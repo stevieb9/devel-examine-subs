@@ -1,5 +1,11 @@
 Revision history for Devel-ExamineSubs
 
+0.02    20120330
+        - added tests
+        - dies() if number of params is not correct (consider
+          changing this internally)
+        - created repository on bitbucket
+
 0.01    20120330 
         First version, released on an unsuspecting world.
 

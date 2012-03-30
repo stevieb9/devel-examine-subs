@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 8;
+use Test::More tests => 6;
 use Test::Exception;
 
 BEGIN {
@@ -9,10 +9,6 @@ BEGIN {
 
 {
     eval { Devel::ExamineSubs->has( 'badfile.none', 'text' ) };
-    ok ( $@ =~ /Invalid file supplied/, "has() dies with error if file not found" );
-}
-{
-    eval { Devel::ExamineSubs->has( 'text' ) };
     ok ( $@ =~ /Invalid file supplied/, "has() dies with error if file not found" );
 }
 {
@@ -28,11 +24,7 @@ BEGIN {
     ok ( ! @res, "has() returns an empty array if file exists and search text not found" );
 }
 {
-    my @res = Devel::ExamineSubs->has( 't/sample.data');
-    ok ( ! @res, "has() returns an empty array if file exists and text param is missing" );
-}
-{
-    my $res = Devel::ExamineSubs->has( 't/sample.data');
+    my $res = Devel::ExamineSubs->has( 't/sample.data', 'this');
     ok ( ref \$res eq 'SCALAR', "has() returns a scalar when called in scalar context" );
 }
 {

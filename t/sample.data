@@ -19,6 +19,12 @@ sub three {
     # six
 
 }
+sub four {
+    # hello
+    # there
+    # wonderful
+    # world
+}
 sub function {
     my ( $x, $y ) = @_;
     return $x * $y;

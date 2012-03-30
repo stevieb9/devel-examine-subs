@@ -1,0 +1,10 @@
+~$
+.tar.gz$
+.bak$
+.swp$
+.txt$
+^test/
+.hg/
+.hgignore$
+^_build/
+^Build$

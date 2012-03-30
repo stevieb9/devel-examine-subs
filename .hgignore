@@ -1,0 +1,12 @@
+~$
+.bak$
+.swp$
+.txt$
+Makefile$
+^test/
+.hg/
+^MYMETA.*
+.tar.gz$
+^_build/
+^blib/
+^Build$

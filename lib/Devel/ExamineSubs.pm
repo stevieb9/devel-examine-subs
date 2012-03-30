@@ -20,7 +20,7 @@ sub all {
 sub _get {
     
     my $self      = shift;
-    my $file      = shift;
+    my $file      = (@_ == 3) ? shift : die "Invalid number of params to _get(): $!";
     my $want_text = (@_ == 2) ? shift : ''; 
     my $want_what = shift; # 0=missing 1=has >1=all
     
@@ -64,7 +64,6 @@ sub _subs {
             next;
         }
         next if ! $name;
-        print "********* $name $want *********\n";
         $subs{ $name } = 1 if $line =~ /$want/;
     }
     return \%subs;

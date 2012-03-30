@@ -17,14 +17,15 @@ sub missing {
 sub all {
     return @{ _get( @_, 2 ) };
 }
-
 sub _get {
     
     my $self      = shift;
     my $file      = shift;
-    my $want_text = shift; 
+    my $want_text = (@_ == 2) ? shift : ''; 
     my $want_what = shift; # 0=missing 1=has >1=all
     
+    $want_text = 0xffff0c0e if $want_text eq '';
+
     my $subs = _subs({
                         file => $file,
                         want => $want_text,
@@ -62,6 +63,8 @@ sub _subs {
             $subs{ $name } = 0;
             next;
         }
+        next if ! $name;
+        print "********* $name $want *********\n";
         $subs{ $name } = 1 if $line =~ /$want/;
     }
     return \%subs;

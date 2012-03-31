@@ -4,33 +4,47 @@ use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 package Devel::ExamineSubs;
 
 sub has {
-    return @{ _get( @_, 1 ) };
+    my $self    = shift;
+    my $p       = shift;
+
+    if ( ! exists $p->{ search } or $p->{ search } eq '' ){
+        return ();
+    }
+    $p->{ want_what } = 1;
+    return @{ _get( $p ) };
 }
 sub missing {
-    return () if $_[2] eq '';
-    return @{ _get( @_, 0 ) };
+    my $self    = shift;
+    my $p       = shift;
+
+    if ( ! exists $p->{ search } or $p->{ search } eq '' ){
+        return ();
+    }
+    $p->{ want_what } = 0;
+    return @{ _get( $p ) };
 }
 sub all {
-    push @_, '' if @_ == 2;
-    return @{ _get( @_, 2 ) };
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{ want_what } = 2;
+    return @{ _get( $p ) };
 }
 sub _get {
     
-    my $self      = shift;
-    my $file      = (@_ == 3) ? shift : die "Invalid number of params to _get(): $!";
-    my $want_text = (@_ == 2) ? shift : ''; 
-    my $want_what = shift; # 0=missing 1=has >1=all
+    my $p           = shift;
+    my $file        = $p->{ file };
+    my $search      = $p->{ search }; 
+    my $want_what   = $p->{ want_what }; # 0=missing 1=has >1=all
     
-    $want_text = 0xffff0c0e if $want_text eq '';
-
     my $subs = _subs({
                         file => $file,
-                        want => $want_text,
+                        want => $search,
                     });
 
     my ( @has, @hasnt );
@@ -65,7 +79,7 @@ sub _subs {
             $subs{ $name } = 0;
             next;
         }
-        next if ! $name;
+        next if ! $name or ! $want;
         $subs{ $name } = 1 if $line =~ /$want/;
     }
     return \%subs;
@@ -86,13 +100,13 @@ Devel::ExamineSubs - Get names of subroutines containing certain text
     my $find = 'function(';
 
     # list of sub names where the sub contains the text "function("
-    my @has = Devel::ExamineSubs->has( $file, $find );
+    my @has = Devel::ExamineSubs->has({ file => $file, search => $find });
     
     # same as has(), but returns the opposite
-    my @missing = Devel::ExamineSubs->missing( $file, $find );
+    my @missing = Devel::ExamineSubs->missing({ file => $file, search => $find });
 
     # get all sub names in a file
-    my @subs = Devel::ExamineSubs->all( $file );
+    my @subs = Devel::ExamineSubs->all({ file => $file });
 
 
 
@@ -105,20 +119,21 @@ subs that contain or do not contain specified text.
 
 =head1 METHODS
 
-=head2 has( $filename, $text )
+=head2 has({ file => $filename, search => $text })
 
 Takes the name of a file to search, and the text you want to
-search for within each sub.
+search for within each sub. Useful to find out which subs call
+other methods.
 
 Returns a list of names of the subs where the subroutine containes
 the text. In scalar context, returns the count of subs containing
 the found text.
 
-=head2 missing( $filename, $text )
+=head2 missing({ file => $filename, search => $text })
 
 The exact opposite of has.
 
-=head2 all( $filename )
+=head2 all({ file => $filename })
 
 Returns a list of the names of all subroutines found in the file.
 

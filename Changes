@@ -1,5 +1,8 @@
 Revision history for Devel-ExamineSubs
 
+0.05    20120330
+        - changed API to all public calls to use href params
+
 0.02    20120330
         - added tests
         - dies() if number of params is not correct (consider

@@ -21,7 +21,7 @@ my $builder = Module::Build->new(
         },
     },
     add_to_cleanup      => [ 'Devel-ExamineSubs-*' ],
-    create_makefile_pl => 'traditional',
+    #create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();

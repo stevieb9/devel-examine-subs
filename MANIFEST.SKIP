@@ -8,3 +8,5 @@
 .hgignore$
 ^_build/
 ^Build$
+^MYMETA\.yml$
+^MYMETA\.json$

@@ -10,3 +10,5 @@ Makefile$
 ^_build/
 ^blib/
 ^Build$
+^META.json$
+^META.yml$

@@ -2,8 +2,16 @@ Build.PL
 Changes
 lib/Devel/ExamineSubs.pm
 MANIFEST			This list of files
+MANIFEST.SKIP
+META.json
+META.yml
+README
 t/00-load.t
+t/01-internal.t
+t/02-has.t
+t/03-missing.t
+t/04-all.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
-MANIFEST.SKIP
+t/sample.data

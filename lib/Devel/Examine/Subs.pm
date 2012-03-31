@@ -4,8 +4,13 @@ use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
+sub new {
+
+    my $class = shift;
+    return bless {}, $class;
+}
 sub has {
     my $self    = shift;
     my $p       = shift;
@@ -108,7 +113,14 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
     # get all sub names in a file
     my @subs = Devel::Examine::Subs->all({ file => $file });
 
+    # There's also an OO interface to save typing if you will be making
+    # multiple calls
 
+    my $des = Devel::Examine::Subs->new();
+
+    $des->has(...);
+    $des->missing(...);
+    $des->all(...);
 
 =head1 DESCRIPTION
 
@@ -119,7 +131,13 @@ subs that contain or do not contain specified text.
 
 =head1 METHODS
 
-=head2 has({ file => $filename, search => $text })
+=head2 new
+
+Instantiates a new object. This module was designed for one-off
+calls through the class methods. Creating an object will save
+keystrokes if multiple calls are required.
+
+=head2 has( { file => $filename, search => $text } )
 
 Takes the name of a file to search, and the text you want to
 search for within each sub. Useful to find out which subs call
@@ -129,11 +147,11 @@ Returns a list of names of the subs where the subroutine containes
 the text. In scalar context, returns the count of subs containing
 the found text.
 
-=head2 missing({ file => $filename, search => $text })
+=head2 missing( { file => $filename, search => $text } )
 
 The exact opposite of has.
 
-=head2 all({ file => $filename })
+=head2 all( { file => $filename } )
 
 Returns a list of the names of all subroutines found in the file.
 

@@ -1,5 +1,9 @@
 Revision history for Devel-Examine::Subs
 
+0.07    20120330
+        - fixes bug 3
+        - add new() method and allow object method calls
+
 0.06    20120330
         - changed name of project from Devel::ExamineSubs
           to Devel::Examine::Subs

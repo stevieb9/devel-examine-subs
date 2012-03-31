@@ -1,12 +1,10 @@
-package Devel::ExamineSubs;
+package Devel::Examine::Subs;
 
 use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
-
-package Devel::ExamineSubs;
+our $VERSION = '0.06';
 
 sub has {
     my $self    = shift;
@@ -90,23 +88,23 @@ __END__
 
 =head1 NAME
 
-Devel::ExamineSubs - Get names of subroutines containing certain text 
+Devel::Examine::Subs - Get names of subroutines containing certain text 
 
 =head1 SYNOPSIS
 
-    use Devel::ExamineSubs;
+    use Devel::Examine::Subs;
 
     my $file = 'perl.pl';
     my $find = 'function(';
 
     # list of sub names where the sub contains the text "function("
-    my @has = Devel::ExamineSubs->has({ file => $file, search => $find });
+    my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
     
     # same as has(), but returns the opposite
-    my @missing = Devel::ExamineSubs->missing({ file => $file, search => $find });
+    my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
 
     # get all sub names in a file
-    my @subs = Devel::ExamineSubs->all({ file => $file });
+    my @subs = Devel::Examine::Subs->all({ file => $file });
 
 
 
@@ -153,7 +151,7 @@ Steve Bertrand, C<< <steveb at cpan.org> >>
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Devel::ExamineSubs
+    perldoc Devel::Examine::Subs
 
 =head1 LICENSE AND COPYRIGHT
 

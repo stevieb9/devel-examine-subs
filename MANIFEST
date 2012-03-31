@@ -1,10 +1,10 @@
 Build.PL
 Changes
-lib/Devel/ExamineSubs.pm
+lib/Devel/Examine/Subs.pm
 MANIFEST			This list of files
 MANIFEST.SKIP
-META.json
 META.yml
+META.json
 README
 t/00-load.t
 t/01-internal.t
@@ -15,3 +15,5 @@ t/manifest.t
 t/pod-coverage.t
 t/pod.t
 t/sample.data
+META.yml
+META.json

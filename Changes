@@ -1,4 +1,8 @@
-Revision history for Devel-ExamineSubs
+Revision history for Devel-Examine::Subs
+
+0.06    20120330
+        - changed name of project from Devel::ExamineSubs
+          to Devel::Examine::Subs
 
 0.05    20120330
         - changed API to all public calls to use href params

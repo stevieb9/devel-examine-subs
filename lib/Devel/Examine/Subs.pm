@@ -45,14 +45,16 @@ sub _get {
                         want => $search,
                     });
 
+    # return early if we want all sub names
+    
+    return [ sort keys %$subs ] if $want_what > 1;
+    
     my ( @has, @hasnt );
 
     while ( my ($k,$v) = each %$subs ){
         push @has,   $k if $v;
         push @hasnt, $k if ! $v;
     }
-
-    return [ sort keys %$subs ] if $want_what > 1;
 
     if ( $want_what ){
         return \@has;

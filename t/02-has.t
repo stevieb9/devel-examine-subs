@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Test::Exception;
 
 BEGIN {

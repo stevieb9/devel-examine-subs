@@ -4,7 +4,7 @@ use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 package Devel::ExamineSubs;
 
@@ -12,6 +12,7 @@ sub has {
     return @{ _get( @_, 1 ) };
 }
 sub missing {
+    return () if $_[2] eq '';
     return @{ _get( @_, 0 ) };
 }
 sub all {

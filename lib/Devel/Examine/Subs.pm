@@ -4,7 +4,7 @@ use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 sub new {
 
@@ -45,18 +45,18 @@ sub _get {
     my $search      = $p->{ search }; 
     my $want_what   = $p->{ want_what }; # 0=missing 1=has >1=all
     
-    my $subs = _subs({
+    my %subs = _subs({
                         file => $file,
                         want => $search,
                     });
 
     # return early if we want all sub names
     
-    return [ sort keys %$subs ] if $want_what > 1;
+    return [ sort keys %subs ] if $want_what > 1;
     
     my ( @has, @hasnt );
 
-    while ( my ($k,$v) = each %$subs ){
+    while ( my ($k,$v) = each %subs ){
         push @has,   $k if $v;
         push @hasnt, $k if ! $v;
     }
@@ -87,7 +87,7 @@ sub _subs {
         next if ! $name or ! $want;
         $subs{ $name } = 1 if $line =~ /$want/;
     }
-    return \%subs;
+    return %subs;
 }
 
 1;

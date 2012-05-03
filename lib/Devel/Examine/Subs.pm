@@ -3,26 +3,36 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 sub new {
     return bless {}, shift;
 }
-sub has { return _search( @_ ); }
-sub missing { return _search( @_ ); }
-sub all { return _search( @_ ); }
-
-sub _search {
+sub has {
     my $self    = shift;
-    my $caller  = shift;
     my $p       = shift;
 
     if ( ! exists $p->{ search } or $p->{ search } eq '' ){
-        return;
+        return ();
     }
-    $p->{ want_what } 
-      = ( split /::/, (caller(0))[3] )[1];
+    $p->{ want_what } = 1;
+    return @{ _get( $p ) };
+}
+sub missing {
+    my $self    = shift;
+    my $p       = shift;
 
+    if ( ! exists $p->{ search } or $p->{ search } eq '' ){
+        return ();
+    }
+    $p->{ want_what } = 0;
+    return @{ _get( $p ) };
+}
+sub all {
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{ want_what } = 2;
     return @{ _get( $p ) };
 }
 sub _get {
@@ -30,7 +40,7 @@ sub _get {
     my $p           = shift;
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
-    my $want_what   = $p->{ want_what }; 
+    my $want_what   = $p->{ want_what }; # 0=missing 1=has >1=all
     
     my %subs = _subs({
                         file => $file,
@@ -39,7 +49,7 @@ sub _get {
 
     # return early if we want all sub names
     
-    return [ sort keys %subs ] if $want_what eq 'all';
+    return [ sort keys %subs ] if $want_what > 1;
     
     my ( @has, @hasnt );
 
@@ -48,7 +58,7 @@ sub _get {
         push @hasnt, $k if ! $v;
     }
 
-    if ( $want_what eq 'has' ){
+    if ( $want_what ){
         return \@has;
     }
     else {

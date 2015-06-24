@@ -127,7 +127,7 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
     use Devel::Examine::Subs;
 
     my $file = 'perl.pl';
-    my $find = 'function(';
+    my $find = 'string';
     
     # get all sub names in a file
     my @subs = Devel::Examine::Subs->all({ file => $file });
@@ -192,9 +192,9 @@ respective position in the file for the subroutine.
 
 =head1 CAVEATS
 
-subs that begin indented (such as closures and those within other
-blocks) will not be counted.
-
+Subs that begin indented (such as closures and those within other
+blocks) will not be counted. For line_numbers() the closing brace
+must be in column one of the file as well.
 
 =head1 AUTHOR
 

@@ -94,7 +94,6 @@ sub _subs {
     while ( my $line = <$fh> ){
         if ( $line =~ /^sub\s/ ){
             $name = (split /\s+/, $line)[1];
-            $subs{ $name } = {};
             $subs{ $name }{ want } = 0;
             $subs{ $name }{ start } = $.;
             next;
@@ -110,13 +109,13 @@ sub _subs {
     
     return %subs;
 }
-
+sub _pod{} #vim placeholder
 1;
 __END__
 
 =head1 NAME
 
-Devel::Examine::Subs - Get names of subroutines containing certain text 
+Devel::Examine::Subs - Get information about subroutines within module and program files
 
 =head1 SYNOPSIS
 
@@ -126,15 +125,19 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
     my $find = 'string';
     
     # get all sub names in a file
+
     my @subs = Devel::Examine::Subs->all({ file => $file });
 
     # list of sub names where the sub contains the text "string"
+    
     my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
     
     # same as has(), but returns the opposite
+   
     my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
 
     # get all sub names with their start and end line numbers in the file
+    
     my $href = Devel::Examine::Subs->line_numbers({ file => $file })
 
     # There's also an OO interface to save typing if you will be making
@@ -151,7 +154,8 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
 
 Reads into Perl program and module files returning the names
 of its subroutines, optionally limiting the names returned to
-subs that contain or do not contain specified text.
+subs that contain or do not contain specified text, or the
+start and end line numbers of the sub.
 
 
 =head1 METHODS

@@ -1,33 +1,95 @@
-Devel::Examine::Subs
-=======================
+NAME
 
-INSTALLATION
+    Devel::Examine::Subs - Get names of subroutines containing certain text
 
-To install this module type the following:
+SYNOPSIS
 
-   perl Build.PL  
-  
-   perl Build 
-   perl Build test
-   perl Build install      
+        use Devel::Examine::Subs;
+    
+        my $file = 'perl.pl';
+        my $find = 'function(';
+        
+        # get all sub names in a file
+        my @subs = Devel::Examine::Subs->all({ file => $file });
+    
+        # list of sub names where the sub contains the text "function("
+        my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
+        
+        # same as has(), but returns the opposite
+        my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
+    
+        # get all sub names with their start and end line numbers in the file
+        my $href = Devel::Examine::Subs->line_numbers({ file => $file })
+    
+        # There's also an OO interface to save typing if you will be making
+        # multiple calls
+    
+        my $des = Devel::Examine::Subs->new();
+    
+        $des->all(...);
+        $des->has(...);
+        $des->missing(...);
+        $des->line_numbers(...);
 
+DESCRIPTION
 
-COPYRIGHT
+    Reads into Perl program and module files returning the names of its
+    subroutines, optionally limiting the names returned to subs that
+    contain or do not contain specified text.
 
-Copyright (C) 2012 by Steve Bertrand <steveb@cpan.org>
+METHODS
 
+ new
 
-SEE ALSO
+    Instantiates a new object. This module was designed for one-off calls
+    through the class methods. Creating an object will save keystrokes if
+    multiple calls are required.
 
-perldoc Devel::Examine::Subs
+ has( { file => $filename, search => $text } )
 
-For usage information.
+    Takes the name of a file to search, and the text you want to search for
+    within each sub. Useful to find out which subs call other methods.
 
+    Returns a list of names of the subs where the subroutine containes the
+    text. In scalar context, returns the count of subs containing the found
+    text.
 
-LICENSE
+ missing( { file => $filename, search => $text } )
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.9 or,
-at your option, any later version of Perl 5 you may have available.
+    The exact opposite of has.
 
+ all( { file => $filename } )
+
+    Returns a list of the names of all subroutines found in the file.
+
+ line_numbers( { file => $filename } )
+
+    Returns a hash of hashes. Top level keys are the function names, and
+    the subkeys 'start' and 'stop' contain the line numbers of the
+    respective position in the file for the subroutine.
+
+CAVEATS
+
+    subs that begin indented (such as closures and those within other
+    blocks) will not be counted.
+
+AUTHOR
+
+    Steve Bertrand, <steveb at cpan.org>
+
+SUPPORT
+
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Devel::Examine::Subs
+
+LICENSE AND COPYRIGHT
+
+    Copyright 2015 Steve Bertrand.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
 

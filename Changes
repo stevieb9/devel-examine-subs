@@ -1,5 +1,10 @@
 Revision history for Devel-Examine::Subs
 
+0.14    20150624
+        - added line_numbers()
+        - retrieves line numbers for the start and end of each
+          function
+
 0.07    20120330
         - fixes bug 3
         - add new() method and allow object method calls

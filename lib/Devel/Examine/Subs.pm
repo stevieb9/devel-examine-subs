@@ -3,7 +3,9 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '0.13';
+use Data::Dumper;
+
+our $VERSION = '0.14';
 
 sub new {
     return bless {}, shift;
@@ -35,12 +37,19 @@ sub all {
     $p->{ want_what } = 2;
     return @{ _get( $p ) };
 }
+sub line_numbers {
+    my $self = shift;
+    my $p = shift;
+
+    $p->{ want_what } = 3;
+    return _get( $p );
+}
 sub _get {
     
     my $p           = shift;
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
-    my $want_what   = $p->{ want_what }; # 0=missing 1=has >1=all
+    my $want_what   = $p->{ want_what }; # 0=missing 1=has 2=all 3=names
     
     my %subs = _subs({
                         file => $file,
@@ -49,13 +58,24 @@ sub _get {
 
     # return early if we want all sub names
     
-    return [ sort keys %subs ] if $want_what > 1;
-    
+    return [ sort keys %subs ] if $want_what == 2;
+
+    # return if we want line nums
+
+    if ( $want_what == 3 ){
+        my @line_nums;
+
+        for my $k ( keys %subs ){
+            delete $subs{ $k }{ want };
+        }
+        return \%subs;
+    }
+
     my ( @has, @hasnt );
 
-    while ( my ($k,$v) = each %subs ){
-        push @has,   $k if $v;
-        push @hasnt, $k if ! $v;
+    for my $k ( keys %subs ){
+        push @has,   $k if $subs{$k}{ want };
+        push @hasnt, $k if ! $subs{$k}{ want };
     }
 
     if ( $want_what ){
@@ -74,16 +94,24 @@ sub _subs {
 
     my %subs;
     my $name; 
-
+    
     while ( my $line = <$fh> ){
         if ( $line =~ /^sub\s/ ){
             $name = (split /\s+/, $line)[1];
-            $subs{ $name } = 0;
+            $subs{ $name } = {};
+            $subs{ $name }{ want } = 0;
+            $subs{ $name }{ start } = $.;
             next;
         }
+        if ( $name and $line =~ /^\}/ ){
+            $subs{ $name }{ stop } = $.;
+        }
+
         next if ! $name or ! $want;
-        $subs{ $name } = 1 if $line =~ /$want/;
+        $subs{ $name }{ want } = 1 if $line =~ /$want/;
+
     }
+    
     return %subs;
 }
 
@@ -100,6 +128,9 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
 
     my $file = 'perl.pl';
     my $find = 'function(';
+    
+    # get all sub names in a file
+    my @subs = Devel::Examine::Subs->all({ file => $file });
 
     # list of sub names where the sub contains the text "function("
     my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
@@ -107,17 +138,18 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
     # same as has(), but returns the opposite
     my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
 
-    # get all sub names in a file
-    my @subs = Devel::Examine::Subs->all({ file => $file });
+    # get all sub names with their start and end line numbers in the file
+    my $href = Devel::Examine::Subs->line_numbers({ file => $file })
 
     # There's also an OO interface to save typing if you will be making
     # multiple calls
 
     my $des = Devel::Examine::Subs->new();
 
+    $des->all(...);
     $des->has(...);
     $des->missing(...);
-    $des->all(...);
+    $des->line_numbers(...);
 
 =head1 DESCRIPTION
 
@@ -152,6 +184,11 @@ The exact opposite of has.
 
 Returns a list of the names of all subroutines found in the file.
 
+=head2 line_numbers( { file => $filename } )
+
+Returns a hash of hashes. Top level keys are the function names,
+and the subkeys 'start' and 'stop' contain the line numbers of the
+respective position in the file for the subroutine.
 
 =head1 CAVEATS
 
@@ -172,7 +209,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2012 Steve Bertrand.
+Copyright 2015 Steve Bertrand.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

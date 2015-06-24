@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 9;
+use Test::More tests => 16;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -43,13 +43,25 @@ BEGIN {#1
     my $res = $des->line_numbers({ file => 't/sample.data', get => 'object' });
     is ( ref($res), 'ARRAY', "line_numbers() returns an aref when called with 'get' param" );
 }
-{#10
-    my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data' });
-    is ( $res->{'eight'}{'stop'}, 43, "line_numbers() catches properly when previous sub end isn't col 1" );
+{#11
+    my $des = Devel::Examine::Subs->new();
+    my $res = $des->line_numbers({ file => 't/sample.data', get => 'obj' });
+    is ( ref($res), 'ARRAY', "line_numbers() does the right thing when 'get' param is set to 'obj'" );
 }
 {#12
-    my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data' });
-    is ( $res->{'eight'}{'stop'}, 43, "line_numbers() catches properly when previous sub end isn't col 1" );
+    my $des = Devel::Examine::Subs->new();
+    my $res = $des->line_numbers({ file => 't/sample.data', get => 'object' });
+    is ( ref($res->[0]), 
+            'Devel::Examine::Subs::Sub', 
+            "The elements in the aref returned by line_numbers() are proper objects" 
+    );
+}
+{#13-16
+    my $des = Devel::Examine::Subs->new();
+    my $res = $des->line_numbers({ file => 't/sample.data', get => 'object' });
+    for (qw(name start stop count)){
+        can_ok( $res->[0], $_ );
+    }
 }
 
 my $des = Devel::Examine::Subs->new();

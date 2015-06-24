@@ -71,8 +71,10 @@ sub _objects {
             $self->{name} = $name || '';
             $self->{start_line} = $data->{start};
             $self->{stop_line} = $data->{stop};
-            $self->{count_line} = $data->{stop} - $data->{start};
-
+            if ($data->{stop} and $data->{start}){
+                $self->{count_line} = $data->{stop} - $data->{start};
+            }
+                     
             return $self;
         }
         sub name {

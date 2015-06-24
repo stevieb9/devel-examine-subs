@@ -18,7 +18,7 @@ sub has {
         return ();
     }
     $p->{ want_what } = 'has';
-    return @{ _get( $p ) };
+    return @{ $self->_get( $p ) };
 }
 sub missing {
     my $self    = shift;
@@ -28,54 +28,104 @@ sub missing {
         return ();
     }
     $p->{ want_what } = 'missing';
-    return @{ _get( $p ) };
+    return @{ $self->_get( $p ) };
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
     $p->{ want_what } = 'all';
-    return @{ _get( $p ) };
+    return @{ $self->_get( $p ) };
 }
 sub line_numbers {
     my $self = shift;
     my $p = shift;
 
     $p->{ want_what } = 'line_numbers';
-    return _get( $p );
+    return $self->_get( $p );
+}
+sub _objects {
+
+    my $self = shift;
+    my $subs = shift;
+
+    my @sub_list;
+
+    package Devel::Examine::Subs::Sub;
+        sub new {
+            my $class = shift;
+            my $data = shift;
+
+            my $self = bless {}, $class;
+
+            $self->{data} = $data;
+            $self->{start_line} = $data->{start};
+            $self->{stop_line} = $data->{stop};
+            $self->{count_line} = $data->{stop} - $data->{start};
+
+            return $self;
+        }
+        sub start {
+            my $self = shift;
+            return $self->{start_line};
+        }
+        sub stop {
+            my $self = shift;
+            return $self->{stop_line};
+        }
+        sub count {
+            my $self = shift;
+            return $self->{count_line};
+        }
+
+    for my $sub (keys %$subs){
+        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub});
+        push @sub_list, $obj;
+    }
+
+    $self->{sublist} = @sub_list;
+}
+sub sublist {
+    my $self = shift;
+    return $self->{sublist};
 }
 sub _get {
-    
+   
+    my $self        = shift;
     my $p           = shift;
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
     my $want_what   = $p->{ want_what }; # 0=missing 1=has 2=all 3=names
     
-    my %subs = _subs({
+    my $subs = _subs({
                         file => $file,
                         want => $search,
                     });
 
+    # configure the object with the data
+
+    $self->_objects($subs);
+
     # return early if we want all sub names
     
-    return [ sort keys %subs ] if $want_what eq 'all';
+    return [ sort keys %$subs ] if $want_what eq 'all';
 
     # return if we want line nums
 
     if ( $want_what eq 'line_numbers' ){
         my @line_nums;
 
-        for my $k ( keys %subs ){
-            delete $subs{ $k }{ want };
+        for my $k ( keys %$subs ){
+            delete $subs->{ $k }{ want };
         }
-        return \%subs;
+        return $subs;
     }
 
     my ( @has, @hasnt );
 
-    for my $k ( keys %subs ){
-        push @has,   $k if $subs{$k}{ want };
-        push @hasnt, $k if ! $subs{$k}{ want };
+    for my $k ( keys %$subs ){
+        push @has,   $k if $subs->{$k}{ want };
+        push @hasnt, $k if ! $subs->{$k}{ want };
     }
 
     return \@has if $want_what eq 'has';
@@ -107,7 +157,7 @@ sub _subs {
 
     }
     
-    return %subs;
+    return \%subs;
 }
 sub _pod{} #vim placeholder
 1;

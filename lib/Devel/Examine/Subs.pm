@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '0.14';
+our $VERSION = '1.01';
 
 sub new {
     return bless {}, shift;
@@ -17,7 +17,7 @@ sub has {
     if ( ! exists $p->{ search } or $p->{ search } eq '' ){
         return ();
     }
-    $p->{ want_what } = 1;
+    $p->{ want_what } = 'has';
     return @{ _get( $p ) };
 }
 sub missing {
@@ -27,21 +27,21 @@ sub missing {
     if ( ! exists $p->{ search } or $p->{ search } eq '' ){
         return ();
     }
-    $p->{ want_what } = 0;
+    $p->{ want_what } = 'missing';
     return @{ _get( $p ) };
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{ want_what } = 2;
+    $p->{ want_what } = 'all';
     return @{ _get( $p ) };
 }
 sub line_numbers {
     my $self = shift;
     my $p = shift;
 
-    $p->{ want_what } = 3;
+    $p->{ want_what } = 'line_numbers';
     return _get( $p );
 }
 sub _get {
@@ -58,11 +58,11 @@ sub _get {
 
     # return early if we want all sub names
     
-    return [ sort keys %subs ] if $want_what == 2;
+    return [ sort keys %subs ] if $want_what eq 'all';
 
     # return if we want line nums
 
-    if ( $want_what == 3 ){
+    if ( $want_what eq 'line_numbers' ){
         my @line_nums;
 
         for my $k ( keys %subs ){
@@ -78,12 +78,8 @@ sub _get {
         push @hasnt, $k if ! $subs{$k}{ want };
     }
 
-    if ( $want_what ){
-        return \@has;
-    }
-    else {
-        return \@hasnt;
-    }
+    return \@has if $want_what eq 'has';
+    return \@hasnt if $want_what eq 'missing';
 }
 sub _subs {
 

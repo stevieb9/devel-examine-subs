@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '1.03';
+our $VERSION = '1.05';
 
 sub new {
     return bless {}, shift;
@@ -55,15 +55,21 @@ sub _objects {
         sub new {
             my $class = shift;
             my $data = shift;
+            my $name = shift;
 
             my $self = bless {}, $class;
 
             $self->{data} = $data;
+            $self->{name} = $name || '';
             $self->{start_line} = $data->{start};
             $self->{stop_line} = $data->{stop};
             $self->{count_line} = $data->{stop} - $data->{start};
 
             return $self;
+        }
+        sub name {
+            my $self = shift;
+            return $self->{name};
         }
         sub start {
             my $self = shift;
@@ -79,11 +85,11 @@ sub _objects {
         }
 
     for my $sub (keys %$subs){
-        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub});
+        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
         push @sub_list, $obj;
     }
 
-    $self->{sublist} = @sub_list;
+    $self->{sublist} = \@sub_list;
 }
 sub sublist {
     my $self = shift;

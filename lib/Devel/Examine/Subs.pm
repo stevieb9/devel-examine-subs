@@ -8,7 +8,9 @@ use Data::Dumper;
 our $VERSION = '1.05';
 
 sub new {
-    return bless {}, shift;
+    my $self = {};
+    bless $self, shift;
+    return $self;
 }
 sub has {
     my $self    = shift;
@@ -42,7 +44,13 @@ sub line_numbers {
     my $p = shift;
 
     $p->{ want_what } = 'line_numbers';
-    return $self->_get( $p );
+
+    if ($p->{ get } and $p->{ get } =~ /obj/){
+        return $self->sublist( $p );
+    }
+    else {
+        return $self->_get( $p );
+    }
 }
 sub _objects {
 
@@ -93,6 +101,12 @@ sub _objects {
 }
 sub sublist {
     my $self = shift;
+    my $p = shift;
+
+    $p->{ want_what } = 'sublist';
+
+    $self->_get($p);
+
     return $self->{sublist};
 }
 sub _get {
@@ -110,7 +124,9 @@ sub _get {
 
     # configure the object with the data
 
-    $self->_objects($subs);
+    if ($want_what eq 'sublist'){
+        $self->_objects($subs);
+    }
 
     # return early if we want all sub names
     
@@ -127,6 +143,12 @@ sub _get {
         return $subs;
     }
 
+    # want_what eq sublist
+
+    if ( $want_what eq 'sublist' ){
+        return $subs;
+    }
+    
     my ( @has, @hasnt );
 
     for my $k ( keys %$subs ){
@@ -195,16 +217,26 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
     # get all sub names with their start and end line numbers in the file
     
     my $href = Devel::Examine::Subs->line_numbers({ file => $file })
-
+    
     # There's also an OO interface to save typing if you will be making
     # multiple calls
 
-    my $des = Devel::Examine::Subs->new();
+    my $des = Devel::Examine::Subs->new({ file => $file });
 
     $des->all(...);
     $des->has(...);
     $des->missing(...);
     $des->line_numbers(...);
+    
+    # return an aref of subroutine objects
+
+    $aref = $des->sublist(...)
+    
+    $aref->[0]->name() # name of sub
+    $aref->[0]->start() # first line of sub
+    $aref->[0]->stop() # last line of sub
+    $aref->[0]->count() # number of lines in sub
+
 
 =head1 DESCRIPTION
 
@@ -240,11 +272,38 @@ The exact opposite of has.
 
 Returns a list of the names of all subroutines found in the file.
 
-=head2 line_numbers( { file => $filename } )
+=head2 line_numbers( { file => $filename, get => 'object' } )
 
-Returns a hash of hashes. Top level keys are the function names,
-and the subkeys 'start' and 'stop' contain the line numbers of the
-respective position in the file for the subroutine.
+If the optional parameter 'get' is not present or set to a
+value of 'object' or 'obj', returns a hash of hashes. 
+Top level keys are the function names, and the subkeys 'start' 
+and 'stop' contain the line numbers of the respective position 
+in the file for the subroutine.
+
+If the optional parameter 'get' is sent in with a value of object,
+will return an array reference of subroutine objects. Each object
+has the following methods:
+
+=head3 name()
+
+Returns the name of the subroutine
+
+=head3 start()
+
+Returns the line number where the sub starts
+
+=head3 stop()
+
+Returns the line number where the sub ends
+
+=head3 count()
+
+Returns the number of lines in the subroutine
+
+=head2 sublist({ file => $filename })
+
+Returns an array reference of subroutine objects. See line_numbers()
+with the 'get' parameter set for details.
 
 =head1 CAVEATS
 

@@ -38,5 +38,18 @@ BEGIN {#1
     my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data' });
     is ( $res->{'eight'}{'stop'}, 43, "line_numbers() catches properly when previous sub end isn't col 1" );
 }
+{#10
+    my $des = Devel::Examine::Subs->new();
+    my $res = $des->line_numbers({ file => 't/sample.data', get => 'object' });
+    is ( ref($res), 'ARRAY', "line_numbers() returns an aref when called with 'get' param" );
+}
+{#10
+    my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data' });
+    is ( $res->{'eight'}{'stop'}, 43, "line_numbers() catches properly when previous sub end isn't col 1" );
+}
+{#12
+    my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data' });
+    is ( $res->{'eight'}{'stop'}, 43, "line_numbers() catches properly when previous sub end isn't col 1" );
+}
 
 my $des = Devel::Examine::Subs->new();

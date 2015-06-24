@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 sub new {
     return bless {}, shift;
@@ -128,7 +128,7 @@ Devel::Examine::Subs - Get names of subroutines containing certain text
     # get all sub names in a file
     my @subs = Devel::Examine::Subs->all({ file => $file });
 
-    # list of sub names where the sub contains the text "function("
+    # list of sub names where the sub contains the text "string"
     my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
     
     # same as has(), but returns the opposite

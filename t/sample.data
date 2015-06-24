@@ -29,3 +29,15 @@ sub function {
     my ( $x, $y ) = @_;
     return $x * $y;
 }
+    sub five {
+    #this
+}
+sub six {
+    #this
+}
+sub seven {
+    #this
+    }
+sub eight {
+    #this
+}

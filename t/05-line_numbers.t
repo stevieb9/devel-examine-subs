@@ -8,7 +8,7 @@ BEGIN {#1
 
 {#2
     my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data'});
-    ok ( ref($res) == 'HASH', "list_numbers() returns an href" );
+    ok ( ref($res) eq 'HASH', "list_numbers() returns an href" );
 }
 {#3
     my $res = Devel::Examine::Subs->line_numbers({ file => 't/sample.data'});

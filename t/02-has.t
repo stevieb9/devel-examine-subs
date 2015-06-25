@@ -30,7 +30,7 @@ my $des = Devel::Examine::Subs->new();
 }
 {#7
     my $res = Devel::Examine::Subs->has({ file => 't/sample.data', search => 'this' });
-    is ( $res, 6, "has() returns the proper count of names when data is found" );
+    is ( $res, 5, "has() returns the proper count of names when data is found" );
 }
 {#8
     my @res = $des->has({ file => 't/sample.data', search => 'this' });

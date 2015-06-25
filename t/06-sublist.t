@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 11;
+use Test::More tests => 10;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -36,11 +36,6 @@ BEGIN {#1
     ok ( $res->[0]->stop() =~ /^\d+$/, "sublist() object calling stop() returns an int " );
 }
 {#10
-    my $des = Devel::Examine::Subs->new();
-    my $res = $des->sublist({ file => 't/sample.data' });
-    ok ( $res->[0]->count() =~ /^\d+$/, "sublist() object calling count() returns an int " );
-}
-{#11
     my $des = Devel::Examine::Subs->new();
     my $res = $des->sublist({ file => 't/sample.data' });
     ok ( $res->[0]->name() =~ /^[\d\w]+$/, "subdata() object calling name() returns a safe string " );

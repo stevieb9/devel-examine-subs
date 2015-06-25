@@ -10,6 +10,7 @@ t/02-has.t
 t/03-missing.t
 t/04-all.t
 t/05-line_numbers.t
+t/06-sublist.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t

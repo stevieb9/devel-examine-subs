@@ -3,9 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 sub new {
     my $self = {};
@@ -19,6 +17,7 @@ sub has {
     if ( ! exists $p->{ search } or $p->{ search } eq '' ){
         return ();
     }
+    
     $p->{ want_what } = 'has';
     return @{ $self->_get( $p ) };
 }
@@ -118,10 +117,12 @@ sub _get {
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
     my $want_what   = $p->{ want_what }; # 0=missing 1=has 2=all 3=names
-    
+   
+    use Data::Dumper;
+    print Dumper $p; 
     my $subs = _subs({
                         file => $file,
-                        want => $search,
+                        search => $search,
                     });
 
     # configure the object with the data
@@ -139,8 +140,8 @@ sub _get {
     if ( $want_what eq 'line_numbers' ){
         my @line_nums;
 
-        for my $k ( keys %$subs ){
-            delete $subs->{ $k }{ want };
+        for my $sub ( keys %$subs ){
+            delete $subs->{ $sub }{ found };
         }
         return $subs;
     }
@@ -153,9 +154,9 @@ sub _get {
     
     my ( @has, @hasnt );
 
-    for my $k ( keys %$subs ){
-        push @has,   $k if $subs->{$k}{ want };
-        push @hasnt, $k if ! $subs->{$k}{ want };
+    for my $sub ( keys %$subs ){
+        push @has,   $sub if $subs->{$sub}{ found };
+        push @hasnt, $sub if ! $subs->{$sub}{ found };
     }
 
     return \@has if $want_what eq 'has';
@@ -165,7 +166,7 @@ sub _subs {
 
     my $p       = shift;
     my $file    = $p->{ file };
-    my $want    = $p->{ want };
+    my $search    = $p->{ search } || '';
     open my $fh, '<', $file or die "Invalid file supplied: $!";
 
     my %subs;
@@ -174,16 +175,29 @@ sub _subs {
     while ( my $line = <$fh> ){
         if ( $line =~ /^sub\s/ ){
             $name = (split /\s+/, $line)[1];
-            $subs{ $name }{ want } = 0;
             $subs{ $name }{ start } = $.;
+            $subs{ $name }{ found } = 0;
+
+            # mark the end of the sub or we'll go past
+            # the last one into POD
+
+            $subs{ $name }{ done } = 0; 
+
             next;
         }
+
         if ( $name and $line =~ /^\}/ ){
             $subs{ $name }{ stop } = $.;
+            $subs{ $name }{ done } = 1;
         }
 
-        next if ! $name or ! $want;
-        $subs{ $name }{ want } = 1 if $line =~ /$want/;
+        if (! $name or $subs{ $name }{ done } == 1){
+            next;
+        }
+
+        next if $subs{ $name }{ found };
+        
+        $subs{ $name }{ found } = 1 if $line =~ /$search/;
 
     }
     

@@ -28,7 +28,7 @@ BEGIN {#1
 }
 {#7
     my $res = Devel::Examine::Subs->missing({ file => 't/sample.data', search => 'this' });
-    is ( $res, 2, "missing() returns the proper count of names when data is found" );
+    is ( $res, 3, "missing() returns the proper count of names when data is found" );
 }
 
 my $des = Devel::Examine::Subs->new();

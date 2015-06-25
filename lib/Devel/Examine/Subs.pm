@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.06';
+our $VERSION = '1.07';
 
 sub new {
     my $self = {};
@@ -116,16 +116,14 @@ sub _get {
     my $p           = shift;
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
-    my $want_what   = $p->{ want_what }; # 0=missing 1=has 2=all 3=names
+    my $want_what   = $p->{ want_what };
    
-    use Data::Dumper;
-    print Dumper $p; 
     my $subs = _subs({
                         file => $file,
                         search => $search,
                     });
 
-    # configure the object with the data
+    # configure sub objects for sublist
 
     if ($want_what eq 'sublist'){
         $self->_objects($subs);

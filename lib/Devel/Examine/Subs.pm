@@ -18,11 +18,11 @@ sub has {
 
     if ($p->{lines}){    
         $p->{want_what} = 'has_lines';
-        return %{ $self->_get($p)};
+        return %{$self->_get($p)};
     }
     else {
         $p->{want_what} = 'has';
-        return @{ $self->_get($p)};
+        return @{$self->_get($p)};
     }
 
 }
@@ -34,21 +34,21 @@ sub missing {
         return ();
     }
     $p->{want_what} = 'missing';
-    return @{ $self->_get($p)};
+    return @{$self->_get($p)};
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
     $p->{want_what} = 'all';
-    return @{ $self->_get($p)};
+    return @{$self->_get($p)};
 }
 sub module {
     my $self = shift;
     my $p = shift;
 
     $p->{want_what} = 'module';
-    return @{ $self->_get($p)};
+    return @{$self->_get($p)};
 }
 sub line_numbers {
     my $self = shift;
@@ -183,7 +183,7 @@ sub _get {
         my @line_nums;
 
         for my $sub (keys %$subs){
-            delete $subs->{ $sub}{found};
+            delete $subs->{$sub}{found};
         }
         return $subs;
     }
@@ -234,33 +234,33 @@ sub _subs {
     while (my $line = <$fh>){
         if ($line =~ /^sub\s/){
             $name = (split /\s+/, $line)[1];
-            $subs{ $name}{start} = $.;
-            $subs{ $name}{found} = 0;
+            $subs{$name}{start} = $.;
+            $subs{$name}{found} = 0;
 
             # mark the end of the sub or we'll go past
             # the last one into POD
 
-            $subs{ $name}{done} = 0; 
+            $subs{$name}{done} = 0; 
 
             next;
         }
 
         if ($name and $line =~ /^\}/){
-            $subs{ $name}{stop} = $.;
-            $subs{ $name}{done} = 1;
+            $subs{$name}{stop} = $.;
+            $subs{$name}{done} = 1;
         }
 
-        if (! $name or $subs{ $name}{done} == 1){
+        if (! $name or $subs{$name}{done} == 1){
             next;
         }
 
-        next if $subs{ $name}{found};
+        next if $subs{$name}{found};
 
         if ($line =~ /$search/){
             if ($want_what ne 'has_lines'){
-                $subs{ $name}{found} = 1;
+                $subs{$name}{found} = 1;
             }
-            push @{$subs{ $name}{lines}}, {$. => $line};
+            push @{$subs{$name}{lines}}, {$. => $line};
         }
     }
     

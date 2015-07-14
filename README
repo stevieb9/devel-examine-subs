@@ -1,7 +1,7 @@
 NAME
 
     Devel::Examine::Subs - Get information about subroutines within module
-    and program files
+    and program files, and in-memory modules.
 
 SYNOPSIS
 

@@ -276,7 +276,7 @@ __END__
 
 =head1 NAME
 
-Devel::Examine::Subs - Get information about subroutines within module and program files
+Devel::Examine::Subs - Get information about subroutines within module and program files, and in-memory modules.
 
 =head1 SYNOPSIS
 

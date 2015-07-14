@@ -13,22 +13,22 @@ SYNOPSIS
         my $find = 'string';
     
         # get all sub names in file
-        my @subs = $des->all({ file => $file }); 
+        my @subs = $des->all({file => $file}); 
     
         # all subs containing "string" in the body
-        my @has = $des->has({ file => $file, search => $find }); 
+        my @has = $des->has({file => $file, search => $find}); 
     
         # all subs containing "string", along with the data in the line
-        my %data = $des->has({ file => $file, search => $find, lines => 1 })
+        my %data = $des->has({file => $file, search => $find, lines => 1})
     
         # opposite of has
-        my @missing = $des->missing({ file => $file, search => $find }); 
+        my @missing = $des->missing({file => $file, search => $find}); 
         
         # all subs with their corresponding start/end line num
-        my $href = $des->line_numbers({ file => $file }) 
+        my $href = $des->line_numbers({file => $file}) 
         
         # return the subs of an in-memory module instead of a file
-        my @subs = $des->module({ module => 'Devel::Examine::Subs' });
+        my @subs = $des->module({module => 'Devel::Examine::Subs'});
     
         # return an aref of subroutine objects
     
@@ -54,7 +54,7 @@ METHODS
 
     Instantiates a new object.
 
- has( { file => $filename, search => $text, lines => 1 } )
+ has({file => $filename, search => $text, lines => 1})
 
     Takes the name of a file to search, and the text you want to search for
     within each sub. Useful to find out which subs call other methods.
@@ -68,20 +68,20 @@ METHODS
     who's keys are the line numer the search found, and the value is the
     data on that line.
 
- missing( { file => $filename, search => $text } )
+ missing({file => $filename, search => $text})
 
     The exact opposite of has.
 
- all( { file => $filename } )
+ all({file => $filename})
 
     Returns a list of the names of all subroutines found in the file.
 
- module( { module => "Devel::Examine::Subs" } )
+ module({module => "Devel::Examine::Subs"})
 
     Returns an array containing a list of all subs found in the module's
     namespace symbol table.
 
- line_numbers( { file => $filename, get => 'object' } )
+ line_numbers({file => $filename, get => 'object'})
 
     If the optional parameter 'get' is not present or set to a value of
     'object' or 'obj', returns a hash of hashes. Top level keys are the
@@ -108,7 +108,7 @@ METHODS
 
     Returns the number of lines in the subroutine
 
- sublist({ file => $filename })
+ sublist({file => $filename})
 
     Returns an array reference of subroutine objects. See line_numbers()
     with the 'get' parameter set for details.

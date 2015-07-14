@@ -259,14 +259,18 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
 
     my $file = 'perl.pl';
     my $find = 'string';
-    
-    my @subs = $des->all({ file => $file }); # get all sub names in file
 
-    my @has = $des->has({ file => $file, search => $find }); # all subs containing "string" in the body
-    
-    my @missing = $des->missing({ file => $file, search => $find }); # opposite of has
+    # get all sub names in file
+    my @subs = $des->all({ file => $file }); 
 
-    my $href = $des->line_numbers({ file => $file }) # all subs with their corresponding start/end line nums
+    # all subs containing "string" in the body
+    my @has = $des->has({ file => $file, search => $find }); 
+
+    # opposite of has
+    my @missing = $des->missing({ file => $file, search => $find }); 
+    
+    # all subs with their corresponding start/end line num
+    my $href = $des->line_numbers({ file => $file }) 
     
     # return an aref of subroutine objects
 

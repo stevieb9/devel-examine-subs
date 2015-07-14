@@ -11,14 +11,18 @@ SYNOPSIS
     
         my $file = 'perl.pl';
         my $find = 'string';
-        
-        my @subs = $des->all({ file => $file }); # get all sub names in file
     
-        my @has = $des->has({ file => $file, search => $find }); # all subs containing "string" in the body
-        
-        my @missing = $des->missing({ file => $file, search => $find }); # opposite of has
+        # get all sub names in file
+        my @subs = $des->all({ file => $file }); 
     
-        my $href = $des->line_numbers({ file => $file }) # all subs with their corresponding start/end line nums
+        # all subs containing "string" in the body
+        my @has = $des->has({ file => $file, search => $find }); 
+    
+        # opposite of has
+        my @missing = $des->missing({ file => $file, search => $find }); 
+        
+        # all subs with their corresponding start/end line num
+        my $href = $des->line_numbers({ file => $file }) 
         
         # return an aref of subroutine objects
     
@@ -33,18 +37,16 @@ SYNOPSIS
 
 DESCRIPTION
 
-    Reads into Perl program and module files returning the names of its
-    subroutines, optionally limiting the names returned to subs that
-    contain or do not contain specified text, or the start and end line
-    numbers of the sub.
+    Reads into Perl program and module files (or modules in memory)
+    returning the names of its subroutines, optionally limiting the names
+    returned to subs that contain or do not contain specified text, or the
+    start and end line numbers of the sub.
 
 METHODS
 
  new
 
-    Instantiates a new object. This module was designed for one-off calls
-    through the class methods. Creating an object will save keystrokes if
-    multiple calls are required.
+    Instantiates a new object.
 
  has( { file => $filename, search => $text } )
 

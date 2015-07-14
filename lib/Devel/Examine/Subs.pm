@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 sub new {
     my $self = {};
@@ -302,6 +302,9 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
     # all subs with their corresponding start/end line num
     my $href = $des->line_numbers({ file => $file }) 
     
+    # return the subs of an in-memory module instead of a file
+    my @subs = $des->module({ module => 'Devel::Examine::Subs' });
+
     # return an aref of subroutine objects
 
     $aref = $des->sublist(...)
@@ -353,8 +356,6 @@ Returns a list of the names of all subroutines found in the file.
 
 Returns an array containing a list of all subs found in the module's 
 namespace symbol table.
-
-die()s if the module requested is not found or can't be require()d.
 
 =head2 line_numbers( { file => $filename, get => 'object' } )
 

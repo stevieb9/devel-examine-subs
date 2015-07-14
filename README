@@ -27,6 +27,9 @@ SYNOPSIS
         # all subs with their corresponding start/end line num
         my $href = $des->line_numbers({ file => $file }) 
         
+        # return the subs of an in-memory module instead of a file
+        my @subs = $des->module({ module => 'Devel::Examine::Subs' });
+    
         # return an aref of subroutine objects
     
         $aref = $des->sublist(...)
@@ -77,8 +80,6 @@ METHODS
 
     Returns an array containing a list of all subs found in the module's
     namespace symbol table.
-
-    die()s if the module requested is not found or can't be require()d.
 
  line_numbers( { file => $filename, get => 'object' } )
 

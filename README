@@ -18,6 +18,9 @@ SYNOPSIS
         # all subs containing "string" in the body
         my @has = $des->has({ file => $file, search => $find }); 
     
+        # all subs containing "string", along with the data in the line
+        my %data = $des->has({ file => $file, search => $find, lines => 1 })
+    
         # opposite of has
         my @missing = $des->missing({ file => $file, search => $find }); 
         
@@ -48,14 +51,19 @@ METHODS
 
     Instantiates a new object.
 
- has( { file => $filename, search => $text } )
+ has( { file => $filename, search => $text, lines => 1 } )
 
     Takes the name of a file to search, and the text you want to search for
     within each sub. Useful to find out which subs call other methods.
 
-    Returns a list of names of the subs where the subroutine containes the
-    text. In scalar context, returns the count of subs containing the found
-    text.
+    By default, returns a list of names of the subs where the subroutine
+    containes the text. In scalar context, returns the count of subs
+    containing the found text.
+
+    With the 'lines' parameter set to true, returns a hash which each sub
+    name is the key, and each key containing an array containing hashes
+    who's keys are the line numer the search found, and the value is the
+    data on that line.
 
  missing( { file => $filename, search => $text } )
 

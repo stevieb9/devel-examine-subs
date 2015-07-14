@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.09';
+our $VERSION = '1.10';
 
 sub new {
     my $self = {};
@@ -17,9 +17,16 @@ sub has {
     if ( ! exists $p->{ search } or $p->{ search } eq '' ){
         return ();
     }
-    
-    $p->{ want_what } = 'has';
-    return @{ $self->_get( $p ) };
+
+    if ( $p->{ lines } ){    
+        $p->{ want_what } = 'has_lines';
+        return %{ $self->_get( $p ) };
+    }
+    else {
+        $p->{ want_what } = 'has';
+        return @{ $self->_get( $p ) };
+    }
+
 }
 sub missing {
     my $self    = shift;
@@ -134,7 +141,6 @@ sub _get {
         no strict 'refs';
 
         if (! $p->{module} or $p->{module} eq ''){
-            warn "No module supplied to module().";
             return [];
         }
 
@@ -190,7 +196,21 @@ sub _get {
     if ( $want_what eq 'sublist' ){
         return $subs;
     }
- 
+
+    # want_what eq has_lines
+
+    if ( $want_what eq 'has_lines' ){
+
+        my %data;
+
+        for my $sub ( keys %$subs ){
+            if ($subs->{$sub}{ found }){
+                $data{$sub} = $subs->{$sub}{lines};
+            }
+        }
+
+        return \%data;
+    }         
   
     my ( @has, @hasnt );
 
@@ -236,9 +256,12 @@ sub _subs {
         }
 
         next if $subs{ $name }{ found };
-        
-        $subs{ $name }{ found } = 1 if $line =~ /$search/;
 
+        if ($line =~ /$search/){        
+            $subs{ $name }{ found } = 1;
+            $subs{ $name }{ this } = 10;
+            push @{$subs{ $name }{ lines }}, {$. => $line};
+        }
     }
     
     return \%subs;
@@ -265,6 +288,9 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
 
     # all subs containing "string" in the body
     my @has = $des->has({ file => $file, search => $find }); 
+
+    # all subs containing "string", along with the data in the line
+    my %data = $des->has({ file => $file, search => $find, lines => 1 })
 
     # opposite of has
     my @missing = $des->missing({ file => $file, search => $find }); 
@@ -296,15 +322,20 @@ specified text, or the start and end line numbers of the sub.
 
 Instantiates a new object. 
 
-=head2 has( { file => $filename, search => $text } )
+=head2 has( { file => $filename, search => $text, lines => 1 } )
 
 Takes the name of a file to search, and the text you want to
 search for within each sub. Useful to find out which subs call
 other methods.
 
-Returns a list of names of the subs where the subroutine containes
+By default, returns a list of names of the subs where the subroutine containes
 the text. In scalar context, returns the count of subs containing
-the found text.
+the found text. 
+
+With the 'lines' parameter set to true, returns
+a hash which each sub name is the key, and each key containing an
+array containing hashes who's keys are the line numer the search found,
+and the value is the data on that line.
 
 =head2 missing( { file => $filename, search => $text } )
 

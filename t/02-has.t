@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 11;
+use Test::More tests => 17;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -47,5 +47,15 @@ my $des = Devel::Examine::Subs->new();
 {#11    
     my $res = $des->has({ file => 't/sample.data', search => 'this' });
     ok ( ref \$res eq 'SCALAR', "obj->has() returns a scalar when called in scalar context" );
+}
+{#12
+    my %res = $des->has({ file => 't/sample.data', search => 'this', lines => 1 });
+    ok ( ref \%res eq 'HASH', "has() returns a hash when called with lines param" );
+}
+{#13-17
+    my %res = $des->has({ file => 't/sample.data', search => 'this', lines => 1 });
+    for my $key (keys %res){
+        ok (ref($res{$key}) eq 'ARRAY', "has()  hash contains array refs for 'lines'" );
+    }
 }
 

@@ -3,28 +3,26 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.13';
+our $VERSION = '1.14';
 
 sub new {
-    my $self = {};
-    bless $self, shift;
-    return $self;
+    return bless {}, shift;
 }
 sub has {
     my $self    = shift;
     my $p       = shift;
 
-    if ( ! exists $p->{ search } or $p->{ search } eq '' ){
+    if (! exists $p->{search} or $p->{search} eq ''){
         return ();
     }
 
-    if ( $p->{ lines } ){    
-        $p->{ want_what } = 'has_lines';
-        return %{ $self->_get( $p ) };
+    if ($p->{lines}){    
+        $p->{want_what} = 'has_lines';
+        return %{ $self->_get($p)};
     }
     else {
-        $p->{ want_what } = 'has';
-        return @{ $self->_get( $p ) };
+        $p->{want_what} = 'has';
+        return @{ $self->_get($p)};
     }
 
 }
@@ -32,37 +30,37 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    if ( ! exists $p->{ search } or $p->{ search } eq '' ){
+    if (! exists $p->{search} or $p->{search} eq ''){
         return ();
     }
-    $p->{ want_what } = 'missing';
-    return @{ $self->_get( $p ) };
+    $p->{want_what} = 'missing';
+    return @{ $self->_get($p)};
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{ want_what } = 'all';
-    return @{ $self->_get( $p ) };
+    $p->{want_what} = 'all';
+    return @{ $self->_get($p)};
 }
 sub module {
     my $self = shift;
     my $p = shift;
 
-    $p->{ want_what } = 'module';
-    return @{ $self->_get( $p ) };
+    $p->{want_what} = 'module';
+    return @{ $self->_get($p)};
 }
 sub line_numbers {
     my $self = shift;
     my $p = shift;
 
-    $p->{ want_what } = 'line_numbers';
+    $p->{want_what} = 'line_numbers';
 
-    if ($p->{ get } and $p->{ get } =~ /obj/){
-        return $self->sublist( $p );
+    if ($p->{get} and $p->{get} =~ /obj/){
+        return $self->sublist($p);
     }
     else {
-        return $self->_get( $p );
+        return $self->_get($p);
     }
 }
 sub _objects {
@@ -118,7 +116,7 @@ sub sublist {
     my $self = shift;
     my $p = shift;
 
-    $p->{ want_what } = 'sublist';
+    $p->{want_what} = 'sublist';
 
     $self->_get($p);
 
@@ -128,9 +126,9 @@ sub _get {
    
     my $self        = shift;
     my $p           = shift;
-    my $file        = $p->{ file };
-    my $search      = $p->{ search }; 
-    my $want_what   = $p->{ want_what };
+    my $file        = $p->{file};
+    my $search      = $p->{search}; 
+    my $want_what   = $p->{want_what};
 
     # do module() first, as we don't need to search in
     # any files
@@ -181,29 +179,29 @@ sub _get {
 
     # return if we want line nums
 
-    if ( $want_what eq 'line_numbers' ){
+    if ($want_what eq 'line_numbers'){
         my @line_nums;
 
-        for my $sub ( keys %$subs ){
-            delete $subs->{ $sub }{ found };
+        for my $sub (keys %$subs){
+            delete $subs->{ $sub}{found};
         }
         return $subs;
     }
 
     # want_what eq sublist
 
-    if ( $want_what eq 'sublist' ){
+    if ($want_what eq 'sublist'){
         return $subs;
     }
 
     # want_what eq has_lines
 
-    if ( $want_what eq 'has_lines' ){
+    if ($want_what eq 'has_lines'){
 
         my %data;
 
-        for my $sub ( keys %$subs ){
-            if ($subs->{$sub}{ lines }){
+        for my $sub (keys %$subs){
+            if ($subs->{$sub}{lines}){
                 $data{$sub} = $subs->{$sub}{lines};
             }
         }
@@ -211,11 +209,11 @@ sub _get {
         return \%data;
     }         
   
-    my ( @has, @hasnt );
+    my (@has, @hasnt);
 
-    for my $sub ( keys %$subs ){
-        push @has,   $sub if $subs->{$sub}{ found };
-        push @hasnt, $sub if ! $subs->{$sub}{ found };
+    for my $sub (keys %$subs){
+        push @has,   $sub if $subs->{$sub}{found};
+        push @hasnt, $sub if ! $subs->{$sub}{found};
     }
 
     return \@has if $want_what eq 'has';
@@ -224,45 +222,45 @@ sub _get {
 sub _subs {
 
     my $p       = shift;
-    my $file    = $p->{ file };
-    my $search    = $p->{ search } || '';
-    my $want_what = $p->{ want_what };
+    my $file    = $p->{file};
+    my $search    = $p->{search} || '';
+    my $want_what = $p->{want_what};
 
     open my $fh, '<', $file or die "Invalid file supplied: $!";
 
     my %subs;
     my $name; 
     
-    while ( my $line = <$fh> ){
-        if ( $line =~ /^sub\s/ ){
+    while (my $line = <$fh>){
+        if ($line =~ /^sub\s/){
             $name = (split /\s+/, $line)[1];
-            $subs{ $name }{ start } = $.;
-            $subs{ $name }{ found } = 0;
+            $subs{ $name}{start} = $.;
+            $subs{ $name}{found} = 0;
 
             # mark the end of the sub or we'll go past
             # the last one into POD
 
-            $subs{ $name }{ done } = 0; 
+            $subs{ $name}{done} = 0; 
 
             next;
         }
 
-        if ( $name and $line =~ /^\}/ ){
-            $subs{ $name }{ stop } = $.;
-            $subs{ $name }{ done } = 1;
+        if ($name and $line =~ /^\}/){
+            $subs{ $name}{stop} = $.;
+            $subs{ $name}{done} = 1;
         }
 
-        if (! $name or $subs{ $name }{ done } == 1){
+        if (! $name or $subs{ $name}{done} == 1){
             next;
         }
 
-        next if $subs{ $name }{ found };
+        next if $subs{ $name}{found};
 
         if ($line =~ /$search/){
             if ($want_what ne 'has_lines'){
-                $subs{ $name }{ found } = 1;
+                $subs{ $name}{found} = 1;
             }
-            push @{$subs{ $name }{ lines }}, {$. => $line};
+            push @{$subs{ $name}{lines}}, {$. => $line};
         }
     }
     
@@ -286,22 +284,22 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
     my $find = 'string';
 
     # get all sub names in file
-    my @subs = $des->all({ file => $file }); 
+    my @subs = $des->all({file => $file}); 
 
     # all subs containing "string" in the body
-    my @has = $des->has({ file => $file, search => $find }); 
+    my @has = $des->has({file => $file, search => $find}); 
 
     # all subs containing "string", along with the data in the line
-    my %data = $des->has({ file => $file, search => $find, lines => 1 })
+    my %data = $des->has({file => $file, search => $find, lines => 1})
 
     # opposite of has
-    my @missing = $des->missing({ file => $file, search => $find }); 
+    my @missing = $des->missing({file => $file, search => $find}); 
     
     # all subs with their corresponding start/end line num
-    my $href = $des->line_numbers({ file => $file }) 
+    my $href = $des->line_numbers({file => $file}) 
     
     # return the subs of an in-memory module instead of a file
-    my @subs = $des->module({ module => 'Devel::Examine::Subs' });
+    my @subs = $des->module({module => 'Devel::Examine::Subs'});
 
     # return an aref of subroutine objects
 
@@ -327,7 +325,7 @@ specified text, or the start and end line numbers of the sub.
 
 Instantiates a new object. 
 
-=head2 has( { file => $filename, search => $text, lines => 1 } )
+=head2 has({file => $filename, search => $text, lines => 1})
 
 Takes the name of a file to search, and the text you want to
 search for within each sub. Useful to find out which subs call
@@ -342,20 +340,20 @@ a hash which each sub name is the key, and each key containing an
 array containing hashes who's keys are the line numer the search found,
 and the value is the data on that line.
 
-=head2 missing( { file => $filename, search => $text } )
+=head2 missing({file => $filename, search => $text})
 
 The exact opposite of has.
 
-=head2 all( { file => $filename } )
+=head2 all({file => $filename})
 
 Returns a list of the names of all subroutines found in the file.
 
-=head2 module( { module => "Devel::Examine::Subs" } )
+=head2 module({module => "Devel::Examine::Subs"})
 
 Returns an array containing a list of all subs found in the module's 
 namespace symbol table.
 
-=head2 line_numbers( { file => $filename, get => 'object' } )
+=head2 line_numbers({file => $filename, get => 'object'})
 
 If the optional parameter 'get' is not present or set to a
 value of 'object' or 'obj', returns a hash of hashes. 
@@ -383,7 +381,7 @@ Returns the line number where the sub ends
 
 Returns the number of lines in the subroutine
 
-=head2 sublist({ file => $filename })
+=head2 sublist({file => $filename})
 
 Returns an array reference of subroutine objects. See line_numbers()
 with the 'get' parameter set for details.

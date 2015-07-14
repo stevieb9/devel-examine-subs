@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 sub new {
     my $self = {};
@@ -168,6 +168,7 @@ sub _get {
     my $subs = _subs({
                         file => $file,
                         search => $search,
+                        want_what => $want_what,
                     });
 
     # configure sub objects for sublist
@@ -204,7 +205,7 @@ sub _get {
         my %data;
 
         for my $sub ( keys %$subs ){
-            if ($subs->{$sub}{ found }){
+            if ($subs->{$sub}{ lines }){
                 $data{$sub} = $subs->{$sub}{lines};
             }
         }
@@ -227,6 +228,8 @@ sub _subs {
     my $p       = shift;
     my $file    = $p->{ file };
     my $search    = $p->{ search } || '';
+    my $want_what = $p->{ want_what };
+
     open my $fh, '<', $file or die "Invalid file supplied: $!";
 
     my %subs;
@@ -257,9 +260,10 @@ sub _subs {
 
         next if $subs{ $name }{ found };
 
-        if ($line =~ /$search/){        
-            $subs{ $name }{ found } = 1;
-            $subs{ $name }{ this } = 10;
+        if ($line =~ /$search/){
+            if ($want_what ne 'has_lines'){
+                $subs{ $name }{ found } = 1;
+            }
             push @{$subs{ $name }{ lines }}, {$. => $line};
         }
     }

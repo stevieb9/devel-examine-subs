@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.11    20150714
+        - fixed bug where only one line was being added for has_lines
+
 1.10    20150714
         - added bool 'lines' param to has()
         -- returns hash of arrays of hashes

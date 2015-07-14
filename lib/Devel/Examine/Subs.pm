@@ -149,8 +149,6 @@ sub _get {
         require "$module_file.pm"
           or die "Module $p->{module} not found: $!";
 
-        die $@ if $@;
-
         my $namespace = "$p->{module}::";
         my @subs;
 

@@ -1,5 +1,11 @@
 Revision history for Devel-Examine::Subs
 
+1.07    20150630
+        - added sublist()
+        - similar to line_numbers(), but returns a list of
+          objects that have start(), stop(), name() and count()
+          methods
+
 0.14    20150624
         - added line_numbers()
         - retrieves line numbers for the start and end of each

@@ -7,43 +7,29 @@ SYNOPSIS
 
         use Devel::Examine::Subs;
     
+        my $des = Devel::Examine::Subs->new();
+    
         my $file = 'perl.pl';
         my $find = 'string';
         
-        # get all sub names in a file
+        my @subs = $des->all({ file => $file }); # get all sub names in file
     
-        my @subs = Devel::Examine::Subs->all({ file => $file });
-    
-        # list of sub names where the sub contains the text "string"
+        my @has = $des->has({ file => $file, search => $find }); # all subs containing "string" in the body
         
-        my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
-        
-        # same as has(), but returns the opposite
-       
-        my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
+        my @missing = $des->missing({ file => $file, search => $find }); # opposite of has
     
-        # get all sub names with their start and end line numbers in the file
-        
-        my $href = Devel::Examine::Subs->line_numbers({ file => $file })
-        
-        # There's also an OO interface to save typing if you will be making
-        # multiple calls
-    
-        my $des = Devel::Examine::Subs->new({ file => $file });
-    
-        $des->all(...);
-        $des->has(...);
-        $des->missing(...);
-        $des->line_numbers(...);
+        my $href = $des->line_numbers({ file => $file }) # all subs with their corresponding start/end line nums
         
         # return an aref of subroutine objects
     
         $aref = $des->sublist(...)
-        
-        $aref->[0]->name() # name of sub
-        $aref->[0]->start() # first line of sub
-        $aref->[0]->stop() # last line of sub
-        $aref->[0]->count() # number of lines in sub
+    
+        for my $sub (@$aref){    
+            print $sub->name() # name of sub
+            print $sub->start() # first line of sub
+            print $sub->stop() # last line of sub
+            print $sub->count() # number of lines in sub
+        }
 
 DESCRIPTION
 
@@ -76,6 +62,13 @@ METHODS
  all( { file => $filename } )
 
     Returns a list of the names of all subroutines found in the file.
+
+ module( { module => "Devel::Examine::Subs" } )
+
+    Returns an array containing a list of all subs found in the module's
+    namespace symbol table.
+
+    die()s if the module requested is not found or can't be require()d.
 
  line_numbers( { file => $filename, get => 'object' } )
 

@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.07';
+our $VERSION = '1.09';
 
 sub new {
     my $self = {};
@@ -36,6 +36,13 @@ sub all {
     my $p       = shift;
 
     $p->{ want_what } = 'all';
+    return @{ $self->_get( $p ) };
+}
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $p->{ want_what } = 'module';
     return @{ $self->_get( $p ) };
 }
 sub line_numbers {
@@ -117,7 +124,41 @@ sub _get {
     my $file        = $p->{ file };
     my $search      = $p->{ search }; 
     my $want_what   = $p->{ want_what };
+
+    # do module() first, as we don't need to search in
+    # any files
+
+    # want_what eq module
+
+    if ($want_what eq 'module'){
+        no strict 'refs';
+
+        if (! $p->{module} or $p->{module} eq ''){
+            warn "No module supplied to module().";
+            return [];
+        }
+
+        (my $module_file = $p->{module}) =~ s|::|/|g;
+
+        require "$module_file.pm"
+          or die "Module $p->{module} not found: $!";
+
+        die $@ if $@;
+
+        my $namespace = "$p->{module}::";
+        my @subs;
+
+        for my $sub (keys %$namespace){
+            if (defined &{$namespace . $sub}){
+                push @subs, $sub;
+            }
+        }
    
+        @subs = sort @subs; 
+        
+        return \@subs;
+    }
+
     my $subs = _subs({
                         file => $file,
                         search => $search,
@@ -149,7 +190,8 @@ sub _get {
     if ( $want_what eq 'sublist' ){
         return $subs;
     }
-    
+ 
+  
     my ( @has, @hasnt );
 
     for my $sub ( keys %$subs ){
@@ -213,60 +255,42 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
 
     use Devel::Examine::Subs;
 
+    my $des = Devel::Examine::Subs->new();
+
     my $file = 'perl.pl';
     my $find = 'string';
     
-    # get all sub names in a file
+    my @subs = $des->all({ file => $file }); # get all sub names in file
 
-    my @subs = Devel::Examine::Subs->all({ file => $file });
-
-    # list of sub names where the sub contains the text "string"
+    my @has = $des->has({ file => $file, search => $find }); # all subs containing "string" in the body
     
-    my @has = Devel::Examine::Subs->has({ file => $file, search => $find });
-    
-    # same as has(), but returns the opposite
-   
-    my @missing = Devel::Examine::Subs->missing({ file => $file, search => $find });
+    my @missing = $des->missing({ file => $file, search => $find }); # opposite of has
 
-    # get all sub names with their start and end line numbers in the file
-    
-    my $href = Devel::Examine::Subs->line_numbers({ file => $file })
-    
-    # There's also an OO interface to save typing if you will be making
-    # multiple calls
-
-    my $des = Devel::Examine::Subs->new({ file => $file });
-
-    $des->all(...);
-    $des->has(...);
-    $des->missing(...);
-    $des->line_numbers(...);
+    my $href = $des->line_numbers({ file => $file }) # all subs with their corresponding start/end line nums
     
     # return an aref of subroutine objects
 
     $aref = $des->sublist(...)
-    
-    $aref->[0]->name() # name of sub
-    $aref->[0]->start() # first line of sub
-    $aref->[0]->stop() # last line of sub
-    $aref->[0]->count() # number of lines in sub
 
+    for my $sub (@$aref){    
+        print $sub->name() # name of sub
+        print $sub->start() # first line of sub
+        print $sub->stop() # last line of sub
+        print $sub->count() # number of lines in sub
+    }
 
 =head1 DESCRIPTION
 
-Reads into Perl program and module files returning the names
-of its subroutines, optionally limiting the names returned to
-subs that contain or do not contain specified text, or the
-start and end line numbers of the sub.
-
+Reads into Perl program and module files (or modules in memory) 
+returning the names of its subroutines, optionally limiting 
+the names returned to subs that contain or do not contain 
+specified text, or the start and end line numbers of the sub.
 
 =head1 METHODS
 
 =head2 new
 
-Instantiates a new object. This module was designed for one-off
-calls through the class methods. Creating an object will save
-keystrokes if multiple calls are required.
+Instantiates a new object. 
 
 =head2 has( { file => $filename, search => $text } )
 
@@ -285,6 +309,13 @@ The exact opposite of has.
 =head2 all( { file => $filename } )
 
 Returns a list of the names of all subroutines found in the file.
+
+=head2 module( { module => "Devel::Examine::Subs" } )
+
+Returns an array containing a list of all subs found in the module's 
+namespace symbol table.
+
+die()s if the module requested is not found or can't be require()d.
 
 =head2 line_numbers( { file => $filename, get => 'object' } )
 

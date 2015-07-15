@@ -9,7 +9,8 @@ BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 {
-    eval { Devel::Examine::Subs->has({ file => 'badfile.none', search => 'text', }) };
+    my $des = Devel::Examine::Subs->new();
+    eval { $des->has({ file => 'badfile.none', search => 'text', }) };
     like ( $@, qr/Invalid file supplied/, "has() dies with error if file not found" );
 }
 {

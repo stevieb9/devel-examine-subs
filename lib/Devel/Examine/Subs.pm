@@ -30,8 +30,9 @@ BEGIN {
             
 sub new {
     my $self = {};
+
     bless $self, shift;
-    
+   
     # set PPI status
 
     $self->{PPI} = 0;
@@ -48,8 +49,8 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
-    if (! -f $p->{file}){
-        die "Invalid file supplied: $p->{file} $!";
+    if (! $p->{file} || ! -f $p->{file}){
+        die "Invalid file supplied: $!";
     }
 
     if (! exists $p->{search} or $p->{search} eq ''){

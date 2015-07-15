@@ -14,17 +14,8 @@ BEGIN {
     eval { require PPI; import PPI; };
     push @use_err, $@ if $@;
    
-    if (not $@){ 
-        eval { require PPI::Dumper; import PPI::Dumper; };
-        push @use_err, $@ if $@;
-    }
-
     if (@use_err and $use_err[0] =~ /PPI\.pm/){
         print "PPI can't be found and won't be used.\n";
-    }
-    elsif (@use_err) {
-        print "PPI found, but PPI::Dumper is missing. " .
-              "PPI won't be used.\n";
     }
 }
             
@@ -43,8 +34,8 @@ sub new {
     if ($INC{$ppi} and $INC{$ppi_dump}){
         $self->{PPI} = 1;
     }
-    $self->{PPI} = 0 if $p->{PPI} eq 0;
-    print $self->_PPI();
+    $self->{PPI} = 0 if $p->{PPI} and $p->{PPI} eq 0;
+    
     return $self;
 }
 sub has {
@@ -329,32 +320,38 @@ sub _PPI_subs {
 
     my $self = shift;
     my $p = shift;
-    my $file = $p->{file};
 
     return if ! $self->_PPI();
 
     my $search = $p->{search};
     my $want_what = $p->{want_what};
-    $self->_load_PPI($p);
+    my $file = $p->{file};
+
+    my $ppi_doc = PPI::Document->new($file);
+
+    my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
 
     tie my @fh, 'Tie::File', $file;
 
     my %subs;
 
-    for my $sub (@{$self->{PPI_subs}}){
-
+    for my $sub (@{$PPI_subs}){
+        
         my $name = $sub->name;
-
-        $subs{$name} = $sub->name;
+        
         $subs{$name}{start} = $sub->line_number;
         
         my $lines = $sub =~ y/\n//;
         $subs{$name}{stop} = $subs{$name}{start} + $lines;
 
-        my $line_num = $self->{$name}{start};
+        my $line_num = $subs{$name}{start};
+       
+        # pull out just the subroutine from the file array
 
-        for (@fh){
-          
+        my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
+
+        for (@sub_section){
+            
             # we haven't found the search term yet
 
             $subs{$name}{found} = 0;
@@ -363,32 +360,21 @@ sub _PPI_subs {
                 if ($want_what ne 'has_lines'){
                     $subs{$name}{found} = 1;
                 }
-                push @{$self->{$name}{lines}}, {$line_num => $_};
+                else {
+                    push @{$subs{$name}{lines}}, {$line_num => $_};
+                }
             }
-        
+
+            $line_num++;
             last if $subs{$name}{found};
         }
     }
 
-    use Data::Dumper;
-    print Dumper \%subs;
     return \%subs;
 }
 sub _PPI {
     my $self = shift;
     return $self->{PPI};
-}
-sub _load_PPI {
-    my $self = shift;
-    my $p = shift;
-
-    my $file = $p->{file};
-
-    return if not $self->_PPI();
-
-    my $ppi_doc = PPI::Document->new($file);
-
-    $self->{PPI_subs} = $ppi_doc->find("PPI::Statement::Subs");
 }
 sub _pod{} #vim placeholder
 1;

@@ -22,10 +22,10 @@ my $des = Devel::Examine::Subs->new();
 }
 {#5
     my $res = $des->all({ file => 't/sample.data', search => 'this' });
-    is ( $res, 9, "obj->all() returns the proper count of names when data is found" );
+    is ( $res, 11, "obj->all() returns the proper count of names when data is found" );
 }
 {#12
     my $res = $des->all({ file => 't/sample.data' });
-    is ( $res, 9, "obj->all() does the right thing with no text param" );
+    is ( $res, 11, "obj->all() does the right thing with no text param" );
 }
 

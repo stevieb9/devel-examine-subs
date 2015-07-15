@@ -1,11 +1,13 @@
 #!perl -T
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
     use_ok( 'PPI' ) || print "PPI can't be loaded, bailing out!\n";
+    use_ok( 'Tie::File' ) || print "Tie::File can't be loaded, bailing out!\n";
+
 }
 
 diag( "Testing Devel::Examine::Subs $Devel::Examine::Subs::VERSION, Perl $], $^X" );

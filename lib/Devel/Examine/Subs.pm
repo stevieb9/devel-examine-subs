@@ -19,6 +19,7 @@ sub new {
     }
 
     @{$self->{can_search}} = qw(has missing all has_lines);
+    @{$self->{valid_params}} = qw(get file search lines);
 
     return $self;
 }
@@ -54,7 +55,7 @@ sub all {
 
     $self->{want_what} = 'all';
     $self->_config($p); 
-
+    
     return @{$self->_get()};
 }
 sub line_numbers {
@@ -65,6 +66,7 @@ sub line_numbers {
     $self->_config($p);
 
     if ($self->{get} and $self->{get} =~ /^obj/){
+        $self->{want_what} = 'sublist';
         return $self->sublist();
     }
     else {
@@ -75,7 +77,7 @@ sub sublist {
     my $self = shift;
     my $p = shift;
 
-    $p->{want_what} = 'sublist';
+    $self->{want_what} = 'sublist';
     $self->_config($p);
 
     $self->_get();
@@ -86,7 +88,7 @@ sub module {
     my $self = shift;
     my $p = shift;
 
-    $p->{want_what} = 'module';
+    $self->{want_what} = 'module';
     $self->_config($p);
 
     return @{$self->_get($p)};
@@ -95,24 +97,25 @@ sub _config {
     my $self = shift;
     my $p = shift;
 
-    my @valid_params = qw(get file search lines);
-    my @search_methods = qw(has missing all has_lines);
-    
     for my $param (keys %$p){
 
-        # validate the file
+        if (grep(/$param/, @{$self->{valid_params}})){
+    
+            # validate the file
 
-        if ($param eq 'file'){
-            $self->_file($p); 
-            next;
+            if ($param eq 'file'){
+                $self->_file($p); 
+                next;
+            }
+
+            # validate search
+
+            if (! exists $p->{search} or $p->{search} eq ''){
+                $self->{bad_search} = 1; 
+            }
+
+            $self->{$param} = $p->{$param};
         }
-
-        # validate search
-
-        if (! exists $p->{search} or $p->{search} eq ''){
-            $self->{bad_search} = 1; 
-        }
-        $self->{$param} = $p->{$param};
     }
 }
 sub _file {

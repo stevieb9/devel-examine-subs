@@ -1,7 +1,17 @@
 Revision history for Devel-Examine::Subs
 
 1.17    20150715
-        - extensive update
+        - implemented PPI sub checking, much safer
+        - removed the old _subs() that was not PPI-based
+        - most everything is OO based now
+        - all core parameters are set into $self through _config()
+        - basic consolodation of error checking in _config()
+        - extensive refactoring to make tests pass
+        - separate out the ::Sub.pm module into its own file
+        - bug 12 fix: new() now sets $self->{file} for use by other methods
+        - bug 14 fix: add file validation: done in _config()
+        - bug 13 fix: new() now accepts 'file' param
+
 1.11    20150714
         - fixed bug where only one line was being added for has_lines
 

@@ -24,7 +24,6 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#5
     my @res = $des->has({ file => 't/sample.data', search => '' });
-    print @res;
     ok ( ! @res, "obj->has() returns an empty array if file exists and text is empty string" );
 }
 {#6

@@ -2,6 +2,12 @@
 
 sub one {
     # one
+    sub one_inner {
+        sub one_inner_two {
+            ...
+        }
+        return 0;
+    }
     # two
     # three
 }

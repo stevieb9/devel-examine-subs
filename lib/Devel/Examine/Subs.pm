@@ -3,10 +3,46 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
+BEGIN {
+    
+    # check for and load PPI
+
+    my @use_err;
+
+    eval { require PPI; import PPI; };
+    push @use_err, $@ if $@;
+   
+    if (not $@){ 
+        eval { require PPI::Dumper; import PPI::Dumper; };
+        push @use_err, $@ if $@;
+    }
+
+    if (@use_err and $use_err[0] =~ /PPI\.pm/){
+        print "PPI can't be found and won't be used.\n";
+    }
+    elsif (@use_err) {
+        print "PPI found, but PPI::Dumper is missing. " .
+              "PPI won't be used.\n";
+    }
+}
+            
 sub new {
-    return bless {}, shift;
+    my $self = {};
+    bless $self, shift;
+    
+    # set PPI status
+
+    $self->{PPI} = 0;
+
+    my ($ppi, $ppi_dump) = qw(PPI.pm PPI/Dumper.pm);
+
+    if ($INC{$ppi} and $INC{$ppi_dump}){
+        $self->{PPI} = 1;
+    }
+
+    return $self;
 }
 sub has {
     my $self    = shift;
@@ -265,6 +301,10 @@ sub _subs {
     }
     
     return \%subs;
+}
+sub _PPI {
+    my $self = shift;
+    return $self->{PPI};
 }
 sub _pod{} #vim placeholder
 1;

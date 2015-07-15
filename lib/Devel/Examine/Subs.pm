@@ -267,45 +267,12 @@ sub _subs {
 }
 sub _objects {
 
+    use Devel::Examine::Subs::Sub;
+
     my $self = shift;
     my $subs = shift;
 
     my @sub_list;
-
-    package Devel::Examine::Subs::Sub;
-        sub new {
-            my $class = shift;
-            my $data = shift;
-            my $name = shift;
-
-            my $self = bless {}, $class;
-
-            $self->{data} = $data;
-            $self->{name} = $name || '';
-            $self->{start_line} = $data->{start};
-            $self->{stop_line} = $data->{stop};
-            if ($data->{stop} and $data->{start}){
-                $self->{count_line} = $data->{stop} - $data->{start};
-            }
-                     
-            return $self;
-        }
-        sub name {
-            my $self = shift;
-            return $self->{name};
-        }
-        sub start {
-            my $self = shift;
-            return $self->{start_line};
-        }
-        sub stop {
-            my $self = shift;
-            return $self->{stop_line};
-        }
-        sub count {
-            my $self = shift;
-            return $self->{count_line};
-        }
 
     for my $sub (keys %$subs){
         my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);

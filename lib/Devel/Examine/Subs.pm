@@ -279,9 +279,6 @@ sub _subs {
     # use PPI sub checking if available
      
     if ($self->_PPI()){
-
-        $self->_load_PPI($p);
-
         return $self->_PPI_subs($p);
     }
 
@@ -329,55 +326,74 @@ sub _PPI_subs {
     my $self = shift;
     my $p = shift;
     my $file    = $p->{file};
-    my $search    = $p->{search} || '';
-    my $want_what = $p->{want_what};
 
     return if ! $self->_PPI();
 
+    $self->_load_PPI($p);
+
+    
     open my $fh, '<', $file or die "Invalid file supplied: $!";
 
     my %subs;
+    
+    my @lines = <$fh>;
+
+    for my $find_sub (@{$self->{PPI_subs}}){
+        $self->__ppi_process(\@lines, $find_sub, \%subs, $p);
+        if (! $subs{$find_sub}{done}){
+            $subs{$find_sub}{lost} = 1;
+        }
+    }
+
+   
+    return \%subs;
+}
+sub __PPI_process {
+    my $self = shift;
+    my $lines = shift;
+    my $find_sub = shift;
+    my $subs = shift;
+    my $p = shift;
+
+    my $search    = $p->{search} || '';
+    my $want_what = $p->{want_what};
+
     my $name; 
 
-    my $find_sub = shift @{$self->{PPI_subs}};
-    print "**$find_sub\n";        
-    while (my $line = <$fh>){
-
+    for my $line (@$lines){
         if ($line =~ /^sub\s+$find_sub/){
             $name = $find_sub;
-            $subs{$name}{start} = $.;
-            $subs{$name}{found} = 0;
+            $subs->{$name}{start} = $.;
+            $subs->{$name}{found} = 0;
 
             # mark the end of the sub or we'll go past
             # the last one into POD
 
-            $subs{$name}{done} = 0; 
+            $subs->{$name}{done} = 0; 
 
             next;
         }
 
         if (($name and $line =~ /\s*sub\s+$self->{PPI_subs}[0]/) or ($name and $line =~ /^\}/)){
-            $subs{$name}{stop} = $.;
-            $subs{$name}{done} = 1;
+            $subs->{$name}{stop} = $.;
+            $subs->{$name}{done} = 1;
             $find_sub = shift @{$self->{PPI_subs}};
             print "***$find_sub\n";
         }
 
-        if (! $name or $subs{$name}{done} == 1){
+        if (! $name or $subs->{$name}{done} == 1){
             next;
         }
 
-        next if $subs{$name}{found};
+        next if $subs->{$name}{found};
 
         if ($line =~ /$search/){
             if ($want_what ne 'has_lines'){
-                $subs{$name}{found} = 1;
+                $subs->{$name}{found} = 1;
             }
-            push @{$subs{$name}{lines}}, {$. => $line};
+            push @{$subs->{$name}{lines}}, {$. => $line};
         }
     }
-    
-    return \%subs;
 }
 sub _PPI {
     my $self = shift;

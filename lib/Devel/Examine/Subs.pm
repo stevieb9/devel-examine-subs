@@ -85,6 +85,10 @@ sub all {
     my $self    = shift;
     my $p       = shift;
 
+    if (! -f $p->{file}){
+        die "Invalid file supplied: $p->{file} $!";
+    }
+
     $p->{want_what} = 'all';
     return @{$self->_get($p)};
 }
@@ -271,14 +275,18 @@ sub _subs {
     my $file    = $p->{file};
     my $search    = $p->{search} || '';
     my $want_what = $p->{want_what};
-
+   
+    # use PPI sub checking if available
+     
     if ($self->_PPI()){
+
         $self->_load_PPI($p);
-        print "$_\n" for @{$self->{PPI_subs}};
+
+        return $self->_PPI_subs($p);
     }
 
     open my $fh, '<', $file or die "Invalid file supplied: $!";
-
+    
     my %subs;
     my $name; 
     
@@ -299,6 +307,60 @@ sub _subs {
         if ($name and $line =~ /^\}/){
             $subs{$name}{stop} = $.;
             $subs{$name}{done} = 1;
+        }
+
+        if (! $name or $subs{$name}{done} == 1){
+            next;
+        }
+
+        next if $subs{$name}{found};
+
+        if ($line =~ /$search/){
+            if ($want_what ne 'has_lines'){
+                $subs{$name}{found} = 1;
+            }
+            push @{$subs{$name}{lines}}, {$. => $line};
+        }
+    }
+    
+    return \%subs;
+}
+sub _PPI_subs {
+    my $self = shift;
+    my $p = shift;
+    my $file    = $p->{file};
+    my $search    = $p->{search} || '';
+    my $want_what = $p->{want_what};
+
+    return if ! $self->_PPI();
+
+    open my $fh, '<', $file or die "Invalid file supplied: $!";
+
+    my %subs;
+    my $name; 
+
+    my $find_sub = shift @{$self->{PPI_subs}};
+    print "**$find_sub\n";        
+    while (my $line = <$fh>){
+
+        if ($line =~ /^sub\s+$find_sub/){
+            $name = $find_sub;
+            $subs{$name}{start} = $.;
+            $subs{$name}{found} = 0;
+
+            # mark the end of the sub or we'll go past
+            # the last one into POD
+
+            $subs{$name}{done} = 0; 
+
+            next;
+        }
+
+        if (($name and $line =~ /\s*sub\s+$self->{PPI_subs}[0]/) or ($name and $line =~ /^\}/)){
+            $subs{$name}{stop} = $.;
+            $subs{$name}{done} = 1;
+            $find_sub = shift @{$self->{PPI_subs}};
+            print "***$find_sub\n";
         }
 
         if (! $name or $subs{$name}{done} == 1){

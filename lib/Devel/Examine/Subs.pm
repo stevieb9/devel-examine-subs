@@ -5,35 +5,31 @@ use warnings;
 
 our $VERSION = '1.15';
 
-BEGIN {
-    
-    # check for and load PPI
-
-    my @use_err;
-
-    eval { require PPI; import PPI; };
-    push @use_err, $@ if $@;
-   
-    if (@use_err and $use_err[0] =~ /PPI\.pm/){
-        print "PPI can't be found and won't be used.\n";
-    }
-}
+use PPI;
             
 sub new {
+    
     my $self = {};
     bless $self, shift;
     
     my $p = shift;
-   
+
+    # set the file
+
+    if ($p->{file}){
+        $self->{file} = $p->{file};
+    }
+
     # set PPI status
 
     $self->{PPI} = 0;
 
     my ($ppi, $ppi_dump) = qw(PPI.pm PPI/Dumper.pm);
 
-    if ($INC{$ppi} and $INC{$ppi_dump}){
+    if ($INC{$ppi}){
         $self->{PPI} = 1;
     }
+
     $self->{PPI} = 0 if $p->{PPI} and $p->{PPI} eq 0;
     
     return $self;
@@ -42,8 +38,12 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
-    if (! $p->{file} || ! -f $p->{file}){
-        die "Invalid file supplied: $!";
+    # set file for legacy 
+
+    $self->{file} = $p->{file} // $self->{file};
+
+    if (! -f $self->{file}){
+        die "Invalid file supplied: $p->{file} $!";
     }
 
     if (! exists $p->{search} or $p->{search} eq ''){
@@ -64,7 +64,11 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    if (! -f $p->{file}){
+    # set file for legacy 
+
+    $self->{file} = $p->{file} // $self->{file};
+
+    if (!-f $self->{file}){
         die "Invalid file supplied: $p->{file} $!";
     }
 
@@ -77,6 +81,14 @@ sub missing {
 sub all {
     my $self    = shift;
     my $p       = shift;
+
+    # set file for legacy 
+
+    $self->{file} = $p->{file} // $self->{file};
+
+    if (! $self->{file} || ! -f $self->{file}){
+        die "Invalid file supplied: $p->{file} $!";
+    }
 
     if (! -f $p->{file}){
         die "Invalid file supplied: $p->{file} $!";
@@ -262,60 +274,6 @@ sub _get {
     return \@hasnt if $want_what eq 'missing';
 }
 sub _subs {
-
-    my $self = shift;
-    my $p       = shift;
-    my $file    = $p->{file};
-    my $search    = $p->{search} || '';
-    my $want_what = $p->{want_what};
-   
-    # use PPI sub checking if available
-     
-    if ($self->_PPI()){
-        return $self->_PPI_subs($p);
-    }
-
-    open my $fh, '<', $file or die "Invalid file supplied: $!";
-    
-    my %subs;
-    my $name; 
-    
-    while (my $line = <$fh>){
-        if ($line =~ /^sub\s/){
-            $name = (split /\s+/, $line)[1];
-            $subs{$name}{start} = $.;
-            $subs{$name}{found} = 0;
-
-            # mark the end of the sub or we'll go past
-            # the last one into POD
-
-            $subs{$name}{done} = 0; 
-
-            next;
-        }
-
-        if ($name and $line =~ /^\}/){
-            $subs{$name}{stop} = $.;
-            $subs{$name}{done} = 1;
-        }
-
-        if (! $name or $subs{$name}{done} == 1){
-            next;
-        }
-
-        next if $subs{$name}{found};
-
-        if ($line =~ /$search/){
-            if ($want_what ne 'has_lines'){
-                $subs{$name}{found} = 1;
-            }
-            push @{$subs{$name}{lines}}, {$. => $line};
-        }
-    }
-    
-    return \%subs;
-}
-sub _PPI_subs {
     use Tie::File;
 
     my $self = shift;
@@ -350,23 +308,27 @@ sub _PPI_subs {
 
         my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
 
-        for (@sub_section){
-            
-            # we haven't found the search term yet
+        # only search if there's a search term
 
-            $subs{$name}{found} = 0;
+        if ($search and $search ne ''){
+            for (@sub_section){
+                
+                # we haven't found the search term yet
 
-            if (/$search/){
-                if ($want_what ne 'has_lines'){
-                    $subs{$name}{found} = 1;
+                $subs{$name}{found} = 0;
+
+                if ($_ and /$search/){
+                    if ($want_what ne 'has_lines'){
+                        $subs{$name}{found} = 1;
+                    }
+                    else {
+                        push @{$subs{$name}{lines}}, {$line_num => $_};
+                    }
                 }
-                else {
-                    push @{$subs{$name}{lines}}, {$line_num => $_};
-                }
+
+                $line_num++;
+                last if $subs{$name}{found};
             }
-
-            $line_num++;
-            last if $subs{$name}{found};
         }
     }
 

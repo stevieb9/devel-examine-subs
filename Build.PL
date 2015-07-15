@@ -13,6 +13,7 @@ my $builder = Module::Build->new(
     },
     requires => {
         'perl' => 5.006,
+        'PPI' => 0,
     },
     meta_merge => {
         resources => {

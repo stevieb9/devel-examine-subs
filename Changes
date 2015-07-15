@@ -1,5 +1,7 @@
 Revision history for Devel-Examine::Subs
 
+1.17    20150715
+        - extensive update
 1.11    20150714
         - fixed bug where only one line was being added for has_lines
 

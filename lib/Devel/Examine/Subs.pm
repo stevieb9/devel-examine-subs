@@ -323,22 +323,12 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
     my $find = 'string';
 
     # get all sub names in file
+
     my @subs = $des->all({file => $file}); 
 
     # all subs containing "string" in the body
+
     my @has = $des->has({file => $file, search => $find}); 
-
-    # all subs containing "string", along with the data in the line
-    my %data = $des->has({file => $file, search => $find, lines => 1})
-
-    # opposite of has
-    my @missing = $des->missing({file => $file, search => $find}); 
-    
-    # all subs with their corresponding start/end line num
-    my $href = $des->line_numbers({file => $file}) 
-    
-    # return the subs of an in-memory module instead of a file
-    my @subs = $des->module({module => 'Devel::Examine::Subs'});
 
     # return an aref of subroutine objects
 
@@ -351,12 +341,21 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
         print $sub->count() # number of lines in sub
     }
 
+    # see the has() method below to find out how to
+    # get a return that contains all lines that match the search
+    # for each sub
+
 =head1 DESCRIPTION
+
+NOTE: This module now requires the PPI module to be installed.
 
 Reads into Perl program and module files (or modules in memory) 
 returning the names of its subroutines, optionally limiting 
 the names returned to subs that contain or do not contain 
 specified text, or the start and end line numbers of the sub.
+
+This module is much safer and accurate than earlier versions, as
+it now uses the reliable PPI module to parse the perl code.
 
 =head1 METHODS
 

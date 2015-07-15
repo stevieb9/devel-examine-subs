@@ -48,6 +48,10 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
+    if (! -f $p->{file}){
+        die "Invalid file supplied: $p->{file} $!";
+    }
+
     if (! exists $p->{search} or $p->{search} eq ''){
         return ();
     }
@@ -65,6 +69,10 @@ sub has {
 sub missing {
     my $self    = shift;
     my $p       = shift;
+
+    if (! -f $p->{file}){
+        die "Invalid file supplied: $p->{file} $!";
+    }
 
     if (! exists $p->{search} or $p->{search} eq ''){
         return ();
@@ -197,7 +205,7 @@ sub _get {
         return \@subs;
     }
 
-    my $subs = _subs({
+    my $subs = $self->_subs({
                         file => $file,
                         search => $search,
                         want_what => $want_what,
@@ -257,10 +265,16 @@ sub _get {
 }
 sub _subs {
 
+    my $self = shift;
     my $p       = shift;
     my $file    = $p->{file};
     my $search    = $p->{search} || '';
     my $want_what = $p->{want_what};
+
+    if ($self->_PPI()){
+        $self->_load_PPI($p);
+        print "$_\n" for @{$self->{PPI_subs}};
+    }
 
     open my $fh, '<', $file or die "Invalid file supplied: $!";
 
@@ -305,6 +319,27 @@ sub _subs {
 sub _PPI {
     my $self = shift;
     return $self->{PPI};
+}
+sub _load_PPI {
+    my $self = shift;
+    my $p = shift;
+
+    my $file = $p->{file};
+
+    return if not $self->_PPI();
+
+    my $ppi_doc = PPI::Document->new($file);
+    my $ppi_dump = PPI::Dumper->new($ppi_doc);
+
+    my @subs =
+        map {$_->name}
+        @{$ppi_doc->find(
+                sub {
+                        $_[1]->isa('PPI::Statement::Sub');
+                }
+        )};
+
+    $self->{PPI_subs} = \@subs;
 }
 sub _pod{} #vim placeholder
 1;

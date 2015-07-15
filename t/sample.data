@@ -3,7 +3,6 @@
 sub one {
     # one
     # two
-    # this
     # three
 }
 sub two {
@@ -15,7 +14,7 @@ sub three {
 
     # four
     # five
-    # this
+    my $str = 'this';
     # six
 
 }
@@ -30,14 +29,14 @@ sub function {
     return $x * $y;
 }
     sub five {
-    #this
+    my $str = this;
 }
 sub six {
-    #this
+    my $str = this;
 }
 sub seven {
-    #this
+    my $str = this;
     }
 sub eight {
-    #this
+    my $str = this;
 }

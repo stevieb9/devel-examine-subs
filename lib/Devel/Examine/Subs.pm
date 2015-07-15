@@ -26,19 +26,18 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
+    $self->_config($p);
+
     if ($self->{lines}){    
         $self->{want_what} = 'has_lines';
-        $self->_config($p);
     
         return %{$self->_get()};
     }
     else {
         $self->{want_what} = 'has';
-        $self->_config($p);
    
         return @{$self->_get()};
     }
-
 }
 sub missing {
     my $self    = shift;
@@ -61,7 +60,6 @@ sub all {
 sub line_numbers {
     my $self = shift;
     my $p = shift;
-
 
     $self->{want_what} = 'line_numbers';
     $self->_config($p);
@@ -114,7 +112,6 @@ sub _config {
         if (! exists $p->{search} or $p->{search} eq ''){
             $self->{bad_search} = 1; 
         }
-
         $self->{$param} = $p->{$param};
     }
 }
@@ -206,7 +203,6 @@ sub _get {
     if ($want_what eq 'has_lines'){
 
         my %data;
-
         for my $sub (keys %$subs){
             if ($subs->{$sub}{lines}){
                 $data{$sub} = $subs->{$sub}{lines};
@@ -232,9 +228,9 @@ sub _subs {
     my $self = shift;
     my $p = shift;
 
-    my $search = $p->{search};
-    my $want_what = $p->{want_what};
-    my $file = $p->{file};
+    my $search = $self->{search};
+    my $want_what = $self->{want_what};
+    my $file = $self->{file};
 
     my $ppi_doc = PPI::Document->new($file);
 
@@ -263,7 +259,7 @@ sub _subs {
 
         if (grep(/$want_what/, @{$self->{can_search}})){
             
-            if ($search ne ''){
+            if (not $search eq ''){
 
                 for (@sub_section){
                    

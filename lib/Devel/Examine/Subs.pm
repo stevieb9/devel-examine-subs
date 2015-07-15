@@ -20,18 +20,6 @@ sub new {
         $self->{file} = $p->{file};
     }
 
-    # set PPI status
-
-    $self->{PPI} = 0;
-
-    my ($ppi, $ppi_dump) = qw(PPI.pm PPI/Dumper.pm);
-
-    if ($INC{$ppi}){
-        $self->{PPI} = 1;
-    }
-
-    $self->{PPI} = 0 if $p->{PPI} and $p->{PPI} eq 0;
-    
     return $self;
 }
 sub has {
@@ -279,8 +267,6 @@ sub _subs {
     my $self = shift;
     my $p = shift;
 
-    return if ! $self->_PPI();
-
     my $search = $p->{search};
     my $want_what = $p->{want_what};
     my $file = $p->{file};
@@ -333,10 +319,6 @@ sub _subs {
     }
 
     return \%subs;
-}
-sub _PPI {
-    my $self = shift;
-    return $self->{PPI};
 }
 sub _pod{} #vim placeholder
 1;

@@ -18,25 +18,23 @@ sub new {
         $self->_file($p);
     }
 
+    @{$self->{can_search}} = qw(has missing all has_lines);
+
     return $self;
 }
 sub has {
     my $self    = shift;
     my $p       = shift;
 
-    $self->_file($p);
-
-    if (! exists $p->{search} or $p->{search} eq ''){
-        return ();
-    }
-
-    if ($p->{lines}){    
-        $p->{want_what} = 'has_lines';
-        return %{$self->_get($p)};
+    if ($self->{lines}){    
+        $self->{want_what} = 'has_lines';
+        $self->_config($p);
+        return %{$self->_get()};
     }
     else {
-        $p->{want_what} = 'has';
-        return @{$self->_get($p)};
+        $self->{want_what} = 'has';
+        $self->_config($p);
+        return @{$self->_get()};
     }
 
 }
@@ -44,13 +42,35 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    $self->_file($p);
+    $self->{want_what} = 'missing';
+    $self->_config($p);
 
-    if (! exists $p->{search} or $p->{search} eq ''){
-        return ();
+    return @{$self->_get()};
+}
+sub _config {
+    my $self = shift;
+    my $p = shift;
+
+    my @valid_params = qw(file search lines);
+    my @search_methods = qw(has missing all has_lines);
+    
+    for my $param (keys %$p){
+
+        # validate the file
+
+        if ($param eq 'file'){
+            $self->_file($p); 
+            next;
+        }
+
+        # validate search
+
+        if (! exists $p->{search} or $p->{search} eq ''){
+            $self->{bad_search} = 1; 
+        }
+
+        $self->{$param} = $p->{$param};
     }
-    $p->{want_what} = 'missing';
-    return @{$self->_get($p)};
 }
 sub all {
     my $self    = shift;
@@ -106,16 +126,17 @@ sub _file {
     $self->{file} = $p->{file} // $self->{file};
 
     if (! $self->{file} || ! -f $self->{file}){
-        die "Invalid file supplied: $p->{file} $!";
+        die "Invalid file supplied: $self->{file} $!";
     }
 }
 sub _get {
    
     my $self        = shift;
     my $p           = shift;
-    my $file        = $p->{file};
-    my $search      = $p->{search}; 
-    my $want_what   = $p->{want_what};
+
+    my $file        = $self->{file};
+    my $search      = $self->{search}; 
+    my $want_what   = $self->{want_what};
 
     # do module() first, as we don't need to search in
     # any files
@@ -241,24 +262,32 @@ sub _subs {
 
         # only search if there's a search term
 
-        if ($search and $search ne ''){
-            for (@sub_section){
-                
-                # we haven't found the search term yet
+        if (grep(/$want_what/, @{$self->{can_search}})){
+            
+            if ($search ne ''){
 
-                $subs{$name}{found} = 0;
+                for (@sub_section){
+                   
+                    # we haven't found the search term yet
 
-                if ($_ and /$search/){
-                    if ($want_what ne 'has_lines'){
-                        $subs{$name}{found} = 1;
+                    $subs{$name}{found} = 0;
+
+                    if ($_ and /$search/){
+                        if ($want_what ne 'has_lines'){
+                            $subs{$name}{found} = 1;
+                        }
+                        else {
+                            push @{$subs{$name}{lines}}, {$line_num => $_};
+                        }
                     }
-                    else {
-                        push @{$subs{$name}{lines}}, {$line_num => $_};
-                    }
+
+                    $line_num++;
+                    last if $subs{$name}{found};
                 }
-
-                $line_num++;
-                last if $subs{$name}{found};
+            }
+            else { 
+                # bad search
+                return {};
             }
         }
     }

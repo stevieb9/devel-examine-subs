@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 6;
+use Test::More tests => 19;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -23,3 +23,8 @@ can_ok( 'Devel::Examine::Subs', '_get' );
 can_ok( 'Devel::Examine::Subs', '_subs' );
 can_ok( 'Devel::Examine::Subs', '_objects' );
 
+can_ok( 'Devel::Examine::Subs::Sub', 'new' );
+can_ok( 'Devel::Examine::Subs::Sub', 'name' );
+can_ok( 'Devel::Examine::Subs::Sub', 'start' );
+can_ok( 'Devel::Examine::Subs::Sub', 'stop' );
+can_ok( 'Devel::Examine::Subs::Sub', 'count' );

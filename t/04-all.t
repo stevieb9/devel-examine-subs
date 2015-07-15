@@ -8,19 +8,19 @@ BEGIN {#1
 
 my $des = Devel::Examine::Subs->new();
 
-{#8
+{#2
     my @res = $des->all({ file => 't/sample.data', search => '' });
-    ok ( @res, "obj->all() returns an array if file exists and text is empty string" );
+    ok ( ! @res, "obj->all() returns an array if file exists and text is empty string" );
 }
-{#9
+{#3
     my @res = $des->all({ file => 't/sample.data', search => 'asdfasdf' });
     ok ( @res, "obj->all() returns an array if file exists and search text not found" );
 }
-{#10
+{#4
     my $res = $des->all({ file => 't/sample.data' });
     ok ( ref \$res eq 'SCALAR', "obj->all() returns a scalar when called in scalar context" );
 }
-{#11
+{#5
     my $res = $des->all({ file => 't/sample.data', search => 'this' });
     is ( $res, 9, "obj->all() returns the proper count of names when data is found" );
 }

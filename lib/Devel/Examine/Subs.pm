@@ -29,11 +29,13 @@ sub has {
     if ($self->{lines}){    
         $self->{want_what} = 'has_lines';
         $self->_config($p);
+    
         return %{$self->_get()};
     }
     else {
         $self->{want_what} = 'has';
         $self->_config($p);
+   
         return @{$self->_get()};
     }
 
@@ -47,11 +49,55 @@ sub missing {
 
     return @{$self->_get()};
 }
+sub all {
+    my $self    = shift;
+    my $p       = shift;
+
+    $self->{want_what} = 'all';
+    $self->_config($p); 
+
+    return @{$self->_get()};
+}
+sub line_numbers {
+    my $self = shift;
+    my $p = shift;
+
+
+    $self->{want_what} = 'line_numbers';
+    $self->_config($p);
+
+    if ($self->{get} and $self->{get} =~ /^obj/){
+        return $self->sublist();
+    }
+    else {
+        return $self->_get();
+    }
+}
+sub sublist {
+    my $self = shift;
+    my $p = shift;
+
+    $p->{want_what} = 'sublist';
+    $self->_config($p);
+
+    $self->_get();
+
+    return $self->{sublist};
+}
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $p->{want_what} = 'module';
+    $self->_config($p);
+
+    return @{$self->_get($p)};
+}
 sub _config {
     my $self = shift;
     my $p = shift;
 
-    my @valid_params = qw(file search lines);
+    my @valid_params = qw(get file search lines);
     my @search_methods = qw(has missing all has_lines);
     
     for my $param (keys %$p){
@@ -71,53 +117,6 @@ sub _config {
 
         $self->{$param} = $p->{$param};
     }
-}
-sub all {
-    my $self    = shift;
-    my $p       = shift;
-
-    $self->_file($p);
-
-    if (! -f $p->{file}){
-        die "Invalid file supplied: $p->{file} $!";
-    }
-
-    $p->{want_what} = 'all';
-    return @{$self->_get($p)};
-}
-sub line_numbers {
-    my $self = shift;
-    my $p = shift;
-
-    $self->_file($p);
-
-    $p->{want_what} = 'line_numbers';
-
-    if ($p->{get} and $p->{get} =~ /obj/){
-        return $self->sublist($p);
-    }
-    else {
-        return $self->_get($p);
-    }
-}
-sub sublist {
-    my $self = shift;
-    my $p = shift;
-
-    $self->_file($p);
-
-    $p->{want_what} = 'sublist';
-
-    $self->_get($p);
-
-    return $self->{sublist};
-}
-sub module {
-    my $self = shift;
-    my $p = shift;
-
-    $p->{want_what} = 'module';
-    return @{$self->_get($p)};
 }
 sub _file {
     my $self = shift;

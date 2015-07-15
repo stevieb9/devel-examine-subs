@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.15';
+our $VERSION = '1.17';
 
 use PPI;
             
@@ -14,10 +14,8 @@ sub new {
     
     my $p = shift;
 
-    # set the file
-
     if ($p->{file}){
-        $self->{file} = $p->{file};
+        $self->_file($p);
     }
 
     return $self;
@@ -26,13 +24,7 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
-    # set file for legacy 
-
-    $self->{file} = $p->{file} // $self->{file};
-
-    if (! -f $self->{file}){
-        die "Invalid file supplied: $p->{file} $!";
-    }
+    $self->_file($p);
 
     if (! exists $p->{search} or $p->{search} eq ''){
         return ();
@@ -52,13 +44,7 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    # set file for legacy 
-
-    $self->{file} = $p->{file} // $self->{file};
-
-    if (!-f $self->{file}){
-        die "Invalid file supplied: $p->{file} $!";
-    }
+    $self->_file($p);
 
     if (! exists $p->{search} or $p->{search} eq ''){
         return ();
@@ -70,13 +56,7 @@ sub all {
     my $self    = shift;
     my $p       = shift;
 
-    # set file for legacy 
-
-    $self->{file} = $p->{file} // $self->{file};
-
-    if (! $self->{file} || ! -f $self->{file}){
-        die "Invalid file supplied: $p->{file} $!";
-    }
+    $self->_file($p);
 
     if (! -f $p->{file}){
         die "Invalid file supplied: $p->{file} $!";
@@ -85,16 +65,11 @@ sub all {
     $p->{want_what} = 'all';
     return @{$self->_get($p)};
 }
-sub module {
-    my $self = shift;
-    my $p = shift;
-
-    $p->{want_what} = 'module';
-    return @{$self->_get($p)};
-}
 sub line_numbers {
     my $self = shift;
     my $p = shift;
+
+    $self->_file($p);
 
     $p->{want_what} = 'line_numbers';
 
@@ -105,64 +80,34 @@ sub line_numbers {
         return $self->_get($p);
     }
 }
-sub _objects {
-
-    my $self = shift;
-    my $subs = shift;
-
-    my @sub_list;
-
-    package Devel::Examine::Subs::Sub;
-        sub new {
-            my $class = shift;
-            my $data = shift;
-            my $name = shift;
-
-            my $self = bless {}, $class;
-
-            $self->{data} = $data;
-            $self->{name} = $name || '';
-            $self->{start_line} = $data->{start};
-            $self->{stop_line} = $data->{stop};
-            if ($data->{stop} and $data->{start}){
-                $self->{count_line} = $data->{stop} - $data->{start};
-            }
-                     
-            return $self;
-        }
-        sub name {
-            my $self = shift;
-            return $self->{name};
-        }
-        sub start {
-            my $self = shift;
-            return $self->{start_line};
-        }
-        sub stop {
-            my $self = shift;
-            return $self->{stop_line};
-        }
-        sub count {
-            my $self = shift;
-            return $self->{count_line};
-        }
-
-    for my $sub (keys %$subs){
-        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
-        push @sub_list, $obj;
-    }
-
-    $self->{sublist} = \@sub_list;
-}
 sub sublist {
     my $self = shift;
     my $p = shift;
+
+    $self->_file($p);
 
     $p->{want_what} = 'sublist';
 
     $self->_get($p);
 
     return $self->{sublist};
+}
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $p->{want_what} = 'module';
+    return @{$self->_get($p)};
+}
+sub _file {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{file} = $p->{file} // $self->{file};
+
+    if (! $self->{file} || ! -f $self->{file}){
+        die "Invalid file supplied: $p->{file} $!";
+    }
 }
 sub _get {
    
@@ -319,6 +264,55 @@ sub _subs {
     }
 
     return \%subs;
+}
+sub _objects {
+
+    my $self = shift;
+    my $subs = shift;
+
+    my @sub_list;
+
+    package Devel::Examine::Subs::Sub;
+        sub new {
+            my $class = shift;
+            my $data = shift;
+            my $name = shift;
+
+            my $self = bless {}, $class;
+
+            $self->{data} = $data;
+            $self->{name} = $name || '';
+            $self->{start_line} = $data->{start};
+            $self->{stop_line} = $data->{stop};
+            if ($data->{stop} and $data->{start}){
+                $self->{count_line} = $data->{stop} - $data->{start};
+            }
+                     
+            return $self;
+        }
+        sub name {
+            my $self = shift;
+            return $self->{name};
+        }
+        sub start {
+            my $self = shift;
+            return $self->{start_line};
+        }
+        sub stop {
+            my $self = shift;
+            return $self->{stop_line};
+        }
+        sub count {
+            my $self = shift;
+            return $self->{count_line};
+        }
+
+    for my $sub (keys %$subs){
+        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
+        push @sub_list, $obj;
+    }
+
+    $self->{sublist} = \@sub_list;
 }
 sub _pod{} #vim placeholder
 1;

@@ -3,7 +3,7 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.17';
+our $VERSION = '1.18';
 
 use PPI;
             

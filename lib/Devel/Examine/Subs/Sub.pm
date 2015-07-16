@@ -3,7 +3,7 @@ package Devel::Examine::Subs::Sub;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '1.18';
 
 sub new {
     my $class = shift;

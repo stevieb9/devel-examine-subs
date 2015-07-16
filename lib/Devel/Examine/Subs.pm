@@ -5,6 +5,7 @@ use warnings;
 
 our $VERSION = '1.18';
 
+use Carp;
 use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Prefilter;
@@ -45,12 +46,17 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
+    $p->{engine} = 'has';
+
     $self->_config($p);
     $self->run($p);
 }
+
 sub missing {
     my $self    = shift;
     my $p       = shift;
+
+    $p->{engine} = 'missing';
 
     $self->_config($p);
     $self->run($p);
@@ -320,6 +326,10 @@ sub _load_engine {
 
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
+
+        if (not $compiler->{engines}{$engine}){
+            confess "No such engine: $engine";
+        }
 
         $subs = $compiler->{engines}{$engine}->($p, $subs);
     }

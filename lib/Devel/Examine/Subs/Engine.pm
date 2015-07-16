@@ -67,13 +67,15 @@ sub has {
             my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
             for my $code (@code_block){
                 for my $line (@$code){
-                    if ($line && $line =~ /$search/){
+                    next if not $search;
+                    if ($line and $line =~ /$search/){
                         push @has, $sub;
                         $found = 1;
+                        last;
                     }
                 }
+                next if $found;
             }
-            next if $found;
         }
     }
 

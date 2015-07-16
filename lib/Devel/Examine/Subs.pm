@@ -268,15 +268,17 @@ sub _core {
 
     return \%subs;
 }
+
 sub _load_engine {
 
     my $self = shift;
 
-    # we got an engine name...
-
     my $engine;
 
     if (not ref($engine) eq 'CODE'){
+
+        # engine is a name
+
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
 

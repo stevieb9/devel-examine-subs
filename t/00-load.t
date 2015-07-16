@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";

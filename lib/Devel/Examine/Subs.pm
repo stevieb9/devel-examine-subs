@@ -5,6 +5,7 @@ use warnings;
 
 our $VERSION = '1.18';
 
+use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Prefilter;
 use PPI;
@@ -32,22 +33,20 @@ sub new {
     return $self;
 }
 
+sub run {
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+    $self->_core($p);
+}
+
 sub has {
     my $self    = shift;
     my $p       = shift;
 
     $self->_config($p);
-
-    if ($self->{lines}){    
-        $self->{want} = 'has_lines';
-    
-        return %{$self->_get()};
-    }
-    else {
-        $self->{want} = 'has';
-   
-        return @{$self->_get()};
-    }
+    $self->run($p);
 }
 sub missing {
     my $self    = shift;
@@ -259,16 +258,11 @@ sub _core {
     
     # run the data pre filter
 
-    my $pre_filter = $self->_pre_filter($subs);
-    $subs = $pre_filter->();
+    #my $pf = $self->_pre_filter($subs);
    
     # load the engine
 
-    my $engine = $self->_load_engine($subs); 
-
-    # run the engine
-
-    # $subs = $engine->();
+    $subs = $self->_load_engine($p, $subs); 
 
     return $subs;
 }
@@ -292,24 +286,24 @@ sub _load_subs {
         
         my $name = $PPI_sub->name;
         
-        $subs{$file}{$name}{start} = $PPI_sub->line_number;
+        $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
         
         my $lines = $PPI_sub =~ y/\n//;
 
-        $subs{$file}{$name}{stop} = $subs{$file}{$name}{start} + $lines;
+        $subs{$file}{subs}{$name}{stop} = $subs{$file}{subs}{$name}{start} + $lines;
 
-        my $line_num = $subs{$file}{$name}{start};
+        my $line_num = $subs{$file}{subs}{$name}{start};
        
         # pull out just the subroutine from the file array
         # and attach it to the structure
 
         my @sub_definition = @perl_file[
-                                    $subs{$file}{$name}{start}
+                                    $subs{$file}{subs}{$name}{start}
                                     ..
-                                    $subs{$file}{$name}{stop}
+                                    $subs{$file}{subs}{$name}{stop}
                                    ];
 
-          @{$subs{$file}{$name}{TIE_perl_file_sub}} = \@sub_definition;
+          @{$subs{$file}{subs}{$name}{TIE_perl_file_sub}} = \@sub_definition;
     }
 
     return \%subs;
@@ -318,8 +312,10 @@ sub _load_subs {
 sub _load_engine {
 
     my $self = shift;
+    my $p = shift;
+    my $subs = shift;
 
-    my $engine;
+    my $engine = $p->{engine} // $self->{engine};
 
     if (not ref($engine) eq 'CODE'){
 
@@ -328,10 +324,10 @@ sub _load_engine {
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
 
-        $engine = \&{$compiler->{engines}{$self->{engine}}};
+        $subs = $compiler->{engines}{$self->{engine}}->($p, $subs);
     }
 
-    return $engine;
+    return $subs;
 }
 
 sub _pre_filter {

@@ -19,7 +19,9 @@ sub new {
         $self->_file($p);
     }
 
-    $self->{namespace} = 'Devel::Examine::Subs::';
+    $self->{engine} = $p->{engine};
+
+    $self->{namespace} = 'Devel::Examine::Subs';
 
     @{$self->{can_search}} = qw(has missing all has_lines);
     @{$self->{valid_params}} = qw(get file search lines);
@@ -282,7 +284,7 @@ sub _load_engine {
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
 
-        $engine = \&{$compiler->{engines}{$self->{engine}};
+        $engine = \&{$compiler->{engines}{$self->{engine}}};
     }
 
     return $engine;

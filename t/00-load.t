@@ -13,23 +13,31 @@ BEGIN {
 
 diag( "Testing Devel::Examine::Subs $Devel::Examine::Subs::VERSION, Perl $], $^X" );
 
-can_ok( 'Devel::Examine::Subs', 'new' );
-can_ok( 'Devel::Examine::Subs', 'has' );
-can_ok( 'Devel::Examine::Subs', 'missing' );
-can_ok( 'Devel::Examine::Subs', 'all' );
-can_ok( 'Devel::Examine::Subs', 'line_numbers' );
+my $subs_namespace = "Devel::Examine::Subs";
 
-can_ok( 'Devel::Examine::Subs', 'sublist' );
-can_ok( 'Devel::Examine::Subs', 'module' );
-can_ok( 'Devel::Examine::Subs', '_file' );
-can_ok( 'Devel::Examine::Subs', '_get' );
-can_ok( 'Devel::Examine::Subs', '_subs' );
-can_ok( 'Devel::Examine::Subs', '_objects' );
+can_ok( $subs_namespace, 'new' );
+can_ok( $subs_namespace, 'has' );
+can_ok( $subs_namespace, 'missing' );
+can_ok( $subs_namespace, 'all' );
+can_ok( $subs_namespace, 'line_numbers' );
 
-can_ok( 'Devel::Examine::Subs::Sub', 'new' );
-can_ok( 'Devel::Examine::Subs::Sub', 'name' );
-can_ok( 'Devel::Examine::Subs::Sub', 'start' );
-can_ok( 'Devel::Examine::Subs::Sub', 'stop' );
-can_ok( 'Devel::Examine::Subs::Sub', 'count' );
+can_ok( $subs_namespace, 'sublist' );
+can_ok( $subs_namespace, 'module' );
+can_ok( $subs_namespace, '_file' );
+can_ok( $subs_namespace, '_get' );
+can_ok( $subs_namespace, '_core' );
+can_ok( $subs_namespace, '_objects' );
+can_ok( $subs_namespace, '_load_engine' );
 
-can_ok( 'Devel::Examine::Subs::Engine', '_test' );
+my $sub_namespace = "Devel::Examine::Subs::Sub";
+
+can_ok( $sub_namespace, 'new' );
+can_ok( $sub_namespace, 'name' );
+can_ok( $sub_namespace, 'start' );
+can_ok( $sub_namespace, 'stop' );
+can_ok( $sub_namespace, 'count' );
+
+my $engine_namespace = "Devel::Examine::Subs::Engine";
+
+can_ok( $engine_namespace, '_test' );
+can_ok( $engine_namespace, '_test_print' );  

@@ -259,8 +259,8 @@ sub _core {
     
     # run the data pre filter
 
-    my $pre_filter = $self->_pre_filter();
-    $subs = $pre_filter->($subs);
+    my $pre_filter = $self->_pre_filter($subs);
+    $subs = $pre_filter->();
    
     # load the engine
 
@@ -346,9 +346,7 @@ sub _pre_filter {
     # default
 
     if (not $pre_filter_name or $pre_filter_name eq ''){
-        $pre_filter = sub {my $subs = shift; return $subs;};
-
-        return $pre_filter;
+        return $subs;
     }
 
     # sent in
@@ -357,10 +355,10 @@ sub _pre_filter {
         my $pre_filter_module = $self->{namespace} . "::Prefilter";
         my $compiler = $pre_filter_module->new();
 
-        $pre_filter = \&{$compiler->{pre_filters}{$pre_filter_name}};
+        $subs = $compiler->{pre_filters}{$pre_filter_name}->($self, $subs);
     }
 
-    return $pre_filter;
+    return $subs;
 }
 
 sub _objects {

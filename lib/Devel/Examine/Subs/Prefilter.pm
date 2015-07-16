@@ -3,6 +3,8 @@ package Devel::Examine::Subs::Prefilter;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 our $VERSION = '1.18';
 
 # new
@@ -10,6 +12,8 @@ our $VERSION = '1.18';
 sub new {
     my $self = {};
     bless $self, shift;
+
+    my $struct = shift;
 
     $self->{pre_filters} = $self->_dt();
 
@@ -40,17 +44,15 @@ sub _test {
 # _default
 
 sub object {
-    my $self = shift;
+    my $des = shift;
     my $struct = shift;
 
     my %return;
 
     for my $file (keys %$struct){
-        for my $sub (keys %{$struct->{$file}}){
-            $return{$file}->{$sub} = $self->_objects($file->{$sub});
-        }
+        $return{$file} = $des->_objects($struct->{$file});
     }
-
+    
     return \%return;
 }
 

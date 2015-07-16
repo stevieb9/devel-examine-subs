@@ -5,6 +5,7 @@ use warnings;
 
 our $VERSION = '1.18';
 
+use Devel::Examine::Subs::Engine;
 use PPI;
             
 sub new {
@@ -173,7 +174,7 @@ sub _get {
 
     # fetch the sub data
 
-    my $subs = $self->_subs({
+    my $subs = $self->_core({
                         file => $file,
                         search => $search,
                         want => $want,
@@ -227,7 +228,7 @@ sub _get {
     return \@has if $want eq 'has';
     return \@hasnt if $want eq 'missing';
 }
-sub _subs {
+sub _core {
     use Tie::File;
 
     my $self = shift;
@@ -261,46 +262,26 @@ sub _subs {
 
         my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
 
-        # only search if there's a search term
-
-        if (grep(/$want/, @{$self->{can_search}})){
-            
-            if (not $search eq ''){
-                
-                # pull out just the subroutine from the file array
-
-                my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
-               
-                my $line_num = $subs{$name}{start};
-                
-                for (@sub_section){
-                   
-                    # we haven't found the search term yet
-
-                    $subs{$name}{found} = 0;
-
-                    if ($_ and /$search/){
-                        if ($want ne 'has_lines'){
-                            $subs{$name}{found} = 1;
-                        }
-                        else {
-                            push @{$subs{$name}{lines}}, {$line_num => $_};
-                        }
-                    }
-
-                    $line_num++;
-                    last if $subs{$name}{found};
-                }
-            }
-            else { 
-                # bad search
-                return {};
-            }
-        }
     }
+
+    $self->_load_engine(); 
 
     return \%subs;
 }
+sub _load_engine {
+
+    my $self = shift;
+
+    my $engine = $self->{engine};
+
+    # we got an engine name...
+
+    if (not ref($engine) eq 'CODE'){
+        my $engine_body = $self->{namespace} . "::Engine->new()";
+        $engine = \$engine_body->($self->{engine});
+    }
+}
+
 sub _objects {
 
     use Devel::Examine::Subs::Sub;

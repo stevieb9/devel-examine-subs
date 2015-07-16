@@ -9,3 +9,5 @@ BEGIN {#1
     my $engine_return = Devel::Examine::Subs::Engine->_test();
     is ( ref($engine_return), 'HASH', "_test engine returns a hashref" );
 }
+{#3
+}

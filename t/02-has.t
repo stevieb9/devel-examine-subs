@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -15,7 +15,7 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#3
     my $des = Devel::Examine::Subs->new();
-    my @res = $des->has({ file => 't/sample.data', search => 'this' });
+    my @res = $des->has({ file => 't/sample.data', search => 't?h$is' });
     ok ( $res[0] =~ '\w+', "has() returns an array if file exists and text available" );
 }
 {#4
@@ -43,5 +43,10 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
     for my $key (keys %res){
         ok (ref($res{$key}) eq 'ARRAY', "has()  hash contains array refs for 'lines'" );
     }
+}
+{#14
+    my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
+    my @res = $des->has({ search => 'this' });
+    ok ( $res[0] =~ '\w+', "has() returns an array if new() takes 'file' and has() doesn't" );
 }
 

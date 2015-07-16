@@ -243,13 +243,14 @@ sub _subs {
 
     my %subs;
 
-    for my $sub (@{$PPI_subs}){
+    for my $PPI_sub (@{$PPI_subs}){
         
-        my $name = $sub->name;
+        my $name = $PPI_sub->name;
         
-        $subs{$name}{start} = $sub->line_number;
+        $subs{$name}{start} = $PPI_sub->line_number;
         
-        my $lines = $sub =~ y/\n//;
+        my $lines = $PPI_sub =~ y/\n//;
+
         $subs{$name}{stop} = $subs{$name}{start} + $lines;
 
         my $line_num = $subs{$name}{start};
@@ -263,7 +264,13 @@ sub _subs {
         if (grep(/$want/, @{$self->{can_search}})){
             
             if (not $search eq ''){
+                
+                # pull out just the subroutine from the file array
 
+                my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
+               
+                my $line_num = $subs{$name}{start};
+                
                 for (@sub_section){
                    
                     # we haven't found the search term yet

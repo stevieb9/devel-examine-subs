@@ -18,6 +18,8 @@ sub new {
         $self->_file($p);
     }
 
+    $self->{namespace} = 'Devel::Examine::Subs::';
+
     @{$self->{can_search}} = qw(has missing all has_lines);
     @{$self->{valid_params}} = qw(get file search lines);
 

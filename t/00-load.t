@@ -1,10 +1,11 @@
 #!perl -T
 
-use Test::More tests => 20;
+use Test::More tests => 22;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
+    use_ok( 'Devel::Examine::Subs::Engine' ) || print "Bail out!\n";
     use_ok( 'PPI' ) || print "PPI can't be loaded, bailing out!\n";
     use_ok( 'Tie::File' ) || print "Tie::File can't be loaded, bailing out!\n";
 
@@ -30,3 +31,5 @@ can_ok( 'Devel::Examine::Subs::Sub', 'name' );
 can_ok( 'Devel::Examine::Subs::Sub', 'start' );
 can_ok( 'Devel::Examine::Subs::Sub', 'stop' );
 can_ok( 'Devel::Examine::Subs::Sub', 'count' );
+
+can_ok( 'Devel::Examine::Subs::Engine', '_test' );

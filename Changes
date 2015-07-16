@@ -1,5 +1,10 @@
 Revision history for Devel-Examine::Subs
 
+1.--    
+        - fixes bug 18
+        - fixes bug 20
+        - fixes bug 21
+
 1.17    20150715
         - implemented PPI sub checking, much safer
         - removed the old _subs() that was not PPI-based

@@ -59,6 +59,7 @@ sub all {
     my $self    = shift;
     my $p       = shift;
 
+    $p->{engine} = 'all';
     $self->_config($p); 
     $self->run($p);    
 }
@@ -320,7 +321,7 @@ sub _load_engine {
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
 
-        $subs = $compiler->{engines}{$self->{engine}}->($p, $subs);
+        $subs = $compiler->{engines}{$engine}->($p, $subs);
     }
 
     return $subs;

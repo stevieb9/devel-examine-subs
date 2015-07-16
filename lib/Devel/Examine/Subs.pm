@@ -230,6 +230,7 @@ sub _get {
     return \@has if $want eq 'has';
     return \@hasnt if $want eq 'missing';
 }
+
 sub _core {
     use Tie::File;
 
@@ -267,6 +268,48 @@ sub _core {
     }
 
     $self->_load_engine(); 
+
+    return \%subs;
+}
+
+sub _load_subs {
+
+    my $self = shift;
+    
+    my $file = $self->{file};
+
+    my $ppi_doc = PPI::Document->new($file);
+    my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
+
+    tie my @perl_file, 'Tie::File', $file;
+
+    my %subs;
+    $subs{$file} = {};
+    $subs{$file}{perl_file} = \@perl_file;
+
+    for my $PPI_sub (@{$PPI_subs}){
+        
+        my $name = $PPI_sub->name;
+        
+        $subs{$file}{$name}{start} = $PPI_sub->line_number;
+        
+        my $lines = $PPI_sub =~ y/\n//;
+
+        $subs{$file}{$name}{stop} = $subs{$file}{$name}{start} + $lines;
+
+        my $line_num = $subs{$file}{$name}{start};
+       
+        # pull out just the subroutine from the file array
+        # and attach it to the structure
+
+        my @sub_definition = @perl_file[
+                                    $subs{$file}{$name}{start}
+                                    ..
+                                    $subs{$file}{$name}{stop}
+                                   ];
+
+          @{$subs{$file}{$name}{perl_file_sub}} = \@sub_definition;
+    }
 
     return \%subs;
 }

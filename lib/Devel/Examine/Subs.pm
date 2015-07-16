@@ -429,6 +429,11 @@ with the 'get' parameter set for details.
 
 =head1 CAVEATS
 
+The previous unreliability caveat has been removed as PPI now
+performs all of the perl file processing.
+
+The previous caveats were:
+
 Subs that begin indented (such as closures and those within other
 blocks) will not be counted. For line_numbers() the closing brace
 must be in column one of the file as well.

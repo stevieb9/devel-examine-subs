@@ -11,6 +11,13 @@ Revision history for Devel-Examine::Subs
         - bug 12 fix: new() now sets $self->{file} for use by other methods
         - bug 14 fix: add file validation: done in _config()
         - bug 13 fix: new() now accepts 'file' param
+        - new test for 'search'
+        - many other test additions/updates
+        - test for ::Sub
+        - test for _config() 
+
+        To consider:
+        - need to sort out esc/unescape for 'search'
 
 1.11    20150714
         - fixed bug where only one line was being added for has_lines

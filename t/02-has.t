@@ -15,7 +15,7 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#3
     my $des = Devel::Examine::Subs->new();
-    my @res = $des->has({ file => 't/sample.data', search => 't?h$is' });
+    my @res = $des->has({ file => 't/sample.data', search => 'this' });
     ok ( $res[0] =~ '\w+', "has() returns an array if file exists and text available" );
 }
 {#4

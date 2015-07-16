@@ -3,132 +3,139 @@ package Devel::Examine::Subs;
 use strict;
 use warnings;
 
-our $VERSION = '1.14';
+our $VERSION = '1.18';
 
+use PPI;
+            
 sub new {
-    return bless {}, shift;
+    
+    my $self = {};
+    bless $self, shift;
+    
+    my $p = shift;
+
+    if ($p->{file}){
+        $self->_file($p);
+    }
+
+    @{$self->{can_search}} = qw(has missing all has_lines);
+    @{$self->{valid_params}} = qw(get file search lines);
+
+    return $self;
 }
 sub has {
     my $self    = shift;
     my $p       = shift;
 
-    if (! exists $p->{search} or $p->{search} eq ''){
-        return ();
-    }
+    $self->_config($p);
 
-    if ($p->{lines}){    
-        $p->{want_what} = 'has_lines';
-        return %{$self->_get($p)};
+    if ($self->{lines}){    
+        $self->{want_what} = 'has_lines';
+    
+        return %{$self->_get()};
     }
     else {
-        $p->{want_what} = 'has';
-        return @{$self->_get($p)};
+        $self->{want_what} = 'has';
+   
+        return @{$self->_get()};
     }
-
 }
 sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    if (! exists $p->{search} or $p->{search} eq ''){
-        return ();
-    }
-    $p->{want_what} = 'missing';
-    return @{$self->_get($p)};
+    $self->{want_what} = 'missing';
+    $self->_config($p);
+
+    return @{$self->_get()};
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{want_what} = 'all';
-    return @{$self->_get($p)};
-}
-sub module {
-    my $self = shift;
-    my $p = shift;
-
-    $p->{want_what} = 'module';
-    return @{$self->_get($p)};
+    $self->{want_what} = 'all';
+    $self->_config($p); 
+    
+    return @{$self->_get()};
 }
 sub line_numbers {
     my $self = shift;
     my $p = shift;
 
-    $p->{want_what} = 'line_numbers';
+    $self->{want_what} = 'line_numbers';
+    $self->_config($p);
 
-    if ($p->{get} and $p->{get} =~ /obj/){
-        return $self->sublist($p);
+    if ($self->{get} and $self->{get} =~ /^obj/){
+        $self->{want_what} = 'sublist';
+        return $self->sublist();
     }
     else {
-        return $self->_get($p);
+        return $self->_get();
     }
-}
-sub _objects {
-
-    my $self = shift;
-    my $subs = shift;
-
-    my @sub_list;
-
-    package Devel::Examine::Subs::Sub;
-        sub new {
-            my $class = shift;
-            my $data = shift;
-            my $name = shift;
-
-            my $self = bless {}, $class;
-
-            $self->{data} = $data;
-            $self->{name} = $name || '';
-            $self->{start_line} = $data->{start};
-            $self->{stop_line} = $data->{stop};
-            if ($data->{stop} and $data->{start}){
-                $self->{count_line} = $data->{stop} - $data->{start};
-            }
-                     
-            return $self;
-        }
-        sub name {
-            my $self = shift;
-            return $self->{name};
-        }
-        sub start {
-            my $self = shift;
-            return $self->{start_line};
-        }
-        sub stop {
-            my $self = shift;
-            return $self->{stop_line};
-        }
-        sub count {
-            my $self = shift;
-            return $self->{count_line};
-        }
-
-    for my $sub (keys %$subs){
-        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
-        push @sub_list, $obj;
-    }
-
-    $self->{sublist} = \@sub_list;
 }
 sub sublist {
     my $self = shift;
     my $p = shift;
 
-    $p->{want_what} = 'sublist';
+    $self->{want_what} = 'sublist';
+    $self->_config($p);
 
-    $self->_get($p);
+    $self->_get();
 
     return $self->{sublist};
+}
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{want_what} = 'module';
+    $self->_config($p);
+
+    return @{$self->_get($p)};
+}
+sub _config {
+    my $self = shift;
+    my $p = shift;
+
+    for my $param (keys %$p){
+
+        if (grep(/$param/, @{$self->{valid_params}})){
+    
+            # validate the file
+
+            if ($param eq 'file'){
+                $self->_file($p); 
+                next;
+            }
+
+            # validate search
+
+            if (! exists $p->{search} or $p->{search} eq ''){
+                $self->{bad_search} = 1; 
+            }
+
+            $self->{$param} = $p->{$param};
+        }
+    }
+}
+sub _file {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{file} = $p->{file} // $self->{file};
+
+    if (! $self->{file} || ! -f $self->{file}){
+        die "Invalid file supplied: $self->{file} $!";
+    }
 }
 sub _get {
    
     my $self        = shift;
     my $p           = shift;
-    my $file        = $p->{file};
-    my $search      = $p->{search}; 
-    my $want_what   = $p->{want_what};
+
+    my $file        = $self->{file};
+    my $search      = $self->{search}; 
+    my $want_what   = $self->{want_what};
 
     # do module() first, as we don't need to search in
     # any files
@@ -161,7 +168,7 @@ sub _get {
         return \@subs;
     }
 
-    my $subs = _subs({
+    my $subs = $self->_subs({
                         file => $file,
                         search => $search,
                         want_what => $want_what,
@@ -199,7 +206,6 @@ sub _get {
     if ($want_what eq 'has_lines'){
 
         my %data;
-
         for my $sub (keys %$subs){
             if ($subs->{$sub}{lines}){
                 $data{$sub} = $subs->{$sub}{lines};
@@ -220,51 +226,87 @@ sub _get {
     return \@hasnt if $want_what eq 'missing';
 }
 sub _subs {
+    use Tie::File;
 
-    my $p       = shift;
-    my $file    = $p->{file};
-    my $search    = $p->{search} || '';
-    my $want_what = $p->{want_what};
+    my $self = shift;
+    my $p = shift;
 
-    open my $fh, '<', $file or die "Invalid file supplied: $!";
+    my $search = $self->{search};
+    my $want_what = $self->{want_what};
+    my $file = $self->{file};
+
+    my $ppi_doc = PPI::Document->new($file);
+
+    my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
+
+    tie my @fh, 'Tie::File', $file;
 
     my %subs;
-    my $name; 
-    
-    while (my $line = <$fh>){
-        if ($line =~ /^sub\s/){
-            $name = (split /\s+/, $line)[1];
-            $subs{$name}{start} = $.;
-            $subs{$name}{found} = 0;
 
-            # mark the end of the sub or we'll go past
-            # the last one into POD
+    for my $sub (@{$PPI_subs}){
+        
+        my $name = $sub->name;
+        
+        $subs{$name}{start} = $sub->line_number;
+        
+        my $lines = $sub =~ y/\n//;
+        $subs{$name}{stop} = $subs{$name}{start} + $lines;
 
-            $subs{$name}{done} = 0; 
+        my $line_num = $subs{$name}{start};
+       
+        # pull out just the subroutine from the file array
 
-            next;
-        }
+        my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
 
-        if ($name and $line =~ /^\}/){
-            $subs{$name}{stop} = $.;
-            $subs{$name}{done} = 1;
-        }
+        # only search if there's a search term
 
-        if (! $name or $subs{$name}{done} == 1){
-            next;
-        }
+        if (grep(/$want_what/, @{$self->{can_search}})){
+            
+            if (not $search eq ''){
 
-        next if $subs{$name}{found};
+                for (@sub_section){
+                   
+                    # we haven't found the search term yet
 
-        if ($line =~ /$search/){
-            if ($want_what ne 'has_lines'){
-                $subs{$name}{found} = 1;
+                    $subs{$name}{found} = 0;
+
+                    if ($_ and /$search/){
+                        if ($want_what ne 'has_lines'){
+                            $subs{$name}{found} = 1;
+                        }
+                        else {
+                            push @{$subs{$name}{lines}}, {$line_num => $_};
+                        }
+                    }
+
+                    $line_num++;
+                    last if $subs{$name}{found};
+                }
             }
-            push @{$subs{$name}{lines}}, {$. => $line};
+            else { 
+                # bad search
+                return {};
+            }
         }
     }
-    
+
     return \%subs;
+}
+sub _objects {
+
+    use Devel::Examine::Subs::Sub;
+
+    my $self = shift;
+    my $subs = shift;
+
+    my @sub_list;
+
+    for my $sub (keys %$subs){
+        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
+        push @sub_list, $obj;
+    }
+
+    $self->{sublist} = \@sub_list;
 }
 sub _pod{} #vim placeholder
 1;
@@ -284,22 +326,12 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
     my $find = 'string';
 
     # get all sub names in file
+
     my @subs = $des->all({file => $file}); 
 
     # all subs containing "string" in the body
+
     my @has = $des->has({file => $file, search => $find}); 
-
-    # all subs containing "string", along with the data in the line
-    my %data = $des->has({file => $file, search => $find, lines => 1})
-
-    # opposite of has
-    my @missing = $des->missing({file => $file, search => $find}); 
-    
-    # all subs with their corresponding start/end line num
-    my $href = $des->line_numbers({file => $file}) 
-    
-    # return the subs of an in-memory module instead of a file
-    my @subs = $des->module({module => 'Devel::Examine::Subs'});
 
     # return an aref of subroutine objects
 
@@ -312,12 +344,21 @@ Devel::Examine::Subs - Get information about subroutines within module and progr
         print $sub->count() # number of lines in sub
     }
 
+    # see the has() method below to find out how to
+    # get a return that contains all lines that match the search
+    # for each sub
+
 =head1 DESCRIPTION
+
+NOTE: This module now requires the PPI module to be installed.
 
 Reads into Perl program and module files (or modules in memory) 
 returning the names of its subroutines, optionally limiting 
 the names returned to subs that contain or do not contain 
 specified text, or the start and end line numbers of the sub.
+
+This module is much safer and accurate than earlier versions, as
+it now uses the reliable PPI module to parse the perl code.
 
 =head1 METHODS
 

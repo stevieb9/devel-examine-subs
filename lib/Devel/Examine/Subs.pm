@@ -19,15 +19,18 @@ sub new {
         $self->_file($p);
     }
 
+    $self->{namespace} = 'Devel::Examine::Subs';
+    
+    $self->{pre_filter} = $p->{pre_filter} // 'default';
     $self->{engine} = $p->{engine};
 
-    $self->{namespace} = 'Devel::Examine::Subs';
 
     @{$self->{can_search}} = qw(has missing all has_lines);
     @{$self->{valid_params}} = qw(get file search lines);
 
     return $self;
 }
+
 sub has {
     my $self    = shift;
     my $p       = shift;
@@ -242,32 +245,28 @@ sub _core {
     my $file = $self->{file};
 
     my $ppi_doc = PPI::Document->new($file);
-
     my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
-
     tie my @fh, 'Tie::File', $file;
 
-    my %subs;
+    # compile the file/sub data, return the base struct
 
-    for my $PPI_sub (@{$PPI_subs}){
-        
-        my $name = $PPI_sub->name;
-        
-        $subs{$name}{start} = $PPI_sub->line_number;
-        
-        my $lines = $PPI_sub =~ y/\n//;
+    $subs = $self->_load_subs();
 
-        $subs{$name}{stop} = $subs{$name}{start} + $lines;
+    #    
+    # perform the modular/callback work
+    # 
+    
+    # run the data pre filter
 
-        my $line_num = $subs{$name}{start};
-       
-        # pull out just the subroutine from the file array
+    $subs = $self->_pre_filter();
+   
+    # load the engine
 
-        my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
+    my $engine = $self->_load_engine(); 
 
-    }
+    # run the engine
 
-    $self->_load_engine(); 
+    # $subs = $engine->();
 
     return \%subs;
 }
@@ -285,7 +284,7 @@ sub _load_subs {
 
     my %subs;
     $subs{$file} = {};
-    $subs{$file}{perl_file} = \@perl_file;
+    $subs{$file}{TIE_perl_file} = \@perl_file;
 
     for my $PPI_sub (@{$PPI_subs}){
         
@@ -308,7 +307,7 @@ sub _load_subs {
                                     $subs{$file}{$name}{stop}
                                    ];
 
-          @{$subs{$file}{$name}{perl_file_sub}} = \@sub_definition;
+          @{$subs{$file}{$name}{TIE_perl_file_sub}} = \@sub_definition;
     }
 
     return \%subs;
@@ -333,6 +332,20 @@ sub _load_engine {
     return $engine;
 }
 
+sub _pre_filter {
+
+    my $self = shift;
+
+    my $pre_filter;
+
+    if (not ref($pre_filter) eq 'CODE'){
+        my $pre_filter_module = $self->{namespace} . "::Prefilter";
+        my $compiler = $pre_filter_module->new();
+
+        $pre_filter = \&{$compiler->{pre_filter}{$self->{pre_filter}}};
+    }
+}
+
 sub _objects {
 
     use Devel::Examine::Subs::Sub;
@@ -349,6 +362,7 @@ sub _objects {
 
     $self->{sublist} = \@sub_list;
 }
+
 sub _pod{} #vim placeholder
 1;
 __END__

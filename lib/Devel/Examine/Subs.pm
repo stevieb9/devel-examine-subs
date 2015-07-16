@@ -272,14 +272,18 @@ sub _load_engine {
 
     my $self = shift;
 
-    my $engine = $self->{engine};
-
     # we got an engine name...
 
+    my $engine;
+
     if (not ref($engine) eq 'CODE'){
-        my $engine_body = $self->{namespace} . "::Engine->new()";
-        $engine = \$engine_body->($self->{engine});
+        my $engine_module = $self->{namespace} . "::Engine";
+        my $compiler = $engine_module->new();
+
+        $engine = \&{$compiler->{engines}{$self->{engine}};
     }
+
+    return $engine;
 }
 
 sub _objects {

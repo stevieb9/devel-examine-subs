@@ -30,12 +30,12 @@ sub has {
     $self->_config($p);
 
     if ($self->{lines}){    
-        $self->{want_what} = 'has_lines';
+        $self->{want} = 'has_lines';
     
         return %{$self->_get()};
     }
     else {
-        $self->{want_what} = 'has';
+        $self->{want} = 'has';
    
         return @{$self->_get()};
     }
@@ -44,7 +44,7 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    $self->{want_what} = 'missing';
+    $self->{want} = 'missing';
     $self->_config($p);
 
     return @{$self->_get()};
@@ -53,7 +53,7 @@ sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $self->{want_what} = 'all';
+    $self->{want} = 'all';
     $self->_config($p); 
     
     return @{$self->_get()};
@@ -62,11 +62,11 @@ sub line_numbers {
     my $self = shift;
     my $p = shift;
 
-    $self->{want_what} = 'line_numbers';
+    $self->{want} = 'line_numbers';
     $self->_config($p);
 
     if ($self->{get} and $self->{get} =~ /^obj/){
-        $self->{want_what} = 'sublist';
+        $self->{want} = 'sublist';
         return $self->sublist();
     }
     else {
@@ -77,7 +77,7 @@ sub sublist {
     my $self = shift;
     my $p = shift;
 
-    $self->{want_what} = 'sublist';
+    $self->{want} = 'sublist';
     $self->_config($p);
 
     $self->_get();
@@ -88,7 +88,7 @@ sub module {
     my $self = shift;
     my $p = shift;
 
-    $self->{want_what} = 'module';
+    $self->{want} = 'module';
     $self->_config($p);
 
     return @{$self->_get($p)};
@@ -135,14 +135,14 @@ sub _get {
 
     my $file        = $self->{file};
     my $search      = $self->{search}; 
-    my $want_what   = $self->{want_what};
+    my $want   = $self->{want};
 
     # do module() first, as we don't need to search in
     # any files
 
-    # want_what eq module
+    # module
 
-    if ($want_what eq 'module'){
+    if ($want eq 'module'){
         no strict 'refs';
 
         if (! $p->{module} or $p->{module} eq ''){
@@ -155,6 +155,7 @@ sub _get {
           or die "Module $p->{module} not found: $!";
 
         my $namespace = "$p->{module}::";
+
         my @subs;
 
         for my $sub (keys %$namespace){
@@ -168,25 +169,22 @@ sub _get {
         return \@subs;
     }
 
+    # fetch the sub data
+
     my $subs = $self->_subs({
                         file => $file,
                         search => $search,
-                        want_what => $want_what,
+                        want => $want,
                     });
 
-    # configure sub objects for sublist
 
-    if ($want_what eq 'sublist'){
-        $self->_objects($subs);
-    }
+    # all
+       
+    return [ sort keys %$subs ] if $want eq 'all';
 
-    # return early if we want all sub names
-    
-    return [ sort keys %$subs ] if $want_what eq 'all';
+    # line_numbers
 
-    # return if we want line nums
-
-    if ($want_what eq 'line_numbers'){
+    if ($want eq 'line_numbers'){
         my @line_nums;
 
         for my $sub (keys %$subs){
@@ -195,15 +193,16 @@ sub _get {
         return $subs;
     }
 
-    # want_what eq sublist
+    # sublist
 
-    if ($want_what eq 'sublist'){
+    if ($want eq 'sublist'){
+        $self->_objects($subs);
         return $subs;
     }
 
-    # want_what eq has_lines
+    # has_lines ('lines' param to has())
 
-    if ($want_what eq 'has_lines'){
+    if ($want eq 'has_lines'){
 
         my %data;
         for my $sub (keys %$subs){
@@ -211,10 +210,11 @@ sub _get {
                 $data{$sub} = $subs->{$sub}{lines};
             }
         }
-
         return \%data;
     }         
-  
+ 
+    # has & missing
+     
     my (@has, @hasnt);
 
     for my $sub (keys %$subs){
@@ -222,8 +222,8 @@ sub _get {
         push @hasnt, $sub if ! $subs->{$sub}{found};
     }
 
-    return \@has if $want_what eq 'has';
-    return \@hasnt if $want_what eq 'missing';
+    return \@has if $want eq 'has';
+    return \@hasnt if $want eq 'missing';
 }
 sub _subs {
     use Tie::File;
@@ -232,7 +232,7 @@ sub _subs {
     my $p = shift;
 
     my $search = $self->{search};
-    my $want_what = $self->{want_what};
+    my $want = $self->{want};
     my $file = $self->{file};
 
     my $ppi_doc = PPI::Document->new($file);
@@ -260,7 +260,7 @@ sub _subs {
 
         # only search if there's a search term
 
-        if (grep(/$want_what/, @{$self->{can_search}})){
+        if (grep(/$want/, @{$self->{can_search}})){
             
             if (not $search eq ''){
 
@@ -271,7 +271,7 @@ sub _subs {
                     $subs{$name}{found} = 0;
 
                     if ($_ and /$search/){
-                        if ($want_what ne 'has_lines'){
+                        if ($want ne 'has_lines'){
                             $subs{$name}{found} = 1;
                         }
                         else {

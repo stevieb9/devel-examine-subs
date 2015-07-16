@@ -52,19 +52,15 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    $self->{want} = 'missing';
     $self->_config($p);
-
-    return @{$self->_get()};
+    $self->run($p);
 }
 sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $self->{want} = 'all';
     $self->_config($p); 
-    
-    return @{$self->_get()};
+    $self->run($p);    
 }
 sub line_numbers {
     my $self = shift;

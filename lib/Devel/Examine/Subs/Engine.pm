@@ -18,12 +18,11 @@ sub new {
     return $self;
 }
 
-# engine dispatch
-
 sub _dt {
     my $self = shift;
 
     my $dt = {
+        all => \&all,
         has => \&has,
         _test => \&_test,
         _test_print => \&_test_print,
@@ -33,19 +32,24 @@ sub _dt {
     return $dt;
 }
             
-# _test
-
 sub _test {
     return {a => 1};
 }
-
-# _test_print
 
 sub _test_print {
     print "Hello, world!\n";
 }
 
-# has
+sub all {
+    my $p = shift;
+    my $struct = shift;
+
+    my $file = $p->{file};
+
+    my @subs = keys %{$struct->{$file}{subs}};
+
+    return \@subs;
+}
 
 sub has {
     my $p = shift;
@@ -76,9 +80,13 @@ sub has {
     return \@has;
 }
 
+sub _nothing {}; # vim placeholder
+
 __END__
 
 # _search_legacy
+
+
 
 sub _search_legacy {
 

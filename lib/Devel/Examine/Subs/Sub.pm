@@ -8,7 +8,7 @@ our $VERSION = '1.18';
 sub new {
     my $class = shift;
     my $data = shift;
-
+    my $name = shift;
     my $self = bless {}, $class;
 
     $self->{data} = $data;

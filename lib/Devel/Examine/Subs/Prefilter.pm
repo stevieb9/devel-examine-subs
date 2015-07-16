@@ -24,6 +24,7 @@ sub _dt {
     my $dt = {
         _default => \&_default,
         _test => \&_test,
+        object => \&object,
     };
 
     return $dt;
@@ -38,7 +39,7 @@ sub _test {
 
 # _default
 
-sub objects {
+sub object {
     my $self = shift;
     my $struct = shift;
 

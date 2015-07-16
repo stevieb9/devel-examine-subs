@@ -6,6 +6,7 @@ use warnings;
 our $VERSION = '1.18';
 
 use Devel::Examine::Subs::Engine;
+use Devel::Examine::Subs::Prefilter;
 use PPI;
             
 sub new {
@@ -21,7 +22,7 @@ sub new {
 
     $self->{namespace} = 'Devel::Examine::Subs';
     
-    $self->{pre_filter} = $p->{pre_filter} // 'default';
+    $self->{pre_filter} = $p->{pre_filter};
     $self->{engine} = $p->{engine};
 
 
@@ -250,7 +251,7 @@ sub _core {
 
     # compile the file/sub data, return the base struct
 
-    $subs = $self->_load_subs();
+    my $subs = $self->_load_subs();
 
     #    
     # perform the modular/callback work
@@ -258,17 +259,18 @@ sub _core {
     
     # run the data pre filter
 
-    $subs = $self->_pre_filter();
+    my $pre_filter = $self->_pre_filter();
+    $subs = $pre_filter->($subs);
    
     # load the engine
 
-    my $engine = $self->_load_engine(); 
+    my $engine = $self->_load_engine($subs); 
 
     # run the engine
 
     # $subs = $engine->();
 
-    return \%subs;
+    return $subs;
 }
 
 sub _load_subs {
@@ -335,15 +337,30 @@ sub _load_engine {
 sub _pre_filter {
 
     my $self = shift;
+    my $subs = shift;
+
+    my $pre_filter_name = $self->{pre_filter};
 
     my $pre_filter;
 
-    if (not ref($pre_filter) eq 'CODE'){
+    # default
+
+    if (not $pre_filter_name or $pre_filter_name eq ''){
+        $pre_filter = sub {my $subs = shift; return $subs;};
+
+        return $pre_filter;
+    }
+
+    # sent in
+
+    if (not ref($pre_filter_name) eq 'CODE'){
         my $pre_filter_module = $self->{namespace} . "::Prefilter";
         my $compiler = $pre_filter_module->new();
 
-        $pre_filter = \&{$compiler->{pre_filter}{$self->{pre_filter}}};
+        $pre_filter = \&{$compiler->{pre_filters}{$pre_filter_name}};
     }
+
+    return $pre_filter;
 }
 
 sub _objects {

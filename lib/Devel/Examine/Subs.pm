@@ -39,9 +39,12 @@ sub run {
     my $self = shift;
     my $p = shift;
 
+    $self->{pf_dump} = $p->{pf_dump};
+
     if ($p->{pre_filter}){
         $self->{pre_filter} = $p->{pre_filter};
     }
+    
     $self->_config($p);
     $self->_core($p);
 }
@@ -210,6 +213,11 @@ sub _core {
         my $pre_filter = $self->_pre_filter($p, $subs);
 
         $subs = $pre_filter->($p, $subs); 
+
+        if ($self->{pf_dump}){
+            print Dumper $subs;
+            exit;
+        }
     }
 
     # load the engine
@@ -288,6 +296,10 @@ sub _load_engine {
         $cref = $compiler->{engines}{$engine}->();
     }
 
+    if (ref($engine) eq 'CODE'){
+        $cref = $engine;
+    }
+
     return $cref;
 }
 
@@ -297,20 +309,24 @@ sub _pre_filter {
     my $p = shift;
     my $subs = shift;
 
-    my $pre_filter_name = $self->{pre_filter};
+    my $pre_filter = $p->{pre_filter} // $self->{pre_filter};
 
-    my $pre_filter;
-    my $cref;
 
-    if (not $pre_filter_name or $pre_filter_name eq ''){
+    if (not $pre_filter or $pre_filter eq ''){
         return $subs;
     }
+    
+    my $cref;
 
-    if (not ref($pre_filter_name) eq 'CODE'){
+    if (not ref($pre_filter) eq 'CODE'){
         my $pre_filter_module = $self->{namespace} . "::Prefilter";
         my $compiler = $pre_filter_module->new();
 
-        $cref = $compiler->{pre_filters}{$pre_filter_name}->();
+        $cref = $compiler->{pre_filters}{$pre_filter}->();
+    }
+    
+    if (ref($pre_filter) eq 'CODE'){
+        $cref = $pre_filter;
     }
 
     return $cref;

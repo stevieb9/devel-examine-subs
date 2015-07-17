@@ -7,8 +7,6 @@ use Data::Dumper;
 
 our $VERSION = '1.18';
 
-# new
-
 sub new {
     my $self = {};
     bless $self, shift;
@@ -20,13 +18,12 @@ sub new {
     return $self;
 }
 
-# pre_filter dispatch
-
 sub _dt {
     my $self = shift;
 
     my $dt = {
         file_lines_contain => \&file_lines_contain,
+        subs => \&subs,
         _default => \&_default,
         _test => \&_test,
         object => \&object,
@@ -34,7 +31,31 @@ sub _dt {
 
     return $dt;
 }
-           
+
+sub subs {
+    
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+        
+        my $s = $struct;
+        my @subs;
+
+        my $search = $p->{search};
+                   
+        for my $f (keys %$s){
+            for my $sub (keys %{$s->{$f}{subs}}){
+                if ($search && $sub eq $search){
+                    next;
+                }
+                push @subs, $s->{$f}{subs}{$sub};
+            }
+        }
+        return \@subs;
+    };
+} 
+
 sub file_lines_contain {
 
     return sub {
@@ -68,6 +89,7 @@ sub file_lines_contain {
         return $struct;
     };
 }
+
 sub _test {
 
     return sub {

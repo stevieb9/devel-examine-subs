@@ -207,12 +207,16 @@ sub _core {
     # run the data pre filter
 
     if ($self->{pre_filter}){
-        $subs = $self->_pre_filter($p, $subs);
+        my $pre_filter = $self->_pre_filter($p, $subs);
+
+        $subs = $pre_filter->($p, $subs); 
     }
 
     # load the engine
 
-    $subs = $self->_load_engine($p, $subs); 
+    my $engine = $self->_load_engine($p, $subs); 
+
+    $subs = $engine->($p, $subs);
 
     return $subs;
 }
@@ -268,6 +272,7 @@ sub _load_engine {
     my $subs = shift;
 
     my $engine = $p->{engine} // $self->{engine};
+    my $cref;
 
     if (not ref($engine) eq 'CODE'){
 
@@ -280,10 +285,10 @@ sub _load_engine {
             confess "No such engine: $engine";
         }
 
-        $subs = $compiler->{engines}{$engine}->($p, $subs);
+        $cref = $compiler->{engines}{$engine}->();
     }
 
-    return $subs;
+    return $cref;
 }
 
 sub _pre_filter {
@@ -295,23 +300,20 @@ sub _pre_filter {
     my $pre_filter_name = $self->{pre_filter};
 
     my $pre_filter;
-
-    # default
+    my $cref;
 
     if (not $pre_filter_name or $pre_filter_name eq ''){
         return $subs;
     }
 
-    # sent in
-
     if (not ref($pre_filter_name) eq 'CODE'){
         my $pre_filter_module = $self->{namespace} . "::Prefilter";
         my $compiler = $pre_filter_module->new();
 
-        $subs = $compiler->{pre_filters}{$pre_filter_name}->($self, $subs);
+        $cref = $compiler->{pre_filters}{$pre_filter_name}->();
     }
 
-    return $subs;
+    return $cref;
 }
 
 sub _objects {

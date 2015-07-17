@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 24;
+use Test::More tests => 23;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -19,7 +19,6 @@ can_ok( $subs_namespace, 'new' );
 can_ok( $subs_namespace, 'has' );
 can_ok( $subs_namespace, 'missing' );
 can_ok( $subs_namespace, 'all' );
-can_ok( $subs_namespace, 'line_numbers' );
 
 can_ok( $subs_namespace, 'sublist' );
 can_ok( $subs_namespace, 'module' );

@@ -333,6 +333,18 @@ sub _objects {
     $self->{sublist} = \@sub_list;
 }
 
+sub pre_filters {
+    my $self = shift;
+    my $pre_filter = Devel::Examine::Subs::Prefilter->new();
+    return keys (%{$pre_filter->_dt()});
+}
+
+sub engines {
+    my $self = shift;
+    my $engine = Devel::Examine::Subs::Engine->new();
+    return keys (%{$engine->_dt()});
+}
+
 sub has {
     my $self    = shift;
     my $p       = shift;

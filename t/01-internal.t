@@ -19,9 +19,14 @@ BEGIN {#1
 }
 {#3-4
     my $des = _des({engine => '_test'});
-    my $data = $des->_load_engine();
-    is ( ref($data), 'HASH', "new() will return an engine with {engine=>'engine'} param" );
-    is_deeply ({a=>1}, $data, "the return from _load_engine is what we expect" );
+
+    my $cref = $des->_engine();
+
+    is ( ref($cref), 'CODE', "new() will return an engine with {engine=>'engine'} param" );
+
+    my $data = $cref->();
+
+    is_deeply ({a=>1}, $data, "the return from the _test _engine() is what we expect" );
 }
 
 sub _des {  

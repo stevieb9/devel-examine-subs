@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 20;
+use Test::More tests => 26;
 use Data::Dumper;
 
 BEGIN {#1
@@ -14,6 +14,7 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
     eval { $des2->has({ file => 'badfile.none'}) };
     ok ( $@ =~ /Invalid file supplied/, "new() dies with error if file not found" );
 }
+
 {#3
     my $des = Devel::Examine::Subs->new();
     my $res = $des->has({ file => 't/sample.data', search => 'this' });
@@ -34,22 +35,18 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#7    
     my $res = $des->has({ file => 't/sample.data', search => 'this' });
-    ok ( ref $res eq 'ARRAY', "obj->has() returns an aref " );
+    like ( $res, qr/ARRAY/, "obj->has() returns an aref " );
 }
-SKIP: {
-    skip("#FIXME! lines => 1 not yet implemented", 6);
-
-    {#8
-        my %res = $des->has({ file => 't/sample.data', search => 'this', lines => 1 });
-        ok ( ref \%res eq 'HASH', "has() returns a hash when called with lines param" );
+{#8
+    my $res = $des->lines({ file => 't/sample.data', search => 'this' });
+    like ( $res, qr/HASH/, "lines() returns a hash" );
+}
+{#9-13
+    my $res = $des->lines({ file => 't/sample.data', search => 'this', lines => 1 });
+    for my $key (keys %$res){
+        ok (ref($res->{$key}) eq 'ARRAY', "lines()  hash contains array refs" );
     }
-    {#9-13
-        my %res = $des->has({ file => 't/sample.data', search => 'this', lines => 1 });
-        for my $key (keys %res){
-            ok (ref($res{$key}) eq 'ARRAY', "has()  hash contains array refs for 'lines'" );
-        }
-    }
-};
+}
 {#14
     my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
     my $res = $des->has({ search => 'this' });

@@ -18,182 +18,69 @@ sub new {
     
     my $p = shift;
 
-    if ($p->{file}){
-        $self->_file($p);
-    }
-
-    $self->{search} = $p->{search};
     $self->{namespace} = 'Devel::Examine::Subs';
     
-    $self->{pre_filter} = $p->{pre_filter};
-    $self->{engine} = $p->{engine};
-
-
-    @{$self->{can_search}} = qw(has missing all has_lines);
-    @{$self->{valid_params}} = qw(get file search lines);
+    $self->_config($p);
 
     return $self;
 }
-
 sub run {
     my $self = shift;
     my $p = shift;
 
-    $self->{pf_dump} = $p->{pf_dump};
-
-    if ($p->{pre_filter}){
-        $self->{pre_filter} = $p->{pre_filter};
-    }
-    
     $self->_config($p);
-    $self->_core($p);
+    
+    $self->_core($self->{params});
 }
-
 sub _config {
     my $self = shift;
     my $p = shift;
 
     for my $param (keys %$p){
 
-        if (grep(/$param/, @{$self->{valid_params}})){
-    
-            # validate the file
+        # validate the file
 
-            if ($param eq 'file'){
-                $self->_file($p); 
-                next;
-            }
+        if ($param eq 'file'){
+            $self->_file($p); 
+            next;
+        }
 
-            # validate search
+        # validate search
 
-            if (! exists $p->{search} or $p->{search} eq ''){
-                $self->{bad_search} = 1; 
-            }
+        if (! exists $p->{search} or $p->{search} eq ''){
+            $self->{params}{bad_search} = 1; 
+        }
 
-            $self->{$param} = $p->{$param};
+        $self->{params}{$param} = $p->{$param};
+
+        if ($self->{params}{config_dump}){
+            print Dumper $self->{params};
         }
     }
 }
-
 sub _file {
     my $self = shift;
     my $p = shift;
 
-    $self->{file} = $p->{file} // $self->{file};
+    $self->{params}{file} = $p->{file} // $self->{params}{file};
 
-    if (! $self->{file} || ! -f $self->{file}){
-        die "Invalid file supplied: $self->{file} $!";
+    if (! $self->{params}{file} || ! -f $self->{params}{file}){
+        die "Invalid file supplied: $self->{params}{file} $!";
     }
 }
-
-sub _get {
-   
-    my $self        = shift;
-    my $p           = shift;
-
-    my $file        = $self->{file};
-    my $search      = $self->{search}; 
-    my $want   = $self->{want};
-
-    # do module() first, as we don't need to search in
-    # any files
-
-    # module
-
-    if ($want eq 'module'){
-        no strict 'refs';
-
-        if (! $p->{module} or $p->{module} eq ''){
-            return [];
-        }
-
-        (my $module_file = $p->{module}) =~ s|::|/|g;
-
-        require "$module_file.pm"
-          or die "Module $p->{module} not found: $!";
-
-        my $namespace = "$p->{module}::";
-
-        my @subs;
-
-        for my $sub (keys %$namespace){
-            if (defined &{$namespace . $sub}){
-                push @subs, $sub;
-            }
-        }
-   
-        @subs = sort @subs; 
-        
-        return \@subs;
-    }
-
-    # fetch the sub data
-
-    my $subs = $self->_core({
-                        file => $file,
-                        search => $search,
-                        want => $want,
-                    });
-
-
-    # all
-       
-    return [ sort keys %$subs ] if $want eq 'all';
-
-    # line_numbers
-
-    if ($want eq 'line_numbers'){
-        my @line_nums;
-
-        for my $sub (keys %$subs){
-            delete $subs->{$sub}{found};
-        }
-        return $subs;
-    }
-
-    # sublist
-
-    if ($want eq 'sublist'){
-        $self->_objects($subs);
-        return $subs;
-    }
-
-    # has_lines ('lines' param to has())
-
-    if ($want eq 'has_lines'){
-
-        my %data;
-        for my $sub (keys %$subs){
-            if ($subs->{$sub}{lines}){
-                $data{$sub} = $subs->{$sub}{lines};
-            }
-        }
-        return \%data;
-    }         
- 
-    # has & missing
-     
-    my (@has, @hasnt);
-
-    for my $sub (keys %$subs){
-        push @has,   $sub if $subs->{$sub}{found};
-        push @hasnt, $sub if ! $subs->{$sub}{found};
-    }
-
-    return \@has if $want eq 'has';
-    return \@hasnt if $want eq 'missing';
-}
-
 sub _core {
     use Tie::File;
 
     my $self = shift;
     my $p = shift;
 
-    my $search = $self->{search};
-    $p->{search} = $self->{search};
-    my $want = $self->{want};
-    my $file = $self->{file};
+    # process the incoming params, then rebuild $p
+    
+    $self->_config($p);
+    $p = $self->{params};
+
+    my $search = $self->{params}{search};
+    my $file = $self->{params}{file};
 
     my $ppi_doc = PPI::Document->new($file);
     my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
@@ -201,7 +88,7 @@ sub _core {
 
     # compile the file/sub data, return the base struct
 
-    my $subs = $self->_load_subs();
+    my $subs = $self->_subs();
 
     #    
     # perform the modular/callback work
@@ -209,12 +96,12 @@ sub _core {
     
     # run the data pre filter
 
-    if ($self->{pre_filter}){
+    if ($self->{params}{pre_filter}){
         my $pre_filter = $self->_pre_filter($p, $subs);
 
         $subs = $pre_filter->($p, $subs); 
 
-        if ($self->{pf_dump}){
+        if ($self->{params}{pf_dump}){
             print Dumper $subs;
             exit;
         }
@@ -222,18 +109,17 @@ sub _core {
 
     # load the engine
 
-    my $engine = $self->_load_engine($p, $subs); 
+    my $engine = $self->_engine($p); 
 
     $subs = $engine->($p, $subs);
 
     return $subs;
 }
-
-sub _load_subs {
+sub _subs {
 
     my $self = shift;
     
-    my $file = $self->{file};
+    my $file = $self->{params}{file};
 
     my $ppi_doc = PPI::Document->new($file);
     my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
@@ -272,14 +158,14 @@ sub _load_subs {
 
     return \%subs;
 }
-
-sub _load_engine {
+sub _engine {
 
     my $self = shift;
     my $p = shift;
-    my $subs = shift;
 
-    my $engine = $p->{engine} // $self->{engine};
+    $self->_config($p);
+
+    my $engine = $p->{engine} // $self->{params}{engine};
     my $cref;
 
     if (not ref($engine) eq 'CODE'){
@@ -290,7 +176,7 @@ sub _load_engine {
         my $compiler = $engine_module->new();
 
         if (not $compiler->{engines}{$engine}){
-            confess "No such engine: $engine";
+            confess "No such engine: >>>$engine<<<";
         }
 
         $cref = $compiler->{engines}{$engine}->();
@@ -302,15 +188,15 @@ sub _load_engine {
 
     return $cref;
 }
-
 sub _pre_filter {
 
     my $self = shift;
-    my $p = shift;
+    my $p = shift; 
     my $subs = shift;
 
-    my $pre_filter = $p->{pre_filter} // $self->{pre_filter};
+    $self->_config($p);
 
+    my $pre_filter = $self->{params}{pre_filter};
 
     if (not $pre_filter or $pre_filter eq ''){
         return $subs;
@@ -331,101 +217,60 @@ sub _pre_filter {
 
     return $cref;
 }
-
-sub _objects {
-
-    use Devel::Examine::Subs::Sub;
-
-    my $self = shift;
-    my $subs = shift;
-
-    my @sub_list;
-
-    for my $sub (keys %$subs){
-        my $obj = Devel::Examine::Subs::Sub->new($subs->{$sub}, $sub);
-        push @sub_list, $obj;
-    }
-
-    $self->{sublist} = \@sub_list;
-}
-
 sub pre_filters {
     my $self = shift;
     my $pre_filter = Devel::Examine::Subs::Prefilter->new();
     return keys (%{$pre_filter->_dt()});
 }
-
 sub engines {
     my $self = shift;
     my $engine = Devel::Examine::Subs::Engine->new();
     return keys (%{$engine->_dt()});
 }
-
 sub has {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{engine} = 'has';
-
     $self->_config($p);
+
+    $self->{params}{engine} = 'has';
+
     $self->run($p);
 }
-
 sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{engine} = 'missing';
-
     $self->_config($p);
-    $self->run($p);
-}
+    
+    $self->{params}{engine} = 'missing';
 
+    $self->run();
+}
 sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $p->{engine} = 'all';
     $self->_config($p); 
+    
+    $self->{params}{engine} = 'all';
+
     $self->run($p);    
 }
-
 sub lines {
     my $self    = shift;
     my $p       = shift;
     
-    if ($p->{search}){
-        $p->{pre_filter} = 'file_lines_contain'; 
+    $self->_config($p); 
+    
+    $self->{params}{engine} = 'lines'; 
+    
+    if ($self->{params}{search}){
+        $self->{params}{pre_filter} = 'file_lines_contain'; 
     }
 
-    $p->{engine} = 'lines';
-    
-    $self->_config($p); 
-    $self->run($p);    
+    $self->run();
 }
-
-sub sublist {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'sublist';
-    $self->_config($p);
-
-    $self->_get();
-
-    return $self->{sublist};
-}
-
-sub module {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'module';
-    $self->_config($p);
-
-    return @{$self->_get($p)};
-}
-
 sub _pod{} #vim placeholder
 1;
 __END__

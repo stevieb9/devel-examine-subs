@@ -36,7 +36,9 @@ sub _dt {
 }
 
 sub _test {
-    return {a => 1};
+    return sub {
+        return {a => 1};
+    };
 }
 
 sub _test_print {

@@ -2,9 +2,9 @@
 
 sub one {
     # one
-    sub one_inner {
+sub one_inner {
         sub one_inner_two {
-            ...
+            # nothing 
         }
         return 0;
     }
@@ -35,7 +35,7 @@ sub function {
     return $x * $y;
 }
     sub five {
-    my $str = this;
+        my $str = this;
 }
 sub six {
     my $str = this;

@@ -24,6 +24,7 @@ sub _dt {
     my $dt = {
         all => \&all,
         has => \&has,
+        missing => \&missing,
         _test => \&_test,
         _test_print => \&_test_print,
         _search_legacy => \&_search_legacy,
@@ -80,6 +81,33 @@ sub has {
     }
 
     return \@has;
+}
+
+sub missing {
+    my $p = shift;
+    my $struct = shift;
+
+    my $file = $p->{file};
+    my $search = $p->{search};
+
+    return [] if not $search;
+
+    my @missing;
+
+    for my $file (keys %$struct){
+        for my $sub (keys %{$struct->{$file}{subs}}){
+
+            my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+            for my $code (@code_block){
+                #my @clean = grep defined, @$code;
+                if (! grep(/$search/, @$code)){
+                    push @missing, $sub;
+                }
+            }
+        }
+    }
+
+    return \@missing;
 }
 
 sub _nothing {}; # vim placeholder

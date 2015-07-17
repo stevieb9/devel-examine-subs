@@ -166,6 +166,7 @@ sub _engine {
     $self->_config($p);
 
     my $engine = $p->{engine} // $self->{params}{engine};
+
     my $cref;
 
     if (not ref($engine) eq 'CODE'){
@@ -232,9 +233,7 @@ sub has {
     my $p       = shift;
 
     $self->_config($p);
-
     $self->{params}{engine} = 'has';
-
     $self->run($p);
 }
 sub missing {
@@ -242,9 +241,7 @@ sub missing {
     my $p       = shift;
 
     $self->_config($p);
-    
     $self->{params}{engine} = 'missing';
-
     $self->run();
 }
 sub all {
@@ -252,9 +249,7 @@ sub all {
     my $p       = shift;
 
     $self->_config($p); 
-    
     $self->{params}{engine} = 'all';
-
     $self->run($p);    
 }
 sub lines {

@@ -59,7 +59,7 @@ my $des = Devel::Examine::Subs->new();
 
     $missing = $des->run($params);
 
-    is ( @$missing, 7, "'missing' engine returns the proper count of subs through run() with 'return'" );
+    is ( @$missing, 8, "'missing' engine returns the proper count of subs through run() with 'return'" );
 }
 {#10
     my $params = {
@@ -69,7 +69,8 @@ my $des = Devel::Examine::Subs->new();
                 };
 
     my $des = Devel::Examine::Subs->new($params);
-
+    my $missing = $des->run();
+    
     is ( @$missing, 11, "'missing' engine returns the proper count of subs through run() with 'asdf'" );
 }
 

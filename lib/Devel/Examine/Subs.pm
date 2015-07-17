@@ -22,6 +22,7 @@ sub new {
         $self->_file($p);
     }
 
+    $self->{search} = $p->{search};
     $self->{namespace} = 'Devel::Examine::Subs';
     
     $self->{pre_filter} = $p->{pre_filter};
@@ -245,6 +246,7 @@ sub _core {
     my $p = shift;
 
     my $search = $self->{search};
+    $p->{search} = $self->{search};
     my $want = $self->{want};
     my $file = $self->{file};
 
@@ -290,7 +292,7 @@ sub _load_subs {
         
         my $name = $PPI_sub->name;
         
-        $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
+        $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number -1;
         
         my $lines = $PPI_sub =~ y/\n//;
 

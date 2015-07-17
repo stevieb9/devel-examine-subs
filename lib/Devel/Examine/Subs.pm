@@ -39,6 +39,9 @@ sub run {
     my $self = shift;
     my $p = shift;
 
+    if ($p->{pre_filter}){
+        $self->{pre_filter} = $p->{pre_filter};
+    }
     $self->_config($p);
     $self->_core($p);
 }
@@ -203,8 +206,10 @@ sub _core {
     
     # run the data pre filter
 
-    #my $pf = $self->_pre_filter($subs);
-   
+    if ($self->{pre_filter}){
+        $subs = $self->_pre_filter($p, $subs);
+    }
+
     # load the engine
 
     $subs = $self->_load_engine($p, $subs); 
@@ -284,6 +289,7 @@ sub _load_engine {
 sub _pre_filter {
 
     my $self = shift;
+    my $p = shift;
     my $subs = shift;
 
     my $pre_filter_name = $self->{pre_filter};
@@ -357,26 +363,15 @@ sub all {
 sub lines {
     my $self    = shift;
     my $p       = shift;
+    
+    if ($p->{search}){
+        $p->{pre_filter} = 'file_lines_contain'; 
+    }
 
     $p->{engine} = 'lines';
+    
     $self->_config($p); 
     $self->run($p);    
-}
-
-sub line_numbers {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'line_numbers';
-    $self->_config($p);
-
-    if ($self->{get} and $self->{get} =~ /^obj/){
-        $self->{want} = 'sublist';
-        return $self->sublist();
-    }
-    else {
-        return $self->_get();
-    }
 }
 
 sub sublist {

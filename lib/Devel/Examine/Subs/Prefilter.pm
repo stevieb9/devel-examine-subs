@@ -26,6 +26,7 @@ sub _dt {
     my $self = shift;
 
     my $dt = {
+        file_lines_contain => \&file_lines_contain,
         _default => \&_default,
         _test => \&_test,
         object => \&object,
@@ -33,16 +34,42 @@ sub _dt {
 
     return $dt;
 }
-            
-# _test
+           
+sub file_lines_contain {
+    my $p = shift;
+    my $struct = shift;
 
+    my $search = $p->{search};
+
+    my $s = $struct;
+    my @has;
+
+
+    if (not $search){
+        return $struct;
+    }
+
+    for my $f (keys %$s){
+        for my $sub (keys %{$s->{$f}{subs}}){
+            for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
+                for (@$_){
+                    if ($_ and /$search/){
+                        push @has, $_;
+                    }
+                }
+            }
+            $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
+        }
+    }
+
+    return $struct;
+}
 sub _test {
     my $struct = shift;
     return $struct;
 }
 
-# _default
-
+__END__
 sub object {
     my $des = shift;
     my $struct = shift;
@@ -56,17 +83,6 @@ sub object {
     return \%return;
 }
 
-__END__
-
-# _search_legacy
-
-sub _search_legacy {
-
-    my $self = shift;
-    my $p = shift;
-
-    my $search = $p->{search};
-    my %subs = %{$p->{subs}};
 
     if (not $search eq ''){
         

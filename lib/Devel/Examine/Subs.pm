@@ -43,69 +43,6 @@ sub run {
     $self->_core($p);
 }
 
-sub has {
-    my $self    = shift;
-    my $p       = shift;
-
-    $p->{engine} = 'has';
-
-    $self->_config($p);
-    $self->run($p);
-}
-
-sub missing {
-    my $self    = shift;
-    my $p       = shift;
-
-    $p->{engine} = 'missing';
-
-    $self->_config($p);
-    $self->run($p);
-}
-
-sub all {
-    my $self    = shift;
-    my $p       = shift;
-
-    $p->{engine} = 'all';
-    $self->_config($p); 
-    $self->run($p);    
-}
-sub line_numbers {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'line_numbers';
-    $self->_config($p);
-
-    if ($self->{get} and $self->{get} =~ /^obj/){
-        $self->{want} = 'sublist';
-        return $self->sublist();
-    }
-    else {
-        return $self->_get();
-    }
-}
-sub sublist {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'sublist';
-    $self->_config($p);
-
-    $self->_get();
-
-    return $self->{sublist};
-}
-sub module {
-    my $self = shift;
-    my $p = shift;
-
-    $self->{want} = 'module';
-    $self->_config($p);
-
-    return @{$self->_get($p)};
-}
 sub _config {
     my $self = shift;
     my $p = shift;
@@ -131,6 +68,7 @@ sub _config {
         }
     }
 }
+
 sub _file {
     my $self = shift;
     my $p = shift;
@@ -141,6 +79,7 @@ sub _file {
         die "Invalid file supplied: $self->{file} $!";
     }
 }
+
 sub _get {
    
     my $self        = shift;
@@ -292,11 +231,13 @@ sub _load_subs {
         
         my $name = $PPI_sub->name;
         
-        $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number -1;
+
+        $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
+        $subs{$file}{subs}{$name}{start}--;
         
         my $lines = $PPI_sub =~ y/\n//;
 
-        $subs{$file}{subs}{$name}{stop} = $subs{$file}{subs}{$name}{start} + $lines;
+        $subs{$file}{subs}{$name}{end} = $subs{$file}{subs}{$name}{start} + $lines;
 
         my $line_num = $subs{$file}{subs}{$name}{start};
        
@@ -306,7 +247,7 @@ sub _load_subs {
         my @sub_definition = @perl_file[
                                     $subs{$file}{subs}{$name}{start}
                                     ..
-                                    $subs{$file}{subs}{$name}{stop}
+                                    $subs{$file}{subs}{$name}{end}
                                    ];
 
           @{$subs{$file}{subs}{$name}{TIE_perl_file_sub}} = \@sub_definition;
@@ -382,6 +323,82 @@ sub _objects {
     }
 
     $self->{sublist} = \@sub_list;
+}
+
+sub has {
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{engine} = 'has';
+
+    $self->_config($p);
+    $self->run($p);
+}
+
+sub missing {
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{engine} = 'missing';
+
+    $self->_config($p);
+    $self->run($p);
+}
+
+sub all {
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{engine} = 'all';
+    $self->_config($p); 
+    $self->run($p);    
+}
+
+sub lines {
+    my $self    = shift;
+    my $p       = shift;
+
+    $p->{engine} = 'lines';
+    $self->_config($p); 
+    $self->run($p);    
+}
+
+sub line_numbers {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{want} = 'line_numbers';
+    $self->_config($p);
+
+    if ($self->{get} and $self->{get} =~ /^obj/){
+        $self->{want} = 'sublist';
+        return $self->sublist();
+    }
+    else {
+        return $self->_get();
+    }
+}
+
+sub sublist {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{want} = 'sublist';
+    $self->_config($p);
+
+    $self->_get();
+
+    return $self->{sublist};
+}
+
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $self->{want} = 'module';
+    $self->_config($p);
+
+    return @{$self->_get($p)};
 }
 
 sub _pod{} #vim placeholder

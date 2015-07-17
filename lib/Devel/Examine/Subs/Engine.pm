@@ -25,6 +25,7 @@ sub _dt {
         all => \&all,
         has => \&has,
         missing => \&missing,
+        lines => \&lines,
         _test => \&_test,
         _test_print => \&_test_print,
         _search_legacy => \&_search_legacy,
@@ -109,54 +110,24 @@ sub missing {
     return \@missing;
 }
 
-sub _nothing {}; # vim placeholder
-
-__END__
-
-# _search_legacy
-
-
-
-sub _search_legacy {
-
-    my $self = shift;
+sub lines {
     my $p = shift;
+    my $struct = shift;
 
-    my $search = $p->{search};
-    my %subs = %{$p->{subs}};
+    my %return;
 
-    if (not $search eq ''){
-        
-        # pull out just the subroutine from the file array
-
-        my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
-       
-        my $line_num = $subs{$name}{start};
-        
-        for (@sub_section){
-           
-            # we havent found the search term yet
-
-            $subs{$name}{found} = 0;
-
-            if ($_ and /$search/){
-                if ($want ne 'has_lines'){
-                    $subs{$name}{found} = 1;
-                }
-                else {
-                    push @{$subs{$name}{lines}}, {$line_num => $_};
+    for my $file (keys %$struct){
+        for my $sub (keys %{$struct->{$file}{subs}}){
+            my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+            for my $code (@code_block){
+                my $line_num = $struct->{$file}{subs}{$sub}{start};
+                for (@$code){
+                    $line_num++;
+                    push @{$return{$sub}}, {$line_num => $_};
                 }
             }
-
-            $line_num++;
-            last if $subs{$name}{found};
         }
     }
-    else { 
-        return {};
-    }
-
-    return \%subs;
+    return \%return;
 }
-
-1;
+sub _nothing {}; # vim placeholder

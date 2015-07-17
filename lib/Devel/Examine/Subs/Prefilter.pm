@@ -36,37 +36,44 @@ sub _dt {
 }
            
 sub file_lines_contain {
-    my $p = shift;
-    my $struct = shift;
 
-    my $search = $p->{search};
+    return sub {
 
-    my $s = $struct;
-    my @has;
+        my $p = shift;
+        my $struct = shift;
+
+        my $search = $p->{search};
+
+        my $s = $struct;
+        my @has;
 
 
-    if (not $search){
-        return $struct;
-    }
+        if (not $search){
+            return $struct;
+        }
 
-    for my $f (keys %$s){
-        for my $sub (keys %{$s->{$f}{subs}}){
-            for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
-                for (@$_){
-                    if ($_ and /$search/){
-                        push @has, $_;
+        for my $f (keys %$s){
+            for my $sub (keys %{$s->{$f}{subs}}){
+                for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
+                    for (@$_){
+                        if ($_ and /$search/){
+                            push @has, $_;
+                        }
                     }
                 }
+                $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
             }
-            $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
         }
-    }
 
-    return $struct;
+        return $struct;
+    };
 }
 sub _test {
-    my $struct = shift;
-    return $struct;
+
+    return sub {
+        my $struct = shift;
+        return $struct;
+    };
 }
 
 __END__

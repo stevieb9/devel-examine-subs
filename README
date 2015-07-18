@@ -1,0 +1,143 @@
+NAME
+
+    Devel::Examine::Subs - Get information about subroutines within module
+    and program files, and in-memory modules.
+
+SYNOPSIS
+
+        use Devel::Examine::Subs;
+    
+        my $des = Devel::Examine::Subs->new();
+    
+        my $file = 'perl.pl';
+        my $find = 'string';
+    
+        # get all sub names in file
+    
+        my @subs = $des->all({file => $file}); 
+    
+        # all subs containing "string" in the body
+    
+        my @has = $des->has({file => $file, search => $find}); 
+    
+        # return an aref of subroutine objects
+    
+        $aref = $des->sublist(...)
+    
+        for my $sub (@$aref){    
+            print $sub->name() # name of sub
+            print $sub->start() # first line of sub
+            print $sub->stop() # last line of sub
+            print $sub->count() # number of lines in sub
+        }
+    
+        # see the has() method below to find out how to
+        # get a return that contains all lines that match the search
+        # for each sub
+
+DESCRIPTION
+
+    NOTE: This module now requires the PPI module to be installed.
+
+    Reads into Perl program and module files (or modules in memory)
+    returning the names of its subroutines, optionally limiting the names
+    returned to subs that contain or do not contain specified text, or the
+    start and end line numbers of the sub.
+
+    This module is much safer and accurate than earlier versions, as it now
+    uses the reliable PPI module to parse the perl code.
+
+METHODS
+
+ new
+
+    Instantiates a new object.
+
+ has({file => $filename, search => $text, lines => 1})
+
+    Takes the name of a file to search, and the text you want to search for
+    within each sub. Useful to find out which subs call other methods.
+
+    By default, returns a list of names of the subs where the subroutine
+    containes the text. In scalar context, returns the count of subs
+    containing the found text.
+
+    With the 'lines' parameter set to true, returns a hash which each sub
+    name is the key, and each key containing an array containing hashes
+    who's keys are the line numer the search found, and the value is the
+    data on that line.
+
+ missing({file => $filename, search => $text})
+
+    The exact opposite of has.
+
+ all({file => $filename})
+
+    Returns a list of the names of all subroutines found in the file.
+
+ module({module => "Devel::Examine::Subs"})
+
+    Returns an array containing a list of all subs found in the module's
+    namespace symbol table.
+
+ line_numbers({file => $filename, get => 'object'})
+
+    If the optional parameter 'get' is not present or set to a value of
+    'object' or 'obj', returns a hash of hashes. Top level keys are the
+    function names, and the subkeys 'start' and 'stop' contain the line
+    numbers of the respective position in the file for the subroutine.
+
+    If the optional parameter 'get' is sent in with a value of object, will
+    return an array reference of subroutine objects. Each object has the
+    following methods:
+
+  name()
+
+    Returns the name of the subroutine
+
+  start()
+
+    Returns the line number where the sub starts
+
+  stop()
+
+    Returns the line number where the sub ends
+
+  count()
+
+    Returns the number of lines in the subroutine
+
+ sublist({file => $filename})
+
+    Returns an array reference of subroutine objects. See line_numbers()
+    with the 'get' parameter set for details.
+
+CAVEATS
+
+    The previous unreliability caveat has been removed as PPI now
+    performs all of the processing.
+
+    Subs that begin indented (such as closures and those within other
+    blocks) will not be counted. For line_numbers() the closing brace must
+    be in column one of the file as well.
+
+AUTHOR
+
+    Steve Bertrand, <steveb at cpan.org>
+
+SUPPORT
+
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Devel::Examine::Subs
+
+LICENSE AND COPYRIGHT
+
+    Copyright 2015 Steve Bertrand.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: the GNU General Public License as published
+    by the Free Software Foundation; or the Artistic License.
+
+    See http://dev.perl.org/licenses/ for more information.
+

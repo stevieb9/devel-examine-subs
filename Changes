@@ -1,0 +1,71 @@
+Revision history for Devel-Examine::Subs
+
+1.--    
+        - fixes bug 18
+        - fixes bug 20
+        - fixes bug 21
+
+1.17    20150715
+        - implemented PPI sub checking, much safer
+        - removed the old _subs() that was not PPI-based
+        - most everything is OO based now
+        - all core parameters are set into $self through _config()
+        - basic consolodation of error checking in _config()
+        - extensive refactoring to make tests pass
+        - separate out the ::Sub.pm module into its own file
+        - bug 12 fix: new() now sets $self->{file} for use by other methods
+        - bug 14 fix: add file validation: done in _config()
+        - bug 13 fix: new() now accepts 'file' param
+        - new test for 'search'
+        - many other test additions/updates
+        - test for ::Sub
+        - test for _config() 
+
+        To consider:
+        - need to sort out esc/unescape for 'search'
+
+1.11    20150714
+        - fixed bug where only one line was being added for has_lines
+
+1.10    20150714
+        - added bool 'lines' param to has()
+        -- returns hash of arrays of hashes
+        - updated POD
+        - new tests for has() (lines)
+
+1.09    20150714
+        - added module()
+        -- return all subs found in a running module
+        - cleaned up POD/Readme
+
+1.07    20150630
+        - added sublist()
+        - similar to line_numbers(), but returns a list of
+          objects that have start(), stop(), name() and count()
+          methods
+
+0.14    20150624
+        - added line_numbers()
+        - retrieves line numbers for the start and end of each
+          function
+
+0.07    20120330
+        - fixes bug 11
+        - add new() method and allow object method calls
+
+0.06    20120330
+        - changed name of project from Devel::ExamineSubs
+          to Devel::Examine::Subs
+
+0.05    20120330
+        - changed API to all public calls to use href params
+
+0.02    20120330
+        - added tests
+        - dies() if number of params is not correct (consider
+          changing this internally)
+        - created repository on bitbucket
+
+0.01    20120330 
+        First version, released on an unsuspecting world.
+

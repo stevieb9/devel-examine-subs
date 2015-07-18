@@ -13,7 +13,7 @@ BEGIN {#1
 
 {#2
     $des->_config({engine => '_test_print'});
-    ok ( $des->{params}{engine} eq '_test_print', "_config() properly sets $self->{params}" );
+    ok ( $des->{params}{engine} eq '_test_print', "_config() properly sets \$self->{params}" );
 
 }
 {#3
@@ -24,5 +24,5 @@ BEGIN {#1
                 get => 'obj',
                 test => 1,
               });
-    is ( keys %{$des->{params}}, 7, "_config() sets $self->{params}, and properly" );
+    is ( keys %{$des->{params}}, 7, "_config() sets \$self->{params}, and properly" );
 }

@@ -46,9 +46,9 @@ my $des = Devel::Examine::Subs->new();
 }
 {#8
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new();
 
-    $all = $des->all({
+    my $all = $des->all({
                 file => 't/sample.data', 
                 engine => 'all',
             });
@@ -57,9 +57,9 @@ my $des = Devel::Examine::Subs->new();
 }
 {#9
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new();
 
-    $all = $des->all({file => 't/sample.data'});
+    my $all = $des->all({file => 't/sample.data'});
 
     ok ( ref($all) eq 'ARRAY', "legacy all() sets the engine param properly" );
 }

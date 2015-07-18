@@ -14,7 +14,7 @@ sub new {
     my $struct = shift;
 
     $self->{pre_filters} = $self->_dt();
-
+    
     return $self;
 }
 

@@ -35,8 +35,10 @@ ok (! $@, "copy of test sample file ok" );
 open my $wfh, '<', $wf or die $!;
 
 #3
+my $fh;
+
 eval {
-    open my $fh, '<', $f
+    open $fh, '<', $f
       or die "Can't open original test file $f: $!";
 };
 ok (! $@, "can open orig test file after tie/untie/copy" );

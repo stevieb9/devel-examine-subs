@@ -2,7 +2,8 @@
 use warnings;
 use strict;
 
-use Test::More tests => 1;
+use Test::More tests => 3;
+use Data::Dumper;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -11,14 +12,15 @@ BEGIN {#1
 
 {
     my $p = {
-        pre_filter => 'subs',
+        pre_filter => 'file_lines_contain',
         file => 't/sample.data',
-        pf_dump => 1,
+        engine => 'all',
     };
     my $des = Devel::Examine::Subs->new();
-    $des->run($p);
     
-
-    
+    my $res = $des->run($p);
+   
+    ok (@$res == 11, "file_lines_contain pre filter loads properly");
+    ok (ref $res eq 'ARRAY', "proper return when using a pre filter"); 
 
 }

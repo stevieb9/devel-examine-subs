@@ -21,6 +21,7 @@ my $p = {
     my $ret = $des->lines($p);
     my %subs = %$ret;
 
+    my $search = $p->{search};
     delete $p->{search};
 
     for my $sub (keys %subs){    
@@ -28,7 +29,7 @@ my $p = {
         for my $line_info (@{$subs{$sub}}){
             my @lines = values %$line_info;
             for (@lines){
-                ok ($_ =~ /$p->{search}/, "lines() uses file_lines_contain prefilter correctly");
+                ok ($_ =~ /$search/, "lines() uses file_lines_contain prefilter correctly");
             }
         }
     }
@@ -83,7 +84,7 @@ delete $p->{search};
     my $subs = $des->lines($p);
     my %subs = %$subs;
 
-    for my $sub (keys $subs){    
+    for my $sub (keys %$subs){    
 
         for my $line_info (@{$subs{$sub}}){
             while (my ($k, $v) = each (%$line_info)){ 

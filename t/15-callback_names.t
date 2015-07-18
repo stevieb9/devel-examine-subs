@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 78;
+use Test::More tests => 18;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs::Engine' ) || print "Bail out!\n";

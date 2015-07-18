@@ -1,4 +1,6 @@
 #!perl -T
+use warnings;
+use strict;
 
 use Test::More tests => 3;
 use File::Copy qw(copy);

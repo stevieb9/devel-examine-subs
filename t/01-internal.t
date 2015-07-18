@@ -1,4 +1,6 @@
 #!perl -T
+use warnings;
+use strict;
 
 # for testing internal subs, either directly,
 # or through an accessor

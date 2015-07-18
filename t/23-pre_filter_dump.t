@@ -1,4 +1,6 @@
 #!perl -T
+use warnings;
+use strict;
 
 use Test::More tests => 8;
 use Test::Trap;

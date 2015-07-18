@@ -1,4 +1,6 @@
 #!perl -T
+use warnings;
+use strict;
 
 use Test::More tests => 26;
 use Data::Dumper;

@@ -8,6 +8,7 @@ our $VERSION = '1.18';
 use Carp;
 use Data::Dumper;
 use Devel::Examine::Subs::Engine;
+use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
 use PPI;
             
@@ -82,28 +83,50 @@ sub _core {
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
 
-    # compile the file/sub data, return the base struct
+    # pre data collection/building processor
+
+    my $data;
+
+    if ($self->{params}{pre_proc}){
+        my $pre_proc = $self->_pre_proc($p);
+
+        $data = $pre_proc->($p);
+
+        if ($self->{params}{pre_proc_dump}){
+            print Dumper $data;
+            exit;
+        }
+
+        # for things like 'module', we need to return
+        # early
+
+        if ($self->{params}{pre_proc_return}){
+            return $data;
+        }
+    }
+
+    # core data collection/building
 
     my $subs = $self->_subs();
 
-    #    
-    # perform the modular/callback work
-    # 
-    
-    # run the data pre filter
+    # pre engine filter
 
     if ($self->{params}{pre_filter}){
         my $pre_filter = $self->_pre_filter($p, $subs);
 
         $subs = $pre_filter->($p, $subs); 
 
-        if ($self->{params}{pf_dump}){
+        if ($self->{params}{pre_filter_dump}){
             print Dumper $subs;
             exit;
         }
+
+        if ($self->{params}{pre_filter_return}){
+            return $subs;
+        }
     }
 
-    # load the engine
+    # engine
 
     my $engine = $self->_engine($p); 
 
@@ -226,6 +249,42 @@ sub engines {
     my $engine = Devel::Examine::Subs::Engine->new();
     return keys (%{$engine->_dt()});
 }
+sub _pre_proc {
+
+    my $self = shift;
+    my $p = shift;
+    my $subs = shift;
+
+    $self->_config($p);
+
+    my $pre_proc = $self->{params}{pre_proc};
+
+    if (not $pre_proc or $pre_proc eq ''){
+        return $subs;
+    }
+   
+    # tell _core() to return directly from the pre_processor
+    # if necessary, and bypass pre_filter and engine
+
+    if ($pre_proc eq 'module'){
+       $self->{params}{pre_proc_return} = 1;
+    }
+
+    my $cref;
+    
+    if (not ref($pre_proc) eq 'CODE'){
+        my $pre_proc_module = $self->{namespace} . "::Preprocessor";
+        my $compiler = $pre_proc_module->new();
+
+        $cref = $compiler->{pre_procs}{$pre_proc}->();
+    }
+
+    if (ref($pre_proc) eq 'CODE'){
+        $cref = $pre_proc;
+    }
+
+    return $cref;
+}
 sub has {
     my $self    = shift;
     my $p       = shift;
@@ -261,6 +320,17 @@ sub lines {
     if ($self->{params}{search}){
         $self->{params}{pre_filter} = 'file_lines_contain'; 
     }
+
+    $self->run();
+}
+sub module {
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+    
+    $self->{params}{pre_proc} = 'module';
+    $self->{params}{pre_proc_return} = 1;
 
     $self->run();
 }

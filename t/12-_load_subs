@@ -1,6 +1,7 @@
 #!perl -T
 
 use Test::More tests => 7;
+use Data::Dumper;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -8,52 +9,21 @@ BEGIN {#1
 
 my $file = 't/sample.data';
 my $des = Devel::Examine::Subs->new({file => $file});
-my $struct = $des->_load_subs();
+my $struct = $des->_subs();
 
 {#2
     ok ( ref($struct) eq 'HASH', "complete structure is a hashref" );
-    use Data::Dumper;
-    print Dumper $struct;
 }
 {#3
     ok ( ref($struct->{$file}) eq 'HASH', "top level of struct are hashes" );
 }
 {#4
-    ok ( ref($struct->{$file}{perl_file}) eq 'ARRAY', "perl_file 2nd level is array" );
+    ok ( ref($struct->{$file}{TIE_perl_file}) eq 'ARRAY', "perl_file 2nd level is hash" );
 }
 {#5
     my $sub = 'one';
-    ok ( ref($struct->{$file}{$sub}) eq 'HASH', "\$sub 2nd level is hash" );
-    ok ( ref($struct->{$file}{$sub}{perl_file_sub}) eq 'ARRAY', "perl_file_sub 3rd level is array" );
+    ok ( ref($struct->{$file}{subs}) eq 'HASH', "'subs' hard container is a hash" );
+    ok ( ref($struct->{$file}{subs}{$sub}) eq 'HASH', "\$sub 3rd level is hash" );
+    ok ( ref($struct->{$file}{subs}{$sub}{TIE_perl_file_sub}) eq 'ARRAY', "TIE_perl_file_sub 3rd level is array" );
 
 }
-
-
-__END__
-{#3
-    my $engine_return = Devel::Examine::Subs::Engine->_test();
-    is ( ref($engine_return), 'HASH', "_test engine returns a hashref" );
-}
-{#4
-    $engine = _engine('_test');
-    my $res = $engine->();
-
-    is ( ref($res), 'HASH', "_test engine returns a hashref properly" );
-}
-{#5
-    my $des = _des({engine => '_test'});
-    my $engine = $des->_load_engine();
-    is ( ref($engine), 'CODE', "_load_engine() returns a cref properly" );
-    is ( ref($engine->()), 'HASH', "the _test engine returns a hashref" );
-}
-
-sub _engine { 
-    my $p = shift; 
-    return \&{$compiler->{engines}{$p}}; 
-};
-
-sub _des {  
-    my $p = shift; 
-    my $des =  Devel::Examine::Subs->new({engine => $p->{engine}}); 
-    return $des;
-};

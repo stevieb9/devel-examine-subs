@@ -9,10 +9,10 @@ BEGIN {#1
 my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 
 {#2
-     my @res = $des->has({ search => 'thi?s' });
-         ok ( @res, "search acts as a regex when unescaped" );
+     my $res = $des->has({ search => 'thi?s' });
+         ok ( @$res, "search acts as a regex when unescaped" );
 }
 {#3
-     my @res = $des->has({ search => 'thi\?s' });
-         ok ( ! @res, "search char escaping works" );
+     my $res = $des->has({ search => 'thi\?s' });
+     ok ( ! @$res, "search char escaping works" );
 }

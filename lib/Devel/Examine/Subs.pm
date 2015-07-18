@@ -89,7 +89,7 @@ sub _core {
     my $data;
 
     if ($self->{params}{pre_proc}){
-        my $pre_proc = $self->_pre_proc($p);
+        my $pre_proc = $self->_pre_proc();
 
         $data = $pre_proc->($p);
 
@@ -110,7 +110,7 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
-        my $pre_filter = $self->_pre_filter($p, $subs);
+        my $pre_filter = $self->_pre_filter();
 
         $subs = $pre_filter->($p, $subs); 
 
@@ -123,7 +123,7 @@ sub _core {
 
     # engine
 
-    my $engine = $self->_engine($p); 
+    my $engine = $self->_engine();
 
     $subs = $engine->($p, $subs);
 

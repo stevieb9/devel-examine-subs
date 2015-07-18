@@ -25,7 +25,7 @@ my $des = Devel::Examine::Subs->new({
 
         my @exit = trap { $des->run({pre_filter_dump => 1}); };
 
-        print STDOUT $trap->stdout;
+        eval { print STDOUT $trap->stdout; };
         is (! $trap->stdout, '', "output to stdout" );
         ok (! $@, "pre_filter dump gave no errors" );
 

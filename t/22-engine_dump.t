@@ -24,7 +24,7 @@ my $des = Devel::Examine::Subs->new({
 
         my @exit = trap { $des->run({engine_dump => 1}); };
 
-        print STDOUT $trap->stdout;
+        eval { print STDOUT $trap->stdout; };
         is (! $trap->stdout, '', "output to stdout" );
         ok (! $@, "engine dump gave no errors" );
 

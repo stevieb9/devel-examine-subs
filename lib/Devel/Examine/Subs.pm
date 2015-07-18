@@ -27,6 +27,7 @@ sub new {
     return $self;
 }
 sub run {
+
     my $self = shift;
     my $p = shift;
 
@@ -35,6 +36,7 @@ sub run {
     $self->_core($self->{params});
 }
 sub _config {
+
     my $self = shift;
     my $p = shift;
 
@@ -62,6 +64,7 @@ sub _config {
     }
 }
 sub _file {
+
     my $self = shift;
     my $p = shift;
 
@@ -128,6 +131,7 @@ sub _core {
     $subs = $engine->($p, $subs);
 
     if ($self->{params}{core_dump}){
+        
         print "\n\t Core Dump called...\n\n";
         print "\n\n\t Dumping data... \n\n";
         print Dumper $subs;
@@ -160,7 +164,6 @@ sub _subs {
         
         my $name = $PPI_sub->name;
         
-
         $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
         $subs{$file}{subs}{$name}{start}--;
         
@@ -259,21 +262,27 @@ sub _pre_filter {
     return $cref;
 }
 sub pre_filters {
+
     my $self = shift;
     my $module = $self->{namespace} . "::Prefilter";
     my $pre_filter = $module->new();
+
     return keys (%{$pre_filter->_dt()});
 }
 sub pre_procs {
+
     my $self = shift;
     my $module = $self->{namespace} . "::Preprocessor";
     my $pre_procs = $module->new();
+
     return keys (%{$pre_procs->_dt()});
 }
 sub engines {
+
     my $self = shift;
     my $module = $self->{namespace} . "::Engine";
     my $engine = $module->new();
+
     return keys (%{$engine->_dt()});
 }
 sub _pre_proc {
@@ -319,6 +328,7 @@ sub _pre_proc {
     return $cref;
 }
 sub has {
+
     my $self    = shift;
     my $p       = shift;
 
@@ -327,6 +337,7 @@ sub has {
     $self->run();
 }
 sub missing {
+
     my $self    = shift;
     my $p       = shift;
 
@@ -335,6 +346,7 @@ sub missing {
     $self->run();
 }
 sub all {
+
     my $self    = shift;
     my $p       = shift;
 
@@ -343,6 +355,7 @@ sub all {
     $self->run();    
 }
 sub lines {
+
     my $self    = shift;
     my $p       = shift;
     
@@ -357,6 +370,7 @@ sub lines {
     $self->run();
 }
 sub module {
+
     my $self = shift;
     my $p = shift;
 

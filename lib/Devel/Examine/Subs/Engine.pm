@@ -10,6 +10,7 @@ our $VERSION = '1.18';
 # new
 
 sub new {
+
     my $self = {};
     bless $self, shift;
 
@@ -17,8 +18,8 @@ sub new {
 
     return $self;
 }
-
 sub _dt {
+
     my $self = shift;
 
     my $dt = {
@@ -34,19 +35,18 @@ sub _dt {
 
     return $dt;
 }
-
 sub _test {
+
     return sub {
         return {a => 1};
     };
 }
-
 sub _test_print {
+
     return sub {
         print "Hello, world!\n";
     };
 }
-
 sub all {
 
     return sub {
@@ -61,7 +61,6 @@ sub all {
         return \@subs;
     };
 }
-
 sub has {
 
     return sub {
@@ -92,11 +91,9 @@ sub has {
                 }
             }
         }
-
         return \@has;
     };
 }
-
 sub missing {
 
     return sub {
@@ -126,10 +123,10 @@ sub missing {
         return \@missing;
     };
 }
-
 sub lines {
 
     return sub {
+        
         my $p = shift;
         my $struct = shift;
 

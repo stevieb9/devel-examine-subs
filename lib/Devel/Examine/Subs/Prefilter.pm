@@ -8,6 +8,7 @@ use Data::Dumper;
 our $VERSION = '1.18';
 
 sub new {
+
     my $self = {};
     bless $self, shift;
 
@@ -17,8 +18,8 @@ sub new {
     
     return $self;
 }
-
 sub _dt {
+
     my $self = shift;
 
     my $dt = {
@@ -31,7 +32,6 @@ sub _dt {
 
     return $dt;
 }
-
 sub subs {
     
     return sub {
@@ -55,7 +55,6 @@ sub subs {
         return \@subs;
     };
 } 
-
 sub file_lines_contain {
 
     return sub {
@@ -85,11 +84,9 @@ sub file_lines_contain {
                 $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
             }
         }
-
         return $struct;
     };
 }
-
 sub _test {
 
     return sub {

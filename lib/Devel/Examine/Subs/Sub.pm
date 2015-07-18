@@ -6,15 +6,18 @@ use warnings;
 our $VERSION = '1.18';
 
 sub new {
+
     my $class = shift;
     my $data = shift;
     my $name = shift;
+
     my $self = bless {}, $class;
 
     $self->{data} = $data;
     $self->{name} = $name || '';
     $self->{start_line} = $data->{start};
     $self->{stop_line} = $data->{stop};
+
     if ($data->{stop} and $data->{start}){
         $self->{count_line} = $data->{stop} - $data->{start};
     }

@@ -8,9 +8,6 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-use File::Copy;
-use Tie::File;
-
 my $f = 't/sample.data';
 my $wf = 't/write_sample.data';
 
@@ -55,7 +52,6 @@ for (0..$count){
     }
 }
 is ( scalar(@changes), 1, "search/replace does the right thing, in the right spot" );
-
 
 #5
 eval { close $fh; };

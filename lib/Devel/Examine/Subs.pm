@@ -92,11 +92,6 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        if ($self->{params}{pre_proc_dump}){
-            print Dumper $data;
-            exit;
-        }
-
         # for things like 'module', we need to return
         # early
 
@@ -108,6 +103,8 @@ sub _core {
     # core data collection/building
 
     my $subs = $self->_subs();
+    
+    $self->{data} = $subs;
 
     # pre engine filter
 
@@ -116,15 +113,13 @@ sub _core {
 
         $subs = $pre_filter->($p, $subs); 
 
-        if ($self->{params}{pre_filter_dump}){
-            print Dumper $subs;
-            exit;
-        }
-
         if ($self->{params}{pre_filter_return}){
             return $subs;
         }
+
+        $self->{data} = $subs;
     }
+
 
     # engine
 
@@ -132,7 +127,19 @@ sub _core {
 
     $subs = $engine->($p, $subs);
 
+    if ($self->{params}{core_dump}){
+        print "\n\t Core Dump called...\n\n";
+        print "\n\n\t Dumping data... \n\n";
+        print Dumper $subs;
+
+        print "\n\n\t Dumping instance...\n\n";
+        print Dumper $self;
+
+        exit;
+    }
     return $subs;
+
+    $self->{data} = $subs;
 }
 sub _subs {
 
@@ -208,6 +215,12 @@ sub _engine {
         $cref = $engine;
     }
 
+    if ($self->{params}{engine_dump}){
+        my $subs = $cref->($p, $self->{data});
+        print Dumper $subs;
+        exit;
+    }
+
     return $cref;
 }
 sub _pre_filter {
@@ -238,11 +251,23 @@ sub _pre_filter {
     }
 
     return $cref;
+
+    if ($self->{params}{pre_filter_dump}){
+        my $subs = $cref->($p, $self->{data});
+        print Dumper $subs;
+        exit;
+    }
+
 }
 sub pre_filters {
     my $self = shift;
     my $pre_filter = Devel::Examine::Subs::Prefilter->new();
     return keys (%{$pre_filter->_dt()});
+}
+sub pre_procs {
+    my $self = shift;
+    my $pre_procs = Devel::Examine::Subs::Preprocessor->new();
+    return keys (%{$pre_procs->_dt()});
 }
 sub engines {
     my $self = shift;
@@ -281,6 +306,12 @@ sub _pre_proc {
 
     if (ref($pre_proc) eq 'CODE'){
         $cref = $pre_proc;
+    }
+    
+    if ($self->{params}{pre_proc_dump}){
+        my $data = $cref->($p);
+        print Dumper $data;
+        exit;
     }
 
     return $cref;

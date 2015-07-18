@@ -250,14 +250,13 @@ sub _pre_filter {
         $cref = $pre_filter;
     }
 
-    return $cref;
-
     if ($self->{params}{pre_filter_dump}){
         my $subs = $cref->($p, $self->{data});
         print Dumper $subs;
         exit;
     }
 
+    return $cref;
 }
 sub pre_filters {
     my $self = shift;

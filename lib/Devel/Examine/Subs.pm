@@ -54,9 +54,10 @@ sub _config {
 
         $self->{params}{$param} = $p->{$param};
 
-        if ($self->{params}{config_dump}){
-            print Dumper $self->{params};
-        }
+    }
+
+    if ($self->{params}{config_dump}){
+        print Dumper $self->{params};
     }
 }
 sub _file {

@@ -82,10 +82,6 @@ sub _core {
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
 
-    my $ppi_doc = PPI::Document->new($file);
-    my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
-    tie my @fh, 'Tie::File', $file;
-
     # compile the file/sub data, return the base struct
 
     my $subs = $self->_subs();
@@ -155,6 +151,8 @@ sub _subs {
 
           @{$subs{$file}{subs}{$name}{TIE_perl_file_sub}} = \@sub_definition;
     }
+   
+    untie @perl_file;
 
     return \%subs;
 }

@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::More tests => 3;
+use Test::More tests => 2;
 use File::Copy qw(copy);
 
 BEGIN {#1

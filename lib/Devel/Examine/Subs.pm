@@ -126,7 +126,7 @@ sub _core {
 
     # engine
 
-    my $engine = $self->_engine();
+    my $engine = $self->_engine($p);
 
     $subs = $engine->($p, $subs);
 

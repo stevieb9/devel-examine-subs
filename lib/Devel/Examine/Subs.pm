@@ -11,7 +11,8 @@ use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
 use PPI;
-            
+use Tie::File;
+
 sub new {
     
     my $self = {};
@@ -71,8 +72,7 @@ sub _file {
     }
 }
 sub _core {
-    use Tie::File;
-
+    
     my $self = shift;
     my $p = shift;
 
@@ -120,7 +120,6 @@ sub _core {
 
         $self->{data} = $subs;
     }
-
 
     # engine
 

@@ -260,17 +260,20 @@ sub _pre_filter {
 }
 sub pre_filters {
     my $self = shift;
-    my $pre_filter = Devel::Examine::Subs::Prefilter->new();
+    my $module = $self->{namespace} . "::Prefilter";
+    my $pre_filter = $module->new();
     return keys (%{$pre_filter->_dt()});
 }
 sub pre_procs {
     my $self = shift;
-    my $pre_procs = Devel::Examine::Subs::Preprocessor->new();
+    my $module = $self->{namespace} . "::Preprocessor";
+    my $pre_procs = $module->new();
     return keys (%{$pre_procs->_dt()});
 }
 sub engines {
     my $self = shift;
-    my $engine = Devel::Examine::Subs::Engine->new();
+    my $module = $self->{namespace} . "::Engine";
+    my $engine = $module->new();
     return keys (%{$engine->_dt()});
 }
 sub _pre_proc {
@@ -321,7 +324,7 @@ sub has {
 
     $self->_config($p);
     $self->{params}{engine} = 'has';
-    $self->run($p);
+    $self->run();
 }
 sub missing {
     my $self    = shift;
@@ -337,7 +340,7 @@ sub all {
 
     $self->_config($p); 
     $self->{params}{engine} = 'all';
-    $self->run($p);    
+    $self->run();    
 }
 sub lines {
     my $self    = shift;

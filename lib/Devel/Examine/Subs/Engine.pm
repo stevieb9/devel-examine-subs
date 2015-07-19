@@ -28,10 +28,11 @@ sub _dt {
         has => \&has,
         missing => \&missing,
         lines => \&lines,
-        objects =>\&object,
+        objects =>\&objects,
         dt_test => \&dt_test,
         _test => \&_test,
         _test_print => \&_test_print,
+        _test_bad => \&_test_bad,
         _search_legacy => \&_search_legacy,
     };
 

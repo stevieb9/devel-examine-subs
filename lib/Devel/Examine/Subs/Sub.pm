@@ -14,30 +14,28 @@ sub new {
     my $self = bless {}, $class;
 
     $self->{data} = $data;
-    $self->{name} = $name || '';
-    $self->{start} = $data->{start};
-    $self->{end} = $data->{end};
+    $self->{data}{name} = $name || '';
 
     if ($data->{end} and $data->{start}){
-        $self->{count_line} = $data->{end} - $data->{start};
+        $self->{data}{line_count} = $data->{end} - $data->{start};
     }
              
     return $self;
 }
 sub name {
     my $self = shift;
-    return $self->{name};
+    return $self->{data}{name};
 }
 sub start {
     my $self = shift;
-    return $self->{start_line};
+    return $self->{data}{start};
 }
-sub stop {
+sub end {
     my $self = shift;
-    return $self->{stop_line};
+    return $self->{data}{end};
 }
-sub count {
+sub line_count {
     my $self = shift;
-    return $self->{count_line};
+    return $self->{data}{line_count};
 }
 1;

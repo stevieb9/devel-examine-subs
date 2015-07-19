@@ -400,7 +400,7 @@ sub objects {
     my $self = shift;
     my $p = shift;
 
-    $self->_confing($p);
+    $self->_config($p);
 
     $self->{params}{pre_filter} = 'subs';
     $self->{params}{engine} = 'objects';

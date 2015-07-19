@@ -48,6 +48,9 @@ sub subs {
                 if ($search && $sub eq $search){
                     next;
                 }
+                $s->{$f}{subs}{$sub}{start}++;
+                $s->{$f}{subs}{$sub}{end}++;
+                $s->{$f}{subs}{$sub}{name} = $sub;
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }

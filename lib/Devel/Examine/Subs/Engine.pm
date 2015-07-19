@@ -5,6 +5,7 @@ use warnings;
 
 use Carp;
 use Data::Dumper;
+use Devel::Examine::Subs::Sub;
 
 our $VERSION = '1.18';
 
@@ -168,10 +169,10 @@ sub objects {
             # if the name of the callback method is mistyped in the 
             # dispatch table, this will be triggered 
 
-            eval {
-                $des_sub 
-                  = Devel::Examine::Subs->new($struct, $struct->{name});
-            };
+            $des_sub 
+              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
+            
+            #FIXME: this eval catch catches bad dispatch and "not a hashref"
 
             if ($@){
                 print "dispatch table in engine has a mistyped function value\n\n";

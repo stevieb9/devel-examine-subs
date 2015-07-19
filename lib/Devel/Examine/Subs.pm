@@ -182,7 +182,7 @@ sub _subs {
                                     $subs{$file}{subs}{$name}{end}
                                    ];
 
-          @{$subs{$file}{subs}{$name}{TIE_perl_file_sub}} = \@sub_definition;
+          $subs{$file}{subs}{$name}{TIE_perl_file_sub} = \@sub_definition;
     }
    
     untie @perl_file;

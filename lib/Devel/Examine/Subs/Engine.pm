@@ -83,13 +83,10 @@ sub has {
 
                 my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
                 for my $code (@code_block){
-                    for my $line (@$code){
-                        next if not $search;
-                        if ($line and $line =~ /$search/){
-                            push @has, $sub;
-                            $found = 1;
-                            last;
-                        }
+                    next if not $search;
+                    if ($code and $code =~ /$search/){
+                        push @has, $sub;
+                        $found = 1;
                     }
                     next if $found;
                 }
@@ -115,12 +112,9 @@ sub missing {
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
-
-                my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
-                for my $code (@code_block){
-                    if (! grep(/$search/, @$code)){
-                        push @missing, $sub;
-                    }
+                my @code = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+                if (! grep(/$search/, @code)){
+                    push @missing, $sub;
                 }
             }
         }
@@ -138,13 +132,11 @@ sub lines {
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
-                my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
-                for my $code (@code_block){
-                    my $line_num = $struct->{$file}{subs}{$sub}{start};
-                    for (@$code){
-                        $line_num++;
-                        push @{$return{$sub}}, {$line_num => $_};
-                    }
+                my $line_num = $struct->{$file}{subs}{$sub}{start};
+                my @code = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+                for my $line (@code){
+                    $line_num++;
+                    push @{$return{$sub}}, {$line_num => $line};
                 }
             }
         }

@@ -67,7 +67,6 @@ sub file_lines_contain {
         my $search = $p->{search};
 
         my $s = $struct;
-        my @has;
 
 
         if (not $search){
@@ -76,14 +75,13 @@ sub file_lines_contain {
 
         for my $f (keys %$s){
             for my $sub (keys %{$s->{$f}{subs}}){
+                my @has;
                 for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
-                    for (@$_){
-                        if ($_ and /$search/){
-                            push @has, $_;
-                        }
+                    if ($_ and /$search/){
+                        push @has, $_;
                     }
                 }
-                $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
+                $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = \@has;
             }
         }
         return $struct;

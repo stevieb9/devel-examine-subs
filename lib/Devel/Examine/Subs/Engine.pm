@@ -3,6 +3,7 @@ package Devel::Examine::Subs::Engine;
 use strict;
 use warnings;
 
+use Carp;
 use Data::Dumper;
 
 our $VERSION = '1.18';
@@ -27,6 +28,7 @@ sub _dt {
         has => \&has,
         missing => \&missing,
         lines => \&lines,
+        objects =>\&object,
         dt_test => \&dt_test,
         _test => \&_test,
         _test_print => \&_test_print,
@@ -147,5 +149,38 @@ sub lines {
         return \%return;
     };
 }
+sub objects {
+    
+    # uses 'subs' pre_filter
 
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my @return;
+
+        my $des_sub;
+
+        for my $sub (@$struct){
+            
+            # if the name of the callback method is mistyped in the 
+            # dispatch table, this will be triggered 
+
+            eval {
+                $des_sub 
+                  = Devel::Examine::Subs->new($struct, $struct->{name});
+            };
+
+            if ($@){
+                print "dispatch table in engine has a mistyped function value\n\n";
+                confess $@;
+            }
+
+            push @return, $des_sub;
+        }
+
+        return \@return;
+    };
+}
 sub _nothing {}; # vim placeholder

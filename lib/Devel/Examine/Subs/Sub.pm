@@ -15,11 +15,11 @@ sub new {
 
     $self->{data} = $data;
     $self->{name} = $name || '';
-    $self->{start_line} = $data->{start};
-    $self->{stop_line} = $data->{stop};
+    $self->{start} = $data->{start};
+    $self->{end} = $data->{end};
 
-    if ($data->{stop} and $data->{start}){
-        $self->{count_line} = $data->{stop} - $data->{start};
+    if ($data->{end} and $data->{start}){
+        $self->{count_line} = $data->{end} - $data->{start};
     }
              
     return $self;

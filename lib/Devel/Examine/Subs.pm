@@ -211,7 +211,16 @@ sub _engine {
             confess "No such engine: >>>$engine<<<";
         }
 
-        $cref = $compiler->{engines}{$engine}->();
+        eval {
+            $cref = $compiler->{engines}{$engine}->();
+        };
+        
+        if ($@){
+            print "\n[Devel::Examine::Subs speaking] " .
+                  "dispatch table in Devel::Examine::Subs::Engine " .
+                  "has a mistyped function value:\n\n";
+            confess $@;
+        }
     }
 
     if (ref($engine) eq 'CODE'){
@@ -375,12 +384,29 @@ sub module {
     my $p = shift;
 
     $self->_config($p);
-    
+
+    # set the preprocessor up, and have it return before
+    # the building/compiling of file data happens
+
     $self->{params}{pre_proc} = 'module';
     $self->{params}{pre_proc_return} = 1;
 
+    $self->{params}{engine} = 'module';
+
     $self->run();
 }
+sub objects {
+
+    my $self = shift;
+    my $p = shift;
+
+    $self->_confing($p);
+
+    $self->{params}{pre_filter} = 'subs';
+    $self->{params}{engine} = 'objects';
+   
+    $self->run();
+} 
 sub _pod{} #vim placeholder
 1;
 __END__

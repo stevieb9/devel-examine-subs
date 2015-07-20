@@ -45,7 +45,7 @@ sub subs {
                    
         for my $f (keys %$s){
             for my $sub (keys %{$s->{$f}{subs}}){
-                if ($search && $sub eq $search){
+                if ($search && ! $sub eq $search){
                     next;
                 }
                 $s->{$f}{subs}{$sub}{start}++;

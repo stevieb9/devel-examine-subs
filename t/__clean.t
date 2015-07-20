@@ -23,6 +23,7 @@ my @files_to_delete = qw(
                     sample.data.orig
                     search_replace.data
                     search.replace.data.bak
+                    inject_after.data
                 );
 
 for (@files_to_delete){

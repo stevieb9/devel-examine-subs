@@ -5,6 +5,7 @@ use warnings;
 
 use Carp;
 use Data::Dumper;
+use Devel::Examine::Subs;
 use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
@@ -33,6 +34,7 @@ sub _dt {
         lines => \&lines,
         objects =>\&objects,
         search_replace => \&search_replace,
+        inject_after => \&inject_after,
         dt_test => \&dt_test,
         _test => \&_test,
         _test_print => \&_test_print,
@@ -157,10 +159,14 @@ sub search_replace {
         my $copy = $p->{copy};
 
         if (! $search){
-            croak "Can't use search_replace engine without specifying a search term";
+            print "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
+                  "can't use search_replace engine without specifying a search term\n\n";
+            confess;
         }
         if (! $replace){
-            croak "Can't use search_replace engine without specifying a replace term";
+            print "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
+                  "can't use search_replace engine without specifying a replace term\n\n";
+            confess;
         }
         
         my $file = $p->{file};
@@ -204,4 +210,103 @@ sub search_replace {
         return \@changed_lines;
     };                        
 }
+sub inject_after {
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+    
+        my $search = $p->{search};
+        my $code = $p->{code};
+        my $copy = $p->{copy};
+
+        if (! $search){
+            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+                    "can't use inject_after engine without specifying a search term\n\n";
+        }
+        if (! $code){
+            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+                    "can't use inject_after engine without code to inject\n\n";
+
+        }
+        
+        my $file = $p->{file};
+ 
+        copy $file, "$file.bak";
+
+        unlink $copy if -f $copy;
+        
+        if ($copy){
+            copy $file, $copy;
+            $file = $copy;
+        }
+
+        my @unprocessed;       
+        my @processed;
+        
+        for my $sub (@$struct){
+            push @unprocessed, $sub->name();
+        }
+
+        for my $uname (@unprocessed){
+        
+            my $des = Devel::Examine::Subs->new();
+
+            my $params = {
+                        file => $file,
+                        pre_filter => 'subs && objects',
+                        pre_filter_return => 2,
+                        search => $search,
+            };
+
+            my $struct = $des->run($params); 
+
+            for my $sub (@$struct){
+                next unless $sub->name() eq $uname;
+
+                my $start_line = $sub->start();
+                my $end_line = $sub->end();
+            
+                tie my @tie_file, 'Tie::File', $file;
+
+                my $line_num = 0;
+                my $new_lines = 0; # don't search added lines
+
+                for my $line (@tie_file){
+                    $line_num++;
+
+                    if ($line_num < $start_line){
+                        next;
+                    }
+                    if ($line_num > $end_line){
+                        last;
+                    }
+                    
+                    if ($line =~ /$search/ && ! $new_lines){
+                        
+                        my $location = $line_num;
+
+                        my $indent;
+
+                        if (! $p->{no_indent}){
+                            if ($line =~ /^(\s+)/ && $1){
+                                $indent = $1;
+                            }
+                        }
+                        for my $line (@$code){
+                            splice @tie_file, $location++, 0, $indent . $line; 
+                            $new_lines++;
+                        }
+                        splice @tie_file, $location++, 0, '';
+                    }
+                    $new_lines-- if $new_lines != 0;
+                }
+                untie @tie_file;
+            }
+        }
+        return \@processed;
+    };                        
+}
+
 sub _nothing {}; # vim placeholder

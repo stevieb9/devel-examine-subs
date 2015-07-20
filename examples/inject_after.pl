@@ -22,3 +22,4 @@ my $des = Devel::Examine::Subs->new($params);
 
 my $struct = $des->run($params);
 
+print Dumper $struct;

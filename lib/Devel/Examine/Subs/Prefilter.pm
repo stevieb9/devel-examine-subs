@@ -26,7 +26,7 @@ sub _dt {
         subs => \&subs,
         _default => \&_default,
         _test => \&_test,
-        object => \&object,
+        objects => \&objects,
     };
 
     return $dt;
@@ -85,6 +85,40 @@ sub file_lines_contain {
             }
         }
         return $struct;
+    };
+}
+sub objects {
+
+    # uses 'subs' pre_filter
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my @return;
+
+        my $des_sub;
+
+        for my $sub (@$struct){
+
+            # if the name of the callback method is mistyped in the
+            # dispatch table, this will be triggered
+
+            $des_sub
+              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
+
+            #FIXME: this eval catch catches bad dispatch and "not a hashref"
+
+            if ($@){
+                print "dispatch table in engine has a mistyped function value\n\n";
+                confess $@;
+            }
+
+            push @return, $des_sub;
+        }
+
+        return \@return;
     };
 }
 sub _test {

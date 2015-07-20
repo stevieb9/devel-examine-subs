@@ -113,22 +113,33 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
-        my $pre_filter = $self->_pre_filter();
 
-        $subs = $pre_filter->($p, $subs); 
+        $self->{params}{pre_filter} =~ s/\s+//g;
+        my @pre_filter_list = split /&&/, $self->{params}{pre_filter};
+    
+        for my $pf (@pre_filter_list){
+            $self->{params}{pre_filter} = $pf;
+
+            my $pre_filter = $self->_pre_filter();
+
+            $subs = $pre_filter->($p, $subs); 
+
+
+            $self->{data} = $subs;
+        }
 
         if ($self->{params}{pre_filter_return}){
             return $subs;
         }
-
-        $self->{data} = $subs;
     }
 
     # engine
 
     my $engine = $self->_engine($p);
 
-    $subs = $engine->($p, $subs);
+    if ($self->{params}{engine}){
+        $subs = $engine->($p, $subs);
+    }
 
     if ($self->{params}{core_dump}){
         
@@ -193,10 +204,15 @@ sub _engine {
 
     my $self = shift;
     my $p = shift;
+    my $struct = shift;
 
     $self->_config($p);
 
     my $engine = $p->{engine} // $self->{params}{engine};
+
+    if (not $engine or $engine eq ''){
+        return $struct;
+    }
 
     my $cref;
 
@@ -239,14 +255,14 @@ sub _pre_filter {
 
     my $self = shift;
     my $p = shift; 
-    my $subs = shift;
+    my $struct = shift;
 
     $self->_config($p);
 
     my $pre_filter = $self->{params}{pre_filter};
 
     if (not $pre_filter or $pre_filter eq ''){
-        return $subs;
+        return $struct;
     }
     
     my $cref;
@@ -402,9 +418,9 @@ sub objects {
 
     $self->_config($p);
 
-    $self->{params}{pre_filter} = 'subs';
-    $self->{params}{engine} = 'objects';
-   
+    $self->{params}{pre_filter} = 'subs && objects';
+    $self->{params}{pre_filter_return} = 1;
+ 
     $self->run();
 } 
 sub _pod{} #vim placeholder

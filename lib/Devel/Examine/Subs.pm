@@ -437,10 +437,10 @@ sub search_replace {
 
     $self->_config($p);
 
-    $self->{params{pre_filter} 
-      = 'file_line_contains && subs && objects';
+    $self->{params}{pre_filter} 
+      = 'file_lines_contain && subs && objects';
 
-    $self->{engine} = 'search_replace';
+    $self->{params}{engine} = 'search_replace';
 
     $self->run();
 }
@@ -451,10 +451,10 @@ sub inject_after {
 
     $self->_config($p);
 
-    $self->{params{pre_filter} 
-      = 'file_line_contains && subs && objects';
+    $self->{params}{pre_filter} 
+      = 'file_lines_contain && subs && objects';
 
-    $self->{engine} = 'inject_after';
+    $self->{params}{engine} = 'inject_after';
 
     $self->run();
 }

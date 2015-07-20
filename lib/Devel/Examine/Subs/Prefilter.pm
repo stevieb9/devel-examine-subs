@@ -45,7 +45,7 @@ sub subs {
                    
         for my $f (keys %$s){
             for my $sub (keys %{$s->{$f}{subs}}){
-                if ($search && ! $sub eq $search){
+                if ($search && $sub eq $search){
                     next;
                 }
                 $s->{$f}{subs}{$sub}{start}++;
@@ -75,11 +75,17 @@ sub file_lines_contain {
 
         for my $f (keys %$s){
             for my $sub (keys %{$s->{$f}{subs}}){
+                my $found = 0;
                 my @has;
                 for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
                     if ($_ and /$search/){
+                        $found++;
                         push @has, $_;
-                    }
+                     }
+                }
+                if (! $found){
+                    delete $s->{$f}{subs}{$sub};                
+                    next;
                 }
                 $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = \@has;
             }

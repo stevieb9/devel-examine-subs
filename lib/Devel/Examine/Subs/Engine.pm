@@ -263,8 +263,11 @@ sub inject_after {
             my $struct = $des->run($params); 
 
             for my $sub (@$struct){
+
                 next unless $sub->name() eq $uname;
 
+                push @processed, $sub->name();
+                
                 my $start_line = $sub->start();
                 my $end_line = $sub->end();
             

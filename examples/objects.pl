@@ -9,9 +9,9 @@ my $file = 't/sample.data';
 
 my $p = {
     file => $file, 
-    engine => 'objects',
-    pre_filter => 'subs',
-    #pre_filter_dump => 1,
+    #engine => 'objects',
+    pre_filter => 'subs && objects',
+    pre_filter_dump => 2,
 };
 
 my $des = Devel::Examine::Subs->new($p);

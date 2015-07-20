@@ -124,8 +124,8 @@ sub _core {
 
             $subs = $pre_filter->($p, $subs); 
 
-
             $self->{data} = $subs;
+
         }
 
         if ($self->{params}{pre_filter_return}){
@@ -260,6 +260,7 @@ sub _pre_filter {
     $self->_config($p);
 
     my $pre_filter = $self->{params}{pre_filter};
+    my $pre_filter_dump = $self->{params}{pre_filter_dump};
 
     if (not $pre_filter or $pre_filter eq ''){
         return $struct;
@@ -277,8 +278,14 @@ sub _pre_filter {
     if (ref($pre_filter) eq 'CODE'){
         $cref = $pre_filter;
     }
+    
+    if ($pre_filter_dump && $pre_filter_dump > 1){
+        $self->{params}{pre_filter_dump}--;
+        $pre_filter_dump = $self->{params}{pre_filter_dump};
+    }
 
-    if ($self->{params}{pre_filter_dump}){
+
+    if ($pre_filter_dump && $pre_filter_dump == 1){
         my $subs = $cref->($p, $self->{data});
         print Dumper $subs;
         exit;

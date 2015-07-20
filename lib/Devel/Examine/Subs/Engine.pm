@@ -6,6 +6,8 @@ use warnings;
 use Carp;
 use Data::Dumper;
 use Devel::Examine::Subs::Sub;
+use File::Copy;
+use Tie::File;
 
 our $VERSION = '1.18';
 
@@ -30,11 +32,11 @@ sub _dt {
         missing => \&missing,
         lines => \&lines,
         objects =>\&objects,
+        search_replace => \&search_replace,
         dt_test => \&dt_test,
         _test => \&_test,
         _test_print => \&_test_print,
         _test_bad => \&_test_bad,
-        _search_legacy => \&_search_legacy,
     };
 
     return $dt;
@@ -142,5 +144,64 @@ sub lines {
         }
         return \%return;
     };
+}
+sub search_replace {
+
+    return sub {
+        my $p = shift;
+        my $struct = shift;
+        my $des = shift;
+    
+        my $search = $p->{search};
+        my $replace = $p->{replace};
+        my $copy = $p->{copy};
+
+        if (! $search){
+            croak "Can't use search_replace engine without specifying a search term";
+        }
+        if (! $replace){
+            croak "Can't use search_replace engine without specifying a replace term";
+        }
+        
+        my $file = $p->{file};
+ 
+        copy $file, "$file.bak";
+
+        unlink $copy if -f $copy;
+        
+        if ($copy){
+            copy $file, $copy;
+            $file = $copy;
+        }
+       
+        my @changed_lines;
+        
+        for my $sub (@$struct){
+            my $start_line = $sub->start();
+            my $end_line = $sub->end();
+
+            tie my @tie_file, 'Tie::File', $file;
+
+            my $line_num = 0;
+
+            for my $line (@tie_file){
+                $line_num++;
+                if ($line_num < $start_line){
+                    next;
+                }
+                if ($line_num > $end_line){
+                    last;
+                }
+                
+                if ($line =~ /$search/){
+                    my $orig = $line;
+                    $line =~ s/$search/$replace/g;
+                    push @changed_lines, [$orig, $line];
+                }
+            }
+            untie @tie_file;
+        }
+        return \@changed_lines;
+    };                        
 }
 sub _nothing {}; # vim placeholder

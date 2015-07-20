@@ -429,7 +429,36 @@ sub objects {
     $self->{params}{pre_filter_return} = 1;
  
     $self->run();
-} 
+}
+sub search_replace {
+
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+
+    $self->{params{pre_filter} 
+      = 'file_line_contains && subs && objects';
+
+    $self->{engine} = 'search_replace';
+
+    $self->run();
+}
+sub inject_after {
+
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+
+    $self->{params{pre_filter} 
+      = 'file_line_contains && subs && objects';
+
+    $self->{engine} = 'inject_after';
+
+    $self->run();
+}
+
 sub _pod{} #vim placeholder
 1;
 __END__

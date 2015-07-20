@@ -63,7 +63,15 @@ sub run_directory {
                       },
                         no_chdir => 1 }, $dir );
 
-    return \@files;
+    #return \@files;
+
+    my @return;
+
+    for my $file (@files){
+        $self->{params}{file} = $file;
+        push @return, $self->_core($self->{params});
+    }
+    return \@return;
 }
 sub _config {
 
@@ -121,6 +129,9 @@ sub _core {
     
     $self->_config($p);
     $p = $self->{params};
+
+    print Dumper $self;
+#    exit;
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};

@@ -10,6 +10,7 @@ use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
+use File::Find;
 use PPI;
 use Tie::File;
 
@@ -32,8 +33,37 @@ sub run {
     my $p = shift;
 
     $self->_config($p);
+
+    # do something different for a dir 
+
+    if ($self->{params}{directory}){
+        my $files = $self->run_directory();
+        print Dumper $files;
+    }
+    else {
+        $self->_core($self->{params});
+    }
+}
+sub run_directory {
+
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+   
+    my $dir = $self->{params}{file};
     
-    $self->_core($self->{params});
+    my @files;
+
+    find({wanted => sub {
+                        my $ext = $self->{params}{extension};
+                        if (! -f or ! /(?:$ext)$/){ return; }
+                        my $file = "$File::Find::name";
+                        push @files, $file;
+                      },
+                        no_chdir => 1 }, $dir );
+
+    return \@files;
 }
 sub _config {
 
@@ -70,9 +100,17 @@ sub _file {
 
     $self->{params}{file} = $p->{file} // $self->{params}{file};
 
-    if (! $self->{params}{file} || ! -f $self->{params}{file}){
-        die "Invalid file supplied: $self->{params}{file} $!";
+    # configure directory searching for run()
+
+    if (-d $self->{params}{file}){
+        $self->{params}{directory} = 1;
+        $self->{params}{extension} = $p->{extention} // '\.pm|\.pl';
     }
+    else {
+        if (! $self->{params}{file} || ! -f $self->{params}{file}){
+            die "Invalid file supplied: $self->{params}{file} $!";
+        }
+   }
 }
 sub _core {
     

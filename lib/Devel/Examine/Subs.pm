@@ -298,9 +298,10 @@ sub _engine {
         };
         
         if ($@){
-            print "\n[Devel::Examine::Subs speaking] " .
+            $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Engine " .
                   "has a mistyped function value:\n\n";
+            $@ . $@;
             confess $@;
         }
     }
@@ -338,7 +339,18 @@ sub _pre_filter {
         my $pre_filter_module = $self->{namespace} . "::Prefilter";
         my $compiler = $pre_filter_module->new();
 
-        $cref = $compiler->{pre_filters}{$pre_filter}->();
+        eval {
+            $cref = $compiler->{pre_filters}{$pre_filter}->();
+        };
+        
+        if ($@){
+           $@ =  "\n[Devel::Examine::Subs speaking] " .
+                  "dispatch table in Devel::Examine::Subs::Prefilter " .
+                  "has a mistyped function value:\n\n";
+            $@ .= $@;
+            confess $@;
+        }
+
     }
     
     if (ref($pre_filter) eq 'CODE'){
@@ -410,7 +422,18 @@ sub _pre_proc {
         my $pre_proc_module = $self->{namespace} . "::Preprocessor";
         my $compiler = $pre_proc_module->new();
 
-        $cref = $compiler->{pre_procs}{$pre_proc}->();
+        eval {
+            $cref = $compiler->{pre_procs}{$pre_proc}->();
+        };
+        
+        if ($@){
+            $@ = "\n[Devel::Examine::Subs speaking] " .
+                  "dispatch table in Devel::Examine::Subs::Preprocessor " .
+                  "has a mistyped function value:\n\n";
+            $@ .= $@;
+            confess $@;
+        }
+
     }
 
     if (ref($pre_proc) eq 'CODE'){

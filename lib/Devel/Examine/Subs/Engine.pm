@@ -333,5 +333,3 @@ sub inject_after {
         return \@processed;
     };                        
 }
-
-sub _nothing {}; # vim placeholder

@@ -219,12 +219,12 @@ sub _subs {
 
     return if ! $PPI_subs;
 
-    tie my @perl_file, 'Tie::File', $file;
+    tie my @TIE_file, 'Tie::File', $file;
 
     my %subs;
     $subs{$file} = {};
     
-    @{$subs{$file}{TIE_perl_file}} = @perl_file;
+    @{$subs{$file}{TIE_file}} = @TIE_file;
 
     for my $PPI_sub (@{$PPI_subs}){
 
@@ -261,16 +261,16 @@ sub _subs {
         # pull out just the subroutine from the file array
         # and attach it to the structure
 
-        my @sub_definition = @perl_file[
+        my @sub_definition = @TIE_file[
                                     $subs{$file}{subs}{$name}{start}
                                     ..
                                     $subs{$file}{subs}{$name}{end}
                                    ];
 
-          $subs{$file}{subs}{$name}{TIE_perl_file_sub} = \@sub_definition;
+          $subs{$file}{subs}{$name}{TIE_file_sub} = \@sub_definition;
     }
    
-    untie @perl_file;
+    untie @TIE_file;
 
     return \%subs;
 }

@@ -101,7 +101,7 @@ sub orig_has {
             for my $sub (keys %{$struct->{$file}{subs}}){
                 my $found = 0;
 
-                my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+                my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
                 for my $code (@code_block){
                     next if not $search;
                     if ($code and $code =~ /\Q$search/){
@@ -131,7 +131,7 @@ sub missing {
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
-                my @code = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+                my @code = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
 
                 my @clean;
 
@@ -159,7 +159,7 @@ sub lines {
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
                 my $line_num = $struct->{$file}{subs}{$sub}{start};
-                my @code = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
+                my @code = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
                 for my $line (@code){
                     $line_num++;
                     push @{$return{$sub}}, {$line_num => $line};

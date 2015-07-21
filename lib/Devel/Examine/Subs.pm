@@ -301,7 +301,7 @@ sub _engine {
             $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Engine " .
                   "has a mistyped function value:\n\n";
-            $@ . $@;
+            $@ .= $@;
             confess $@;
         }
     }

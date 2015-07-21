@@ -226,9 +226,20 @@ sub _subs {
     $subs{$file}{TIE_perl_file} = \@perl_file;
 
     for my $PPI_sub (@{$PPI_subs}){
-        
+
+        my $include = $self->{params}{include} // [];
+        my $exclude = $self->{params}{exclude} // [];
+
         my $name = $PPI_sub->name;
-        
+
+        # bug 48: bail out if caller wants specific subs only
+
+        next if grep {$name eq $_ } @$exclude;
+
+        if ($include->[0]){
+            next if (! grep {$name eq $_ && $_} @$include);
+        }
+
         $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
         $subs{$file}{subs}{$name}{start}--;
         
@@ -437,6 +448,7 @@ sub all {
     my $p       = shift;
 
     $self->_config($p); 
+    
     $self->{params}{engine} = 'all';
     $self->run();    
 }

@@ -430,8 +430,8 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
-    $self->_config($p);
     $self->{params}{engine} = 'has';
+    $self->_config($p);
     $self->run();
 }
 sub missing {
@@ -439,8 +439,8 @@ sub missing {
     my $self    = shift;
     my $p       = shift;
 
-    $self->_config($p);
     $self->{params}{engine} = 'missing';
+    $self->_config($p);
     $self->run();
 }
 sub all {
@@ -448,9 +448,8 @@ sub all {
     my $self    = shift;
     my $p       = shift;
 
-    $self->_config($p); 
-    
     $self->{params}{engine} = 'all';
+    $self->_config($p); 
     $self->run();    
 }
 sub lines {
@@ -458,9 +457,8 @@ sub lines {
     my $self    = shift;
     my $p       = shift;
     
-    $self->_config($p); 
-    
     $self->{params}{engine} = 'lines'; 
+    $self->_config($p); 
     
     if ($self->{params}{search}){
         $self->{params}{pre_filter} = 'file_lines_contain'; 

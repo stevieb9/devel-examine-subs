@@ -165,19 +165,33 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
+        if (ref($self->{params}{pre_filter}) ne 'CODE'){
 
-        $self->{params}{pre_filter} =~ s/\s+//g;
-        my @pre_filter_list = split /&&/, $self->{params}{pre_filter};
-    
-        for my $pf (@pre_filter_list){
-            $self->{params}{pre_filter} = $pf;
+            $self->{params}{pre_filter} =~ s/\s+//g;
 
+            if ($self->{params}{pre_filter} =~ /&&/){
+                my @pre_filter_list = split /&&/, $self->{params}{pre_filter};
+                
+                for my $pf (@pre_filter_list){
+                    $self->{params}{pre_filter} = $pf;
+
+                    my $pre_filter = $self->_pre_filter();
+
+                    $subs = $pre_filter->($p, $subs); 
+
+                    $self->{data} = $subs;
+                }
+            }
+            else {
+                my $pre_filter = $self->_pre_filter();
+                $subs = $pre_filter->($p, $subs);
+                $self->{data} = $subs;
+            }
+        }
+        else {
             my $pre_filter = $self->_pre_filter();
-
-            $subs = $pre_filter->($p, $subs); 
-
+            $subs = $pre_filter->($p, $subs);
             $self->{data} = $subs;
-
         }
 
         if ($self->{params}{pre_filter_return}){
@@ -337,7 +351,7 @@ sub _pre_filter {
     my $pre_filter = $self->{params}{pre_filter};
     my $pre_filter_dump = $self->{params}{pre_filter_dump};
 
-    if (not $pre_filter or $pre_filter eq ''){
+    if (ref($pre_filter) && ref($pre_filter) ne 'CODE' && $pre_filter eq ''){
         return $struct;
     }
     
@@ -358,7 +372,6 @@ sub _pre_filter {
             $@ .= $@;
             confess $@;
         }
-
     }
     
     if (ref($pre_filter) eq 'CODE'){
@@ -554,6 +567,57 @@ sub inject_after {
     $self->{params}{engine} = 'inject_after';
 
     $self->run();
+}
+sub add_functionality {
+    
+    my $self = shift;
+    my $p = shift;
+
+    $self->_config($p);
+    
+    my $to_add = $self->{params}{add_functionality};
+    print "$to_add\n";
+    my $in_prod = $self->{params}{add_functionality_prod};
+
+    my @allowed = qw(
+                    pre_proc 
+                    pre_filter 
+                    engine
+    );
+
+
+    if (! (grep {$to_add eq $_} @allowed)){
+        croak "Adding a non-allowed piece of functionality...\n";
+    }
+
+    my %dt = (
+            engine => sub { 
+                        return $in_prod 
+                        ? $INC{'Devel/Examine/Subs/Engine.pm'} 
+                        : 'lib/Devel/Examine/Subs/Engine.pm'; 
+                      },
+    );
+
+    my $caller = (caller())[1];
+
+    open my $fh, '<', $caller
+      or confess "can't open the caller file $caller: $!";
+
+    my $code_found = 0;
+    my @code;
+
+    while (<$fh>){
+        chomp;
+        if (m|^#(.*)<des>|){
+            $code_found = 1;
+            next;
+        }
+        next if ! $code_found;
+        last if m|^#(.*)</des>|;
+        push @code, $_;
+    }
+
+        
 }
 
 sub _pod{} #vim placeholder

@@ -17,6 +17,11 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
     ok ( $@ =~ /Invalid file supplied/, "new() dies with error if file not found" );
 }
 
+{
+    my $des = Devel::Examine::Subs->new();
+    my $has = $des->has({file => 'lib/Devel/Examine/Subs.pm', search => 'core' });
+    is (@$has, 2, "..." );
+}
 {#3
     my $des = Devel::Examine::Subs->new();
     my $res = $des->has({ file => 't/sample.data', search => 'this' });

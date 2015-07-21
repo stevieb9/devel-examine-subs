@@ -27,6 +27,7 @@ sub _dt {
         subs => \&subs,
         _default => \&_default,
         _test => \&_test,
+        _test_bad => \&_test_bad,
         objects => \&objects,
     };
 

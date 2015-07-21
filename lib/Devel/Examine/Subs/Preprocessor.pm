@@ -25,6 +25,7 @@ sub _dt {
 
     my $dt = {
         module => \&module,
+        _test_bad => \&test_bad,
     };
 
     return $dt;

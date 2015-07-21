@@ -2,6 +2,7 @@ package Devel::Examine::Subs::Prefilter;
 use strict;
 use warnings;
 
+use Carp;
 use Data::Dumper;
 
 our $VERSION = '1.18';
@@ -105,6 +106,8 @@ sub objects {
         my @return;
 
         my $des_sub;
+       
+        return if not ref($struct) eq 'ARRAY';
 
         for my $sub (@$struct){
 

@@ -8,6 +8,7 @@ my $params = {
                 file => '../t/sample.data', 
                 engine => 'has', 
                 search => 'this',
+                core_dump => 1,
               };
 
 my $des = Devel::Examine::Subs->new($params);

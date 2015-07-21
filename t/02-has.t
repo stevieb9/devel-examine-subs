@@ -1,8 +1,8 @@
-#!perl -T
+#!perl 
 use warnings;
 use strict;
 
-use Test::More tests => 20;
+use Test::More tests => 25;
 use Data::Dumper;
 
 BEGIN {#1
@@ -90,3 +90,17 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
     is ( @$has, 5, "legacy has() gets the proper number of find when searching" );
 }
 
+{
+    my $params = { file => 't/test', search => 'this' };
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $ret = $des->has();
+
+    is (keys %$ret, 2, "has() directory has the correct number of keys" );
+
+    for (keys %$ret){
+        ok (ref $ret->{$_} eq 'ARRAY', "has() directory keys contain arefs" );
+        is (@{$ret->{$_}}, 5, "has() directory keys have the correct number of elements" );
+    }
+}

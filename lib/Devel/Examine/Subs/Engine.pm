@@ -112,12 +112,18 @@ sub missing {
         return [] if not $search;
 
         my @missing;
-        my @has;
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
                 my @code = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
-                if (! grep(/$search/, @code)){
+
+                my @clean;
+
+                for (@code){
+                    push @clean, $_ if $_;
+                } 
+
+                if (! grep {/$search/ and $_} @clean){
                     push @missing, $sub;
                 }
             }

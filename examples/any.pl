@@ -13,7 +13,7 @@ my $params = {
                 file => '.',
                 #copy => 't/inject_after.data',
                 #pre_filter => 'subs && objects',
-                #engine => 'inject_after',
+                engine => 'all',
                 #search => 'this',
                 #code => ['# comment line one', '# comment line 2' ],
               };

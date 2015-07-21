@@ -54,6 +54,7 @@ sub subs {
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;
                 $s->{$f}{subs}{$sub}{name} = $sub;
+                $s->{$f}{subs}{$sub}{file} = $s->{$f}{TIE_perl_file};
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }

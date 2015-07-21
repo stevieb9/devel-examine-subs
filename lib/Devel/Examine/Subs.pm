@@ -223,7 +223,8 @@ sub _subs {
 
     my %subs;
     $subs{$file} = {};
-    $subs{$file}{TIE_perl_file} = \@perl_file;
+    
+    @{$subs{$file}{TIE_perl_file}} = @perl_file;
 
     for my $PPI_sub (@{$PPI_subs}){
 

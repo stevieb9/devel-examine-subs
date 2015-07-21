@@ -20,6 +20,7 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 {
     my $des = Devel::Examine::Subs->new();
     my $has = $des->has({file => 'lib/Devel/Examine/Subs.pm', search => 'core' });
+    print Dumper $has;
     is (@$has, 2, "..." );
 }
 {#3

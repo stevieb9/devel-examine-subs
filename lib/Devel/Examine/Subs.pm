@@ -248,6 +248,14 @@ sub _subs {
 
         $subs{$file}{subs}{$name}{end} = $subs{$file}{subs}{$name}{start} + $lines;
 
+        my $count_start = $subs{$file}{subs}{$name}{start};
+        $count_start--;
+
+        my $sub_line_count 
+          = $subs{$file}{subs}{$name}{end} - $count_start;
+
+        $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
+
         my $line_num = $subs{$file}{subs}{$name}{start};
        
         # pull out just the subroutine from the file array

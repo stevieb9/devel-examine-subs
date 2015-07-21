@@ -29,6 +29,7 @@ sub _dt {
         _test => \&_test,
         _test_bad => \&_test_bad,
         objects => \&objects,
+        end_of_last_sub => \&end_of_last_sub,
     };
 
     return $dt;
@@ -61,7 +62,7 @@ sub subs {
         }
         return \@subs;
     };
-} 
+}
 sub file_lines_contain {
 
     return sub {
@@ -141,3 +142,25 @@ sub _test {
         return $struct;
     };
 }
+sub end_of_last_sub {
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my $s = $struct;
+
+        my @end_line_nums;
+
+        for my $f (keys %$s){
+            for my $sub (keys %{$s->{$f}{subs}}){
+                    push @end_line_nums, ++$s->{$f}{subs}{$sub}{end};
+            }
+        }
+        @end_line_nums = sort {$a<=>$b} @end_line_nums;
+        
+        return $end_line_nums[-1];
+    };
+}
+

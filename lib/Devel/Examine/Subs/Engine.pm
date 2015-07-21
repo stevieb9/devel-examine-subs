@@ -88,7 +88,7 @@ sub has {
                 my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_perl_file_sub}};
                 for my $code (@code_block){
                     next if not $search;
-                    if ($code and $code =~ /$search/){
+                    if ($code and $code =~ /\Q$search/){
                         push @has, $sub;
                         $found = 1;
                     }
@@ -123,7 +123,7 @@ sub missing {
                     push @clean, $_ if $_;
                 } 
 
-                if (! grep {/$search/ and $_} @clean){
+                if (! grep {/\Q$search/ and $_} @clean){
                     push @missing, $sub;
                 }
             }
@@ -205,9 +205,9 @@ sub search_replace {
                     last;
                 }
                 
-                if ($line =~ /$search/){
+                if ($line =~ /\Q$search/){
                     my $orig = $line;
-                    $line =~ s/$search/$replace/g;
+                    $line =~ s/\Q$search/$replace/g;
                     push @changed_lines, [$orig, $line];
                 }
             }
@@ -292,7 +292,7 @@ sub inject_after {
                         last;
                     }
                     
-                    if ($line =~ /$search/ && ! $new_lines){
+                    if ($line =~ /\Q$search/ && ! $new_lines){
                         
                         my $location = $line_num;
 

@@ -72,6 +72,22 @@ sub all {
 sub has {
 
     return sub {
+        
+        my $p = shift;
+        my $struct = shift;
+
+        return [] if ! $struct;
+
+        my $file = (keys %$struct)[0];
+
+        my @has = keys %{$struct->{$file}{subs}};
+
+        return \@has || [];
+    };
+}
+sub orig_has {
+
+    return sub {
 
         my $p = shift;
         my $struct = shift;

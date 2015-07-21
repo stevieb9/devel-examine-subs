@@ -71,6 +71,8 @@ sub file_lines_contain {
 
         my $search = $p->{search};
 
+        return if ! $search;
+
         my $s = $struct;
 
 

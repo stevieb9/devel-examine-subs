@@ -461,6 +461,7 @@ sub has {
     my $self    = shift;
     my $p       = shift;
 
+    $self->{params}{pre_filter} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
     $self->_config($p);
     $self->run();

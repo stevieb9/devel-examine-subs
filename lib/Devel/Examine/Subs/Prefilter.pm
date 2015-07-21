@@ -83,7 +83,7 @@ sub file_lines_contain {
                 my $found = 0;
                 my @has;
                 for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
-                    if ($_ and /$search/){
+                    if ($_ and /\Q$search/){
                         $found++;
                         push @has, $_;
                      }

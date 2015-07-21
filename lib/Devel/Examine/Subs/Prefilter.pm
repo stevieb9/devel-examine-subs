@@ -43,9 +43,11 @@ sub subs {
         my @subs;
 
         my $search = $p->{search};
-                   
+
         for my $f (keys %$s){
+        
             for my $sub (keys %{$s->{$f}{subs}}){
+                
                 if ($search && $sub eq $search){
                     next;
                 }

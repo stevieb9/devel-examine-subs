@@ -16,10 +16,6 @@ sub new {
     $self->{data} = $data;
     $self->{data}{name} = $name || '';
 
-    if ($data->{end} and $data->{start}){
-        $self->{data}{line_count} = $data->{end} - $data->{start};
-    }
-             
     return $self;
 }
 sub name {
@@ -36,6 +32,6 @@ sub end {
 }
 sub line_count {
     my $self = shift;
-    return $self->{data}{line_count};
+    return $self->{data}{num_lines};
 }
 1;

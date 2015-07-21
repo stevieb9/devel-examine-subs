@@ -617,7 +617,20 @@ sub add_functionality {
         push @code, $_;
     }
 
-        
+    my $file = $dt{$to_add}->();
+
+    my $des = Devel::Examine::Subs->new({
+                                    file => $file,
+                                    pre_filter => 'end_of_last_sub',
+                                });
+
+    
+    tie my @TIE_file, 'Tie::File', $file
+      or croak "can't Tie::File the file $file: $!";
+
+    my $end_line = $des->run();
+
+    push @TIE_file, @code;    
 }
 
 sub _pod{} #vim placeholder

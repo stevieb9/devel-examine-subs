@@ -28,9 +28,13 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#5
     my $res = $des->has({ file => 't/sample.data', search => '' });
-    print "$_\n" for @$res;
-    ok ( ! $res->[0], "obj->has() returns an empty array if file exists and text is empty string" );
+    ok ( ! $res->[0], "has() acts like all() when search term is empty" );
 }
+{#5
+    my $res = $des->has({ file => 't/sample.data' });
+    ok ( ! $res->[0], "has() acts like all() when search term is empty" );
+}
+
 {#6
     my $res = $des->has({ file => 't/sample.data', search => 'asdfasdf' });
     ok ( ! $res->[0], "obj->has() returns an empty array if file exists and search text not found" );

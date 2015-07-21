@@ -1,8 +1,9 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
-use Test::More tests => 11;
+use Data::Dumper;
+use Test::More tests => 16;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -64,3 +65,15 @@ my $des = Devel::Examine::Subs->new();
     ok ( ref($all) eq 'ARRAY', "legacy all() sets the engine param properly" );
 }
 
+
+{
+    my $des = Devel::Examine::Subs->new({ file => 't/test' });
+    my $struct = $des->all();
+
+    is (keys %$struct, 2, "all() directory has the correct number of keys");
+
+    for (keys %$struct){
+        ok (ref $struct->{$_} eq 'ARRAY', "all() directory files contain arefs" );
+        is (@{$struct->{$_}}, 11, "all() directory contains the correct number of elements" );
+    }
+}

@@ -38,7 +38,6 @@ sub run {
 
     if ($self->{params}{directory}){
         my $files = $self->run_directory();
-        print Dumper $files;
     }
     else {
         $self->_core($self->{params});
@@ -63,15 +62,19 @@ sub run_directory {
                       },
                         no_chdir => 1 }, $dir );
 
-    #return \@files;
-
-    my @return;
+    my %return;
 
     for my $file (@files){
         $self->{params}{file} = $file;
-        push @return, $self->_core($self->{params});
+        my $data = $self->_core($self->{params});
+        
+        my $exists = 0;
+        $exists = %$data if ref($data) eq 'HASH';
+        $exists = @$data if ref($data) eq 'ARRAY';
+
+        $return{$file} = $data if $exists;
     }
-    return \@return;
+    return \%return;
 }
 sub _config {
 
@@ -130,9 +133,6 @@ sub _core {
     $self->_config($p);
     $p = $self->{params};
 
-    print Dumper $self;
-#    exit;
-
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
 
@@ -157,6 +157,9 @@ sub _core {
 
     my $subs = $self->_subs();
     
+    $subs = $subs // 0;
+    return if ! $subs;
+
     $self->{data} = $subs;
 
     # pre engine filter
@@ -213,6 +216,8 @@ sub _subs {
 
     my $ppi_doc = PPI::Document->new($file);
     my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
+
+    return if ! $PPI_subs;
 
     tie my @perl_file, 'Tie::File', $file;
 
@@ -475,7 +480,7 @@ sub objects {
     $self->_config($p);
 
     $self->{params}{pre_filter} = 'subs && objects';
-    $self->{params}{pre_filter_return} = 1;
+    $self->{params}{pre_filter_return} = 2;
  
     $self->run();
 }

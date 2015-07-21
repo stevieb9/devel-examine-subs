@@ -6,7 +6,7 @@ use Devel::Examine::Subs;
 
 
 my $params = {
-                file => '../t/sample.data', 
+                file => 't/sample.data', 
               };
 
 my $des = Devel::Examine::Subs->new($params);

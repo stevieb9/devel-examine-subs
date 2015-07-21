@@ -92,7 +92,7 @@ sub has {
                         push @has, $sub;
                         $found = 1;
                     }
-                    next if $found;
+                    last if $found;
                 }
             }
         }

@@ -687,8 +687,8 @@ Get all subs containing "string" in the body
 Search and replace code in subs
 
     $des->search_replace({
-                    search => '$template = 'one.tmpl',
-                    replace => '$template = 'two.tmpl',
+                    search => "$template = 'one.tmpl'",
+                    replace => "$template = 'two.tmpl'",
                   });
 
 Inject code into sub after a search term (preserves previous line's indenting)
@@ -766,7 +766,7 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 Instantiates a new object.
 
-Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file' will remain persistent across runs under the same DES object.
+Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'include' and 'exclude' will remain persistent across runs under the same DES object.
 
 Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable of using.
 
@@ -866,7 +866,7 @@ There are various optional parameters that can be used.
 
 =item C<include>
 
-An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls.
+An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
 
 =item C<exclude>
 

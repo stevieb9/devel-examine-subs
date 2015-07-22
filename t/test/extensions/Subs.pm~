@@ -54,17 +54,16 @@ sub run_directory {
     my @files;
 
     find({wanted => sub {
-                        return if ! -f;
-                       
                         my @extensions = @{$self->{params}{extensions}};
-                        my $exts = join('|', @extensions);
-
-                        if ($_ !~ /\.(?:$exts)$/i){
-                            return;
+                        return if ! -f;
+                        for my $ext (@extensions){
+                            if (! $_ =~ /\.(?:$ext)$/){
+                                return;
+                            }
                         }
-                        
                         my $file = "$File::Find::name";
-                        
+                        print "###### $file\n";
+                        return;
                         push @files, $file;
                       },
                         no_chdir => 1 }, $dir );
@@ -688,15 +687,6 @@ Get all sub names in a file
 
     my $aref = $des->all();
 
-Print all subs within each Perl file under a directory
-
-    my $href = $des->all({ file => 'lib/Devel/Examine' });
-
-    for my $file (keys %$href){
-        print "\n$file\n";
-        print "\t$_\n" for @{$href->{$file}};
-    }
-
 Get all subs containing "string" in the body
 
     my $aref = $des->has({search => $search});
@@ -748,23 +738,6 @@ Print out all lines in all subs that contain a search term
             }
         }
     }
-
-Same, but after searching a directory, not a single file
-
-my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
-
-for my $file (keys %$ret){
-    print "\n$file\n";
-    for my $sub (keys %{$ret->{$file}}){
-        print "\nSub: $sub\n";
-        for my $lines (@{$ret->{$file}{$sub}}){
-            while (my ($line_no, $code) = each (%$lines)){
-                print "\tLine num: $line_no:\t $code\n";
-            }
-        }
-    }
-}
-
 
 =head1 DESCRIPTION
 

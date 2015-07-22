@@ -15,7 +15,7 @@ sub new {
     my $struct = shift;
 
     $self->{pre_filters} = $self->_dt();
-    
+
     return $self;
 }
 sub _dt {
@@ -33,6 +33,17 @@ sub _dt {
     };
 
     return $dt;
+}
+sub exists {
+    my $self = shift;
+    my $string = shift;
+
+    if (exists $self->{pre_filters}{$string}){
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 sub subs {
     

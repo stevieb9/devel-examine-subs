@@ -81,6 +81,11 @@ sub _config {
     my $self = shift;
     my $p = shift;
 
+    if ($p->{clean_config}){
+        delete $self->{params};
+        return;
+    }
+
     for my $param (keys %$p){
 
         # validate the file
@@ -165,38 +170,14 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
-        if (ref($self->{params}{pre_filter}) ne 'CODE'){
-
-            $self->{params}{pre_filter} =~ s/\s+//g;
-
-            if ($self->{params}{pre_filter} =~ /&&/){
-                my @pre_filter_list = split /&&/, $self->{params}{pre_filter};
-                
-                for my $pf (@pre_filter_list){
-                    $self->{params}{pre_filter} = $pf;
-
-                    my $pre_filter = $self->_pre_filter();
-
-                    $subs = $pre_filter->($p, $subs); 
-
-                    $self->{data} = $subs;
-                }
-            }
-            else {
-                my $pre_filter = $self->_pre_filter();
-                $subs = $pre_filter->($p, $subs);
-                $self->{data} = $subs;
-            }
-        }
-        else {
-            my $pre_filter = $self->_pre_filter();
+        for my $pre_filter ($self->_pre_filter()){
             $subs = $pre_filter->($p, $subs);
             $self->{data} = $subs;
         }
+    }  
 
-        if ($self->{params}{pre_filter_return}){
-            return $subs;
-        }
+    if ($self->{params}{pre_filter_return}){
+        return $subs;
     }
 
     # engine
@@ -227,6 +208,8 @@ sub _subs {
     my $self = shift;
     
     my $file = $self->{params}{file};
+
+    return {} if ! $file;
 
     my $ppi_doc = PPI::Document->new($file);
     my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
@@ -288,134 +271,6 @@ sub _subs {
 
     return \%subs;
 }
-sub _engine {
-
-    my $self = shift;
-    my $p = shift;
-    my $struct = shift;
-
-    $self->_config($p);
-
-    my $engine = $p->{engine} // $self->{params}{engine};
-
-    if (not $engine or $engine eq ''){
-        return $struct;
-    }
-
-    my $cref;
-
-    if (not ref($engine) eq 'CODE'){
-
-        # engine is a name
-
-        my $engine_module = $self->{namespace} . "::Engine";
-        my $compiler = $engine_module->new();
-
-        if (not $compiler->{engines}{$engine}){
-            confess "No such engine: >>>$engine<<<";
-        }
-
-        eval {
-            $cref = $compiler->{engines}{$engine}->();
-        };
-        
-        if ($@){
-            $@ = "\n[Devel::Examine::Subs speaking] " .
-                  "dispatch table in Devel::Examine::Subs::Engine " .
-                  "has a mistyped function value:\n\n";
-            $@ .= $@;
-            confess $@;
-        }
-    }
-
-    if (ref($engine) eq 'CODE'){
-        $cref = $engine;
-    }
-
-    if ($self->{params}{engine_dump}){
-        my $subs = $cref->($p, $self->{data});
-        print Dumper $subs;
-        exit;
-    }
-
-    return $cref;
-}
-sub _pre_filter {
-
-    my $self = shift;
-    my $p = shift; 
-    my $struct = shift;
-
-    $self->_config($p);
-
-    my $pre_filter = $self->{params}{pre_filter};
-    my $pre_filter_dump = $self->{params}{pre_filter_dump};
-
-    if (ref($pre_filter) && ref($pre_filter) ne 'CODE' && $pre_filter eq ''){
-        return $struct;
-    }
-    
-    my $cref;
-
-    if (not ref($pre_filter) eq 'CODE'){
-        my $pre_filter_module = $self->{namespace} . "::Prefilter";
-        my $compiler = $pre_filter_module->new();
-
-        eval {
-            $cref = $compiler->{pre_filters}{$pre_filter}->();
-        };
-        
-        if ($@){
-           $@ =  "\n[Devel::Examine::Subs speaking] " .
-                  "dispatch table in Devel::Examine::Subs::Prefilter " .
-                  "has a mistyped function value:\n\n";
-            $@ .= $@;
-            confess $@;
-        }
-    }
-    
-    if (ref($pre_filter) eq 'CODE'){
-        $cref = $pre_filter;
-    }
-    
-    if ($pre_filter_dump && $pre_filter_dump > 1){
-        $self->{params}{pre_filter_dump}--;
-        $pre_filter_dump = $self->{params}{pre_filter_dump};
-    }
-
-
-    if ($pre_filter_dump && $pre_filter_dump == 1){
-        my $subs = $cref->($p, $self->{data});
-        print Dumper $subs;
-        exit;
-    }
-
-    return $cref;
-}
-sub pre_filters {
-
-    my $self = shift;
-    my $module = $self->{namespace} . "::Prefilter";
-    my $pre_filter = $module->new();
-
-    return keys (%{$pre_filter->_dt()});
-}
-sub pre_procs {
-
-    my $self = shift;
-    my $module = $self->{namespace} . "::Preprocessor";
-    my $pre_procs = $module->new();
-
-    return keys (%{$pre_procs->_dt()});
-}
-sub engines {
-
-    my $self = shift;
-    my $module = $self->{namespace} . "::Engine";
-    my $engine = $module->new();
-
-    return keys (%{$engine->_dt()});
-}
 sub _pre_proc {
 
     my $self = shift;
@@ -468,6 +323,170 @@ sub _pre_proc {
     }
 
     return $cref;
+}
+sub _pre_filter {
+
+    my $self = shift;
+    my $p = shift; 
+    my $struct = shift;
+
+    $self->_config($p);
+
+    my $pre_filter = $self->{params}{pre_filter};
+    my $pre_filter_dump = $self->{params}{pre_filter_dump};
+
+    my @pre_filters;
+
+    if ($pre_filter){
+
+        # prefilter contains an array ref of crefs
+
+        if (ref($pre_filter) eq 'ARRAY'){
+            push @pre_filters, $_ for @$pre_filter;
+            return @pre_filters;
+        }
+ 
+        $self->{params}{pre_filter} =~ s/\s+//g;
+
+        my @pre_filter_list;
+
+        if ($self->{params}{pre_filter} =~ /&&/){
+            @pre_filter_list = split /&&/, $self->{params}{pre_filter};
+        }
+        else {
+            push @pre_filter_list, $pre_filter;
+        }
+                
+        for my $pf (@pre_filter_list){
+ 
+            if (ref($pre_filter) && ref($pre_filter) ne 'CODE' && $pre_filter eq ''){
+                push @pre_filters, sub { my ($p, $struct); return $struct };
+                return @pre_filters;
+            }
+    
+            my $cref;
+
+            if (not ref($pre_filter) eq 'CODE'){
+                my $pre_filter_module = $self->{namespace} . "::Prefilter";
+                my $compiler = $pre_filter_module->new();
+
+                # pre_filter isn't in the dispatch table
+
+                if (! $compiler->exists($pre_filter)){
+                    croak "pre_filter '$pre_filter' is not implemented...\n";
+                }
+                
+                eval {
+                    $cref = $compiler->{pre_filters}{$pre_filter}->();
+                };
+        
+                if ($@){
+                    $@ =  "\n[Devel::Examine::Subs speaking] " .
+                          "dispatch table in Devel::Examine::Subs::Prefilter " .
+                          "has a mistyped function value:\n\n"
+                    . $@;
+                    confess $@;
+                }
+            } 
+            if (ref($pre_filter) eq 'CODE'){
+                $cref = $pre_filter;
+            }
+
+            if ($pre_filter_dump && $pre_filter_dump > 1){
+                $self->{params}{pre_filter_dump}--;
+                $pre_filter_dump = $self->{params}{pre_filter_dump};
+            }
+
+
+            if ($pre_filter_dump && $pre_filter_dump == 1){
+                my $subs = $cref->($p, $self->{data});
+                print Dumper $subs;
+                exit;
+            }
+    
+            push @pre_filters, $cref;
+        }
+    }
+    else {
+        return;
+    }
+    return @pre_filters;
+}
+sub _engine {
+
+    my $self = shift;
+    my $p = shift;
+    my $struct = shift;
+
+    $self->_config($p);
+
+    my $engine = $p->{engine} // $self->{params}{engine};
+
+    if (not $engine or $engine eq ''){
+        return $struct;
+    }
+
+    my $cref;
+
+    if (not ref($engine) eq 'CODE'){
+
+        # engine is a name
+
+        my $engine_module = $self->{namespace} . "::Engine";
+        my $compiler = $engine_module->new();
+
+        if (not $compiler->{engines}{$engine}){
+            confess "No such engine: >>>$engine<<<";
+        }
+
+        eval {
+            $cref = $compiler->{engines}{$engine}->();
+        };
+        
+        if ($@){
+            $@ = "\n[Devel::Examine::Subs speaking] " .
+                  "dispatch table in Devel::Examine::Subs::Engine " .
+                  "has a mistyped function value:\n\n";
+            $@ .= $@;
+            confess $@;
+        }
+    }
+
+    if (ref($engine) eq 'CODE'){
+        $cref = $engine;
+    }
+
+    if ($self->{params}{engine_dump}){
+        my $subs = $cref->($p, $self->{data});
+        print Dumper $subs;
+        exit;
+    }
+
+    return $cref;
+}
+sub pre_procs {
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Preprocessor";
+    my $pre_procs = $module->new();
+
+    return keys (%{$pre_procs->_dt()});
+}
+sub pre_filters {
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Prefilter";
+    my $pre_filter = $module->new();
+
+    return keys (%{$pre_filter->_dt()});
+}
+sub engines {
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Engine";
+    my $engine = $module->new();
+
+    return keys (%{$engine->_dt()});
 }
 sub has {
 

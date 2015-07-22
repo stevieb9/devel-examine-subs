@@ -298,6 +298,10 @@ sub _pre_proc {
         my $pre_proc_module = $self->{namespace} . "::Preprocessor";
         my $compiler = $pre_proc_module->new();
 
+        if (! $compiler->exists($pre_proc)){
+            croak "pre_processor '$pre_proc' is not implemented.\n";
+        }
+
         eval {
             $cref = $compiler->{pre_procs}{$pre_proc}->();
         };
@@ -305,9 +309,9 @@ sub _pre_proc {
         if ($@){
             $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Preprocessor " .
-                  "has a mistyped function value:\n\n";
-            $@ .= $@;
-            confess $@;
+                  "has a mistyped function as a value, but the key is ok\n\n"
+            . $@;
+            croak $@;
         }
 
     }
@@ -383,9 +387,9 @@ sub _pre_filter {
                 if ($@){
                     $@ =  "\n[Devel::Examine::Subs speaking] " .
                           "dispatch table in Devel::Examine::Subs::Prefilter " .
-                          "has a mistyped function value:\n\n"
+                          "has a mistyped function as a value, but the key is ok\n\n"
                     . $@;
-                    confess $@;
+                    croak $@;
                 }
             } 
             if (ref($pf) eq 'CODE'){
@@ -435,20 +439,25 @@ sub _engine {
         my $engine_module = $self->{namespace} . "::Engine";
         my $compiler = $engine_module->new();
 
-        if (not $compiler->{engines}{$engine}){
-            confess "No such engine: >>>$engine<<<";
+        # engine isn't in the dispatch table
+
+        if (! $compiler->exists($engine)){
+            croak "engine '$engine' is not implemented.\n";
         }
 
         eval {
             $cref = $compiler->{engines}{$engine}->();
         };
-        
+
+        # engine has bad func val in dispatch table,
+        # but key is ok
+
         if ($@){
             $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Engine " .
-                  "has a mistyped function value:\n\n";
-            $@ .= $@;
-            confess $@;
+                  "has a mistyped function as a value, but the key is ok\n\n"
+            . $@;
+            croak $@;
         }
     }
 

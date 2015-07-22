@@ -183,26 +183,30 @@ sub lines {
 sub search_replace {
 
     return sub {
+
         my $p = shift;
         my $struct = shift;
         my $des = shift;
-    
+
+        my $file = $p->{file};
         my $search = $p->{search};
         my $replace = $p->{replace};
         my $copy = $p->{copy};
 
+        if (! $file){
+            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
+                  "can't use search_replace engine without specifying a file\n\n";
+        }
+
         if (! $search){
-            print "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
+            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
                   "can't use search_replace engine without specifying a search term\n\n";
-            confess;
         }
         if (! $replace){
-            print "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
+            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
                   "can't use search_replace engine without specifying a replace term\n\n";
-            confess;
         }
         
-        my $file = $p->{file};
  
         copy $file, "$file.bak";
 
@@ -255,11 +259,11 @@ sub inject_after {
         my $copy = $p->{copy};
 
         if (! $search){
-            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                     "can't use inject_after engine without specifying a search term\n\n";
         }
         if (! $code){
-            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                     "can't use inject_after engine without code to inject\n\n";
 
         }

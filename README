@@ -1,39 +1,73 @@
 NAME
 
-    Devel::Examine::Subs - Get information about subroutines within module
-    and program files, and in-memory modules.
+    Devel::Examine::Subs - Get info, search/replace and inject code in Perl
+    file subs.
 
 SYNOPSIS
 
         use Devel::Examine::Subs;
     
-        my $des = Devel::Examine::Subs->new();
+        my $file = 'perl.pl'; # or directory name
+        my $search = 'string';
     
-        my $file = 'perl.pl';
-        my $find = 'string';
+        my $des = Devel::Examine::Subs->new({file => $file);
+
+    Get all sub names in a file
+
+        my $aref = $des->all();
+
+    Get all subs containing "string" in the body
+
+        my $aref = $des->has({search => $search});
+
+    Search and replace code in subs
+
+        $des->search_replace({
+                        search => '$template = 'one.tmpl',
+                        replace => '$template = 'two.tmpl',
+                      });
+
+    Inject code into sub after a search term (preserves previous line's
+    indenting)
+
+        my @code = <DATA>;
     
-        # get all sub names in file
+        $des->inject_after({
+                        search => 'this', 
+                        code => \@code, 
+                      });
     
-        my @subs = $des->all({file => $file}); 
+        __DATA__
     
-        # all subs containing "string" in the body
+        # previously uncaught issue
     
-        my @has = $des->has({file => $file, search => $find}); 
-    
-        # return an aref of subroutine objects
-    
+        if ($foo eq "bar"){
+            croak 'big bad error';
+        }
+
+    Get all the subs as objects
+
         $aref = $des->sublist(...)
     
-        for my $sub (@$aref){    
+        for my $sub (@$aref){
             print $sub->name() # name of sub
             print $sub->start() # first line of sub
             print $sub->stop() # last line of sub
-            print $sub->count() # number of lines in sub
+            print $sub->num_lines() # number of lines in sub
         }
+
+    Print out all lines in all subs that contain a search term
+
+        my $ret = $des->lines({search => 'this'});
     
-        # see the has() method below to find out how to
-        # get a return that contains all lines that match the search
-        # for each sub
+        for my $sub (%$ret){
+            for my $lines (@{$ret->{$sub}}){
+                print "\nSubroutine $sub:\n";
+                while (my ($line_no, $code) = each (%$lines)){
+                    print "Line num: $line_no, Code: $code\n";
+                }
+            }
+        }
 
 DESCRIPTION
 
@@ -114,8 +148,10 @@ METHODS
 
 CAVEATS
 
-    The previous unreliability caveat has been removed as PPI now
-    performs all of the processing.
+    The previous unreliability caveat has been removed as PPI now performs
+    all of the perl file processing.
+
+    The previous caveats were:
 
     Subs that begin indented (such as closures and those within other
     blocks) will not be counted. For line_numbers() the closing brace must

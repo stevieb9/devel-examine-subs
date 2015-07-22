@@ -1,7 +1,8 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
+use Carp;
 use Test::More tests => 37;
 
 BEGIN {#1
@@ -47,4 +48,32 @@ for (0..4){
     ok ($m_struct->[$_][1] =~ /that/, "first elem of each elem in s_r() contains replace" );
 }
 
+{
 
+    $params = undef;
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    eval {
+        $des->search_replace($params);
+    };
+
+    like ($@, qr/without specifying a file/, "search_replace() croaks if no file is sent in" );
+
+    eval {
+        $params->{file} = 't/sample.data';
+        $des->search_replace($params);
+    };
+
+    like ($@, qr/without specifying a search term/, "search_replace() croaks if no search term is sent in" );
+
+    eval {
+        $params->{file} = 't/sample.data';
+        $params->{search} = 'this';
+
+        $des->search_replace($params);
+    };
+
+    like ($@, qr/without specifying a replace term/, "search_replace() croaks if no replace term is sent in" );
+
+}

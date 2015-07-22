@@ -1,18 +1,11 @@
 package Devel::Examine::Subs;
 
-use strict;
-use warnings;
+use strict; use warnings;
 
 our $VERSION = '1.18';
 
-use Carp;
-use Data::Dumper;
-use Devel::Examine::Subs::Engine;
-use Devel::Examine::Subs::Preprocessor;
-use Devel::Examine::Subs::Prefilter;
-use File::Find;
-use PPI;
-use Tie::File;
+use Carp; use Data::Dumper; use Devel::Examine::Subs::Engine; use Devel::Examine::Subs::Preprocessor; use 
+Devel::Examine::Subs::Prefilter; use File::Find; use PPI; use Tie::File;
 
 sub new {
     
@@ -34,7 +27,7 @@ sub run {
 
     $self->_config($p);
 
-    # do something different for a dir 
+    # do something different for a dir
 
     if ($self->{params}{directory}){
         my $files = $self->run_directory();
@@ -91,14 +84,14 @@ sub _config {
         # validate the file
 
         if ($param eq 'file'){
-            $self->_file($p); 
+            $self->_file($p);
             next;
         }
 
         # validate search
 
         if (! exists $p->{search} or $p->{search} eq ''){
-            $self->{params}{bad_search} = 1; 
+            $self->{params}{bad_search} = 1;
         }
 
         $self->{params}{$param} = $p->{$param};
@@ -150,8 +143,7 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        # for things like 'module', we need to return
-        # early
+        # for things like 'module', we need to return early
 
         if ($self->{params}{pre_proc_return}){
             return $data;
@@ -248,15 +240,14 @@ sub _subs {
         my $count_start = $subs{$file}{subs}{$name}{start};
         $count_start--;
 
-        my $sub_line_count 
+        my $sub_line_count
           = $subs{$file}{subs}{$name}{end} - $count_start;
 
         $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
 
         my $line_num = $subs{$file}{subs}{$name}{start};
        
-        # pull out just the subroutine from the file array
-        # and attach it to the structure
+        # pull out just the subroutine from the file array and attach it to the structure
 
         my @sub_definition = @TIE_file[
                                     $subs{$file}{subs}{$name}{start}
@@ -285,8 +276,7 @@ sub _pre_proc {
         return $subs;
     }
    
-    # tell _core() to return directly from the pre_processor
-    # if necessary, and bypass pre_filter and engine
+    # tell _core() to return directly from the pre_processor if necessary, and bypass pre_filter and engine
 
     if ($pre_proc eq 'module'){
        $self->{params}{pre_proc_return} = 1;
@@ -331,7 +321,7 @@ sub _pre_proc {
 sub _pre_filter {
 
     my $self = shift;
-    my $p = shift; 
+    my $p = shift;
     my $struct = shift;
 
     $self->_config($p);
@@ -385,7 +375,7 @@ sub _pre_filter {
                 };
         
                 if ($@){
-                    $@ =  "\n[Devel::Examine::Subs speaking] " .
+                    $@ = "\n[Devel::Examine::Subs speaking] " .
                           "dispatch table in Devel::Examine::Subs::Prefilter " .
                           "has a mistyped function as a value, but the key is ok\n\n"
                     . $@;
@@ -449,8 +439,7 @@ sub _engine {
             $cref = $compiler->{engines}{$engine}->();
         };
 
-        # engine has bad func val in dispatch table,
-        # but key is ok
+        # engine has bad func val in dispatch table, but key is ok
 
         if ($@){
             $@ = "\n[Devel::Examine::Subs speaking] " .
@@ -499,8 +488,8 @@ sub engines {
 }
 sub has {
 
-    my $self    = shift;
-    my $p       = shift;
+    my $self = shift;
+    my $p = shift;
 
     $self->{params}{pre_filter} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
@@ -509,8 +498,8 @@ sub has {
 }
 sub missing {
 
-    my $self    = shift;
-    my $p       = shift;
+    my $self = shift;
+    my $p = shift;
 
     $self->{params}{engine} = 'missing';
     $self->_config($p);
@@ -518,23 +507,23 @@ sub missing {
 }
 sub all {
 
-    my $self    = shift;
-    my $p       = shift;
+    my $self = shift;
+    my $p = shift;
 
     $self->{params}{engine} = 'all';
-    $self->_config($p); 
-    $self->run();    
+    $self->_config($p);
+    $self->run();
 }
 sub lines {
 
-    my $self    = shift;
-    my $p       = shift;
+    my $self = shift;
+    my $p = shift;
     
-    $self->{params}{engine} = 'lines'; 
-    $self->_config($p); 
+    $self->{params}{engine} = 'lines';
+    $self->_config($p);
     
     if ($self->{params}{search}){
-        $self->{params}{pre_filter} = 'file_lines_contain'; 
+        $self->{params}{pre_filter} = 'file_lines_contain';
     }
 
     $self->run();
@@ -546,8 +535,7 @@ sub module {
 
     $self->_config($p);
 
-    # set the preprocessor up, and have it return before
-    # the building/compiling of file data happens
+    # set the preprocessor up, and have it return before the building/compiling of file data happens
 
     $self->{params}{pre_proc} = 'module';
     $self->{params}{pre_proc_return} = 1;
@@ -575,7 +563,7 @@ sub search_replace {
 
     $self->_config($p);
 
-    $self->{params}{pre_filter} 
+    $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';
 
     $self->{params}{engine} = 'search_replace';
@@ -589,7 +577,7 @@ sub inject_after {
 
     $self->_config($p);
 
-    $self->{params}{pre_filter} 
+    $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';
 
     $self->{params}{engine} = 'inject_after';
@@ -608,8 +596,8 @@ sub add_functionality {
     my $in_prod = $self->{params}{add_functionality_prod};
 
     my @allowed = qw(
-                    pre_proc 
-                    pre_filter 
+                    pre_proc
+                    pre_filter
                     engine
     );
 
@@ -619,10 +607,10 @@ sub add_functionality {
     }
 
     my %dt = (
-            engine => sub { 
-                        return $in_prod 
-                        ? $INC{'Devel/Examine/Subs/Engine.pm'} 
-                        : 'lib/Devel/Examine/Subs/Engine.pm'; 
+            engine => sub {
+                        return $in_prod
+                        ? $INC{'Devel/Examine/Subs/Engine.pm'}
+                        : 'lib/Devel/Examine/Subs/Engine.pm';
                       },
     );
 
@@ -658,106 +646,127 @@ sub add_functionality {
 
     my $end_line = $des->run();
 
-    push @TIE_file, @code;    
+    push @TIE_file, @code;
 }
 
-sub _pod{} #vim placeholder
-1;
-__END__
+sub _pod{} #vim placeholder 1; __END__
 
 =head1 NAME
 
-Devel::Examine::Subs - Get information about subroutines within module and program files, and in-memory modules.
+Devel::Examine::Subs - Get info, search/replace and inject code in Perl file subs.
 
 =head1 SYNOPSIS
 
     use Devel::Examine::Subs;
 
-    my $des = Devel::Examine::Subs->new();
+    my $file = 'perl.pl'; # or directory name
+    my $search = 'string';
 
-    my $file = 'perl.pl';
-    my $find = 'string';
+    my $des = Devel::Examine::Subs->new({file => $file);
 
-    # get all sub names in file
+Get all sub names in a file
 
-    my @subs = $des->all({file => $file}); 
+    my $aref = $des->all();
 
-    # all subs containing "string" in the body
+Get all subs containing "string" in the body
 
-    my @has = $des->has({file => $file, search => $find}); 
+    my $aref = $des->has({search => $search});
 
-    # return an aref of subroutine objects
+Search and replace code in subs
 
-    $aref = $des->sublist(...)
+    $des->search_replace({
+                    search => '$template = 'one.tmpl',
+                    replace => '$template = 'two.tmpl',
+                  });
 
-    for my $sub (@$aref){    
+Inject code into sub after a search term (preserves previous line's indenting)
+
+    my @code = <DATA>;
+
+    $des->inject_after({
+                    search => 'this', 
+                    code => \@code, 
+                  });
+
+    __DATA__
+
+    # previously uncaught issue
+
+    if ($foo eq "bar"){
+        croak 'big bad error';
+    }
+
+Get all the subs as objects
+
+    $aref = $des->objects(...)
+
+    for my $sub (@$aref){
         print $sub->name() # name of sub
         print $sub->start() # first line of sub
         print $sub->stop() # last line of sub
-        print $sub->count() # number of lines in sub
+        print $sub->num_lines() # number of lines in sub
     }
 
-    # see the has() method below to find out how to
-    # get a return that contains all lines that match the search
-    # for each sub
+Print out all lines in all subs that contain a search term
+
+    my $ret = $des->lines({search => 'this'});
+
+    for my $sub (%$ret){
+        for my $lines (@{$ret->{$sub}}){
+            print "\nSubroutine $sub:\n";
+            while (my ($line_no, $code) = each (%$lines)){
+                print "Line num: $line_no, Code: $code\n";
+            }
+        }
+    }
 
 =head1 DESCRIPTION
 
-NOTE: This module now requires the PPI module to be installed.
+Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, get line counts and a myriad of other options.
 
-Reads into Perl program and module files (or modules in memory) 
-returning the names of its subroutines, optionally limiting 
-the names returned to subs that contain or do not contain 
-specified text, or the start and end line numbers of the sub.
+=head1 FEATURES
 
-This module is much safer and accurate than earlier versions, as
-it now uses the reliable PPI module to parse the perl code.
+- uses PPI for Perl file parsing
+- search and replace code within subs
+- inject new code into subs following a found search pattern
+- retrieve all sub names where the sub does or doesn't contain a search term
+- retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
+- include or exclude subs to be processed
+- differentiates a directory from a file, and acts accordingly by recursing and processing specified files
+- extremely modular and extensible; the core of the system uses plugin-type callbacks for everything
+- pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
 
 =head1 METHODS
 
-=head2 new
+=head2 new({ file => $filename })
 
-Instantiates a new object. 
+Instantiates a new object.
 
-=head2 has({file => $filename, search => $text, lines => 1})
+Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file' will remain persistent across runs under the same DES object.
 
-Takes the name of a file to search, and the text you want to
-search for within each sub. Useful to find out which subs call
-other methods.
+Note that all public methods of this module can accept all documented parameters.
 
-By default, returns a list of names of the subs where the subroutine containes
-the text. In scalar context, returns the count of subs containing
-the found text. 
+=head2 has({ file => $filename, search => $text })
 
-With the 'lines' parameter set to true, returns
-a hash which each sub name is the key, and each key containing an
-array containing hashes who's keys are the line numer the search found,
-and the value is the data on that line.
+Returns an array reference containing the names of the subs where the subroutine contains the text.
 
-=head2 missing({file => $filename, search => $text})
+=head2 missing({ file => $filename, search => $text })
 
 The exact opposite of has.
 
-=head2 all({file => $filename})
+=head2 all({ file => $filename })
 
-Returns a list of the names of all subroutines found in the file.
+Returns an array reference containing the names of all subroutines found in the file.
 
-=head2 module({module => "Devel::Examine::Subs"})
+=head2 module({ module => 'Devel::Examine::Subs' } )
 
-Returns an array containing a list of all subs found in the module's 
-namespace symbol table.
+Returns an array reference containing the names of all subs found in the module's namespace symbol table.
 
-=head2 line_numbers({file => $filename, get => 'object'})
+=head2 lines({ file => $filename, search => $text })
 
-If the optional parameter 'get' is not present or set to a
-value of 'object' or 'obj', returns a hash of hashes. 
-Top level keys are the function names, and the subkeys 'start' 
-and 'stop' contain the line numbers of the respective position 
-in the file for the subroutine.
+Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
-If the optional parameter 'get' is sent in with a value of object,
-will return an array reference of subroutine objects. Each object
-has the following methods:
+Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format line_number => line_text.
 
 =head3 name()
 
@@ -777,19 +786,16 @@ Returns the number of lines in the subroutine
 
 =head2 sublist({file => $filename})
 
-Returns an array reference of subroutine objects. See line_numbers()
-with the 'get' parameter set for details.
+Returns an array reference of subroutine objects. See line_numbers() with the 'get' parameter set for details.
 
 =head1 CAVEATS
 
-The previous unreliability caveat has been removed as PPI now
-performs all of the perl file processing.
+The previous unreliability caveat has been removed as PPI now performs all of the perl file processing.
 
 The previous caveats were:
 
-Subs that begin indented (such as closures and those within other
-blocks) will not be counted. For line_numbers() the closing brace
-must be in column one of the file as well.
+Subs that begin indented (such as closures and those within other blocks) will not be counted. For line_numbers() the closing brace must 
+be in column one of the file as well.
 
 =head1 AUTHOR
 
@@ -806,9 +812,8 @@ You can find documentation for this module with the perldoc command.
 
 Copyright 2015 Steve Bertrand.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under the terms of either: the GNU General Public License as 
+published by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

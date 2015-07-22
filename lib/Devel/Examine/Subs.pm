@@ -366,18 +366,18 @@ sub _pre_filter {
     
             my $cref;
 
-            if (not ref($pre_filter) eq 'CODE'){
+            if (not ref($pf) eq 'CODE'){
                 my $pre_filter_module = $self->{namespace} . "::Prefilter";
                 my $compiler = $pre_filter_module->new();
 
                 # pre_filter isn't in the dispatch table
 
-                if (! $compiler->exists($pre_filter)){
-                    croak "pre_filter '$pre_filter' is not implemented...\n";
+                if (! $compiler->exists($pf)){
+                    croak "pre_filter '$pf' is not implemented. '$pre_filter' was sent in.\n";
                 }
                 
                 eval {
-                    $cref = $compiler->{pre_filters}{$pre_filter}->();
+                    $cref = $compiler->{pre_filters}{$pf}->();
                 };
         
                 if ($@){
@@ -388,8 +388,8 @@ sub _pre_filter {
                     confess $@;
                 }
             } 
-            if (ref($pre_filter) eq 'CODE'){
-                $cref = $pre_filter;
+            if (ref($pf) eq 'CODE'){
+                $cref = $pf;
             }
 
             if ($pre_filter_dump && $pre_filter_dump > 1){

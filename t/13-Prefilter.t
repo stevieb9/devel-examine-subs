@@ -2,7 +2,7 @@
 #use warnings;
 #use strict;
 
-use Test::More tests => 6;
+use Test::More tests => 24;
 use Data::Dumper;
 
 BEGIN {#1-2
@@ -87,26 +87,20 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
         $des->run({pre_filter => '_test && asdfasdf'});
     };
 
-    print $@;
-    ok ( $@, "pre_filter module croaks if an invalid internal prefilter name is passed in" );
-
+    like ( $@, qr/'asdfasdf'/, "pre_filter module croaks if the 2nd entry in a 'one && two' string is not implemented" );
 }
-
-
-
-{#7
+{#8
     my $des = Devel::Examine::Subs->new();
 
-    my $pf = $des->_pre_filter({pre_filter => 'subs'});
+    my $cref = sub { print "hello, world!"; };
 
     eval {
-        my $res = $pf->({}, [qw(a b c)]);
+        $des->run({pre_filter => '$cref && asdfasdf'});
     };
- 
-    like ($@, qr/HASH/, "prefilter with 'sub' and an array, breaks internally");
-   
 
+    like ( $@, qr/'\$cref'/, "pre_filter module croaks with invalid if a \$cref is passed within the string format" );
 }
+
 
 sub _des {  
     my $p = shift; 

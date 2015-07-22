@@ -4,8 +4,14 @@ use strict; use warnings;
 
 our $VERSION = '1.18';
 
-use Carp; use Data::Dumper; use Devel::Examine::Subs::Engine; use Devel::Examine::Subs::Preprocessor; use 
-Devel::Examine::Subs::Prefilter; use File::Find; use PPI; use Tie::File;
+use Carp; 
+use Data::Dumper; 
+use Devel::Examine::Subs::Engine; 
+use Devel::Examine::Subs::Preprocessor; 
+use Devel::Examine::Subs::Prefilter; 
+use File::Find; 
+use PPI; 
+use Tie::File;
 
 sub new {
     
@@ -126,7 +132,7 @@ sub _core {
     my $self = shift;
     my $p = shift;
 
-    # process the incoming params, then rebuild $p
+    # config
     
     $self->_config($p);
     $p = $self->{params};
@@ -134,7 +140,7 @@ sub _core {
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
 
-    # pre data collection/building processor
+    # pre processor
 
     my $data;
 
@@ -143,18 +149,20 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        # for things like 'module', we need to return early
+        # for things that don't need to process files
+        # (such as 'module'), return early
 
         if ($self->{params}{pre_proc_return}){
             return $data;
         }
     }
 
-    # core data collection/building
+    # processor
 
     my $subs = $self->_subs();
     
     $subs = $subs // 0;
+
     return if ! $subs;
 
     $self->{data} = $subs;
@@ -179,6 +187,8 @@ sub _core {
     if ($self->{params}{engine}){
         $subs = $engine->($p, $subs);
     }
+
+    # core dump
 
     if ($self->{params}{core_dump}){
         
@@ -247,7 +257,8 @@ sub _subs {
 
         my $line_num = $subs{$file}{subs}{$name}{start};
        
-        # pull out just the subroutine from the file array and attach it to the structure
+        # pull out just the subroutine from the file 
+        # array and attach it to the structure
 
         my @sub_definition = @TIE_file[
                                     $subs{$file}{subs}{$name}{start}
@@ -276,7 +287,8 @@ sub _pre_proc {
         return $subs;
     }
    
-    # tell _core() to return directly from the pre_processor if necessary, and bypass pre_filter and engine
+    # tell _core() to return directly from the pre_processor 
+    # if necessary, and bypass pre_filter and engine
 
     if ($pre_proc eq 'module'){
        $self->{params}{pre_proc_return} = 1;
@@ -390,7 +402,6 @@ sub _pre_filter {
                 $self->{params}{pre_filter_dump}--;
                 $pre_filter_dump = $self->{params}{pre_filter_dump};
             }
-
 
             if ($pre_filter_dump && $pre_filter_dump == 1){
                 my $subs = $cref->($p, $self->{data});
@@ -535,7 +546,8 @@ sub module {
 
     $self->_config($p);
 
-    # set the preprocessor up, and have it return before the building/compiling of file data happens
+    # set the preprocessor up, and have it return 
+    # before the building/compiling of file data happens
 
     $self->{params}{pre_proc} = 'module';
     $self->{params}{pre_proc_return} = 1;
@@ -592,7 +604,7 @@ sub add_functionality {
     $self->_config($p);
     
     my $to_add = $self->{params}{add_functionality};
-    print "$to_add\n";
+    
     my $in_prod = $self->{params}{add_functionality_prod};
 
     my @allowed = qw(
@@ -726,81 +738,203 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =head1 FEATURES
 
-- uses PPI for Perl file parsing
-- search and replace code within subs
-- inject new code into subs following a found search pattern
-- retrieve all sub names where the sub does or doesn't contain a search term
-- retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
-- include or exclude subs to be processed
-- differentiates a directory from a file, and acts accordingly by recursing and processing specified files
-- extremely modular and extensible; the core of the system uses plugin-type callbacks for everything
-- pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
+=over 4
+
+=item - uses PPI for Perl file parsing
+
+=item - search and replace code within subs
+
+=item - inject new code into subs following a found search pattern
+
+=item - retrieve all sub names where the sub does or doesn't contain a search term
+
+=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
+
+=item - include or exclude subs to be processed
+
+=item - differentiates a directory from a file, and acts accordingly by recursing and processing specified files
+
+=item - extremely modular and extensible; the core of the system uses plugin-type callbacks for everything
+
+=item - pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
+
+=back
 
 =head1 METHODS
 
-=head2 new({ file => $filename })
+=head2 C<new({ file => $filename })>
 
 Instantiates a new object.
 
 Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file' will remain persistent across runs under the same DES object.
 
-Note that all public methods of this module can accept all documented parameters.
+Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable of using.
 
-=head2 has({ file => $filename, search => $text })
+=head2 C<has({ file => $filename, search => $text })>
 
 Returns an array reference containing the names of the subs where the subroutine contains the text.
 
-=head2 missing({ file => $filename, search => $text })
+=head2 C<missing({ file => $filename, search => $text })>
 
 The exact opposite of has.
 
-=head2 all({ file => $filename })
+=head2 C<all({ file => $filename })>
 
 Returns an array reference containing the names of all subroutines found in the file.
 
-=head2 module({ module => 'Devel::Examine::Subs' } )
+=head2 C<module({ module => 'Devel::Examine::Subs' } )>
 
 Returns an array reference containing the names of all subs found in the module's namespace symbol table.
 
-=head2 lines({ file => $filename, search => $text })
+=head2 C<lines({ file => $filename, search => $text })>
 
 Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
 Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format line_number => line_text.
 
-=head3 name()
+=head2 C<search_replace({ file => $file, $search => 'this', $replace => 'that' })>
 
-Returns the name of the subroutine
+Search for lines that contain certain text, and replace the search term with the replace term.
 
-=head3 start()
+This method will create a backup copy of the file with the same name appended with '.bak'.
 
-Returns the line number where the sub starts
+=head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
 
-=head3 stop()
+WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for example). This will be fixed in the next release.
 
-Returns the line number where the sub ends
+Injects the code in C<@code> into the sub within the file, where the sub contains the search term. The same indentation level of the line that contains the search term is used for any new code injected. Set C<no_indent> parameter to a true value to disable this feature.
 
-=head3 count()
+The C<code> array should contain one line of code (or blank line) per each element. (See SYNOPSIS for an example).
 
-Returns the number of lines in the subroutine
+Optional parameters:
 
-=head2 sublist({file => $filename})
+=over 4
 
-Returns an array reference of subroutine objects. See line_numbers() with the 'get' parameter set for details.
+=item C<copy>
+
+See C<search_replace()> for a description of how this parameter is used.
+
+=back
+
+=head2 C<pre_procs()>
+
+Returns a list of all available pre processor modules.
+
+=head2 C<pre_filters()>
+
+Returns a list of all available built-in pre engine filter modules.
+
+=head2 C<engines()>
+
+Returns a list of all available built-in 'engine' modules.
+
+=head2 C<add_functionality()>
+
+WARNING!: This method is highly experimental and is used for developing internal processors only. Only 'engine' is functional, and only half way. DO NOT USE.
+
+While writing new processors, set the processor type to a callback within the local working file. When the code performs the actions you want it to, put a comment line before the code with C<#<des>> and a line following the code with C<#</des>>. DES will slurp in all of that code live-time, inject it into the specified processor, and configure it for use. See C<examples/write_new_engine.pl> for an example of creating a new 'engine' processor.
+
+Parameters:
+
+=over 4
+
+=item C<add_functionality>
+
+Informs the system which type of processor to inject and configure. Permitted values are 'pre_proc', 'pre_filter' and 'engine'.
+
+=item C<add_functionality_prod>
+
+Set to a true value, will update the code in the actual installed Perl module file, instead of a local copy.
+
+=back
+
+Optional parameters:
+
+=over 4
+
+=item C<copy>
+Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took properly.
+
+=back
+
+
+=head1 PARAMETERS
+
+There are various optional parameters that can be used.
+
+=over 4
+
+=item C<include>
+
+An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls.
+
+=item C<exclude>
+
+An array reference of the names of subs to exclude. See C<include> for further details.
+
+=item C<no_indent>
+
+In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the file.
+
+=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
+
+Set to 1 to activate.
+
+Print to STDOUT using Data::Dumper the structure of the data following the respective phase. The C<core_dump> will print the state of the data, as well as the current state of the entire DES object.
+
+NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be daisy-chained. Due to this reason, the value of C<pre_filter_dump> works a little differently. For example:
+
+    pre_filter => 'one && two';
+
+...will execute filter 'one' first, then filter 'two' with the data that came out of filter 'one'. Simply set the value to the number that coincides with the location of the filter. For instance, C<pre_filter_dump => 2;> will dump the output from the second filter and likewise, C<1> will dump after the first.
+
+=item C<pre_proc_return>, C<pre_filter_return>, C<engine_return>
+
+Returns the structure of data immediately after being processed by the respective phase. Useful for writing new 'phases'. (See "SEE ALSO" for details).
+
+NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only return after all pre-filters have executed.
+
+=item C<clean_config>
+
+Resets all configuration parameters back to pristine condition (ie. it deletes them all)
+
+=item C<config_dump>
+
+Prints to STDOUT with Data::Dumper the current state of all loaded configuration parameters.
+
+=item C<extension>
+
+By default, we load only C<.pm> and C<.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file.
+
+=back
 
 =head1 CAVEATS
 
-The previous unreliability caveat has been removed as PPI now performs all of the perl file processing.
+The search parameter is currently only literal text. Regexes have been disabled until further extensive testing has been done.
 
-The previous caveats were:
+=head1 SEE ALSO
 
-Subs that begin indented (such as closures and those within other blocks) will not be counted. For line_numbers() the closing brace must 
-be in column one of the file as well.
+As of 1.19 pre release, the following POD documents haven't been created.
+
+=over 4
+
+=item C<perldoc Devel::Examine::Subs::Preprocessor>
+
+Information related to the 'pre_proc' phase core modules.
+
+=item C<perldoc Devel::Examine::Subs::Prefilter>
+
+Information related to the 'pre_filter' phase core modules.
+
+=item C<perldoc Devel::Examine::Subs::Engine>
+
+Information related to the 'engine' phase core modules.
+
+=back
 
 =head1 AUTHOR
 
 Steve Bertrand, C<< <steveb at cpan.org> >>
-
 
 =head1 SUPPORT
 
@@ -816,6 +950,5 @@ This program is free software; you can redistribute it and/or modify it under th
 published by the Free Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
-
 
 =cut

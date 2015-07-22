@@ -2,7 +2,7 @@
 #use warnings;
 #use strict;
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 use Data::Dumper;
 
 BEGIN {#1-2
@@ -100,10 +100,12 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
 
     like ( $@, qr/'\$cref'/, "pre_filter module croaks with invalid if a \$cref is passed within the string format" );
 }
+{#9
+    my $des = Devel::Examine::Subs->new();
 
+    eval {
+        $des->run({pre_filter => '_test_bad'});
+    };
 
-sub _des {  
-    my $p = shift; 
-    my $des =  Devel::Examine::Subs->new({pre_filter => $p->{pre_filter}}); 
-    return $des;
-};
+    like ( $@, qr/dispatch table/, "pre_filter module croaks if the dt key is ok, but the value doesn't point to a callback" );
+}

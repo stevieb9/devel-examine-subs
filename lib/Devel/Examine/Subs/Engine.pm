@@ -43,6 +43,17 @@ sub _dt {
 
     return $dt;
 }
+sub exists {
+    my $self = shift;
+    my $string = shift;
+
+    if (exists $self->{engines}{$string}){
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
 sub _test {
 
     return sub {

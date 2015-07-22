@@ -765,7 +765,6 @@ for my $file (keys %$ret){
     }
 }
 
-
 =head1 DESCRIPTION
 
 Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, get line counts and a myriad of other options.
@@ -831,6 +830,20 @@ Returns a hash reference with the sub name as the key, the value being an array 
 Search for lines that contain certain text, and replace the search term with the replace term.
 
 This method will create a backup copy of the file with the same name appended with '.bak'.
+
+=head2 C<run()>
+
+All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
+
+    my $params = {
+            search => 'text',
+            pre_filter => 'file_lines_contain',
+            engine => 'has',
+    };
+
+    my $return = $des->run($params);
+
+This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
 
 =head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
 

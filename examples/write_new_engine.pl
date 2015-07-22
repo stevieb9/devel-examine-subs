@@ -18,7 +18,7 @@ my $params = {
                 pre_filter => 'file_lines_contain',
 #                pre_filter_dump => 1,
 #                pre_filter_return => 1,
-                engine => has(),
+                engine => new_has(),
 #                engine_return => 1,
 #                engine_dump => 1,
 #                core_dump => 1,
@@ -26,8 +26,8 @@ my $params = {
 #                code => ['# comment line one', '# comment line 2' ],
               };
 
-
-sub has {
+#<des>
+sub new_has {
 
     return sub {
 
@@ -41,6 +41,12 @@ sub has {
         return \@has;
     };
 }
+#</des>
+
+# uncomment below line to inject the code
+# after you're certain the return is correct
+
+#$des->add_functionality({add_functionality => 'engine'});
 
 my $des = Devel::Examine::Subs->new($params);
 my $struct = $des->run($params);

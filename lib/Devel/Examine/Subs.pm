@@ -753,17 +753,17 @@ Same, but after searching a directory, not a single file
 
 my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
 
-for my $file (keys %$ret){
-    print "\n$file\n";
-    for my $sub (keys %{$ret->{$file}}){
-        print "\nSub: $sub\n";
-        for my $lines (@{$ret->{$file}{$sub}}){
-            while (my ($line_no, $code) = each (%$lines)){
-                print "\tLine num: $line_no:\t $code\n";
+    for my $file (keys %$ret){
+        print "\n$file\n";
+        for my $sub (keys %{$ret->{$file}}){
+            print "\nSub: $sub\n";
+            for my $lines (@{$ret->{$file}{$sub}}){
+                while (my ($line_no, $code) = each (%$lines)){
+                    print "\tLine num: $line_no:\t $code\n";
+                }
             }
         }
     }
-}
 
 =head1 DESCRIPTION
 

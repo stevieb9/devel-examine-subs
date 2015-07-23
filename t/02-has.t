@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 25;
+use Test::More tests => 26;
 use Data::Dumper;
 
 BEGIN {#1
@@ -24,15 +24,16 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 }
 {#4
     my $res = $des->has({ file => 't/sample.data', search => 'this' });
-    ok ( $res->[0] =~ '\w+', "obj->has() returns an array if file exists and text available" );
+    ok ( $res->[0] =~ '\w+', "has() returns an array if file exists and text available" );
 }
 {#5
     my $res = $des->has({ file => 't/sample.data', search => '' });
-    ok ( ! $res->[0], "has() acts like all() when search term is empty" );
+    is ( @$res, 11, "has() acts like all() when search term is empty" );
 }
 {#5
+    delete $des->{params}{search};
     my $res = $des->has({ file => 't/sample.data' });
-    ok ( ! $res->[0], "has() acts like all() when search term is empty" );
+    is ( @$res, 11, "has() acts like all() when no search term is passed in" );
 }
 
 {#6

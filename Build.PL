@@ -12,6 +12,9 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     requires => {
+        'Carp' => 0,
+        'Data::Dumper' => 0,
+        'File::Find' => 0,
         'perl' => 5.006,
         'PPI' => 0,
         'Tie::File' => 0,

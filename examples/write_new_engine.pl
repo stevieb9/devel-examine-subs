@@ -43,12 +43,13 @@ sub new_has {
 }
 #</des>
 
+my $des = Devel::Examine::Subs->new($params);
+my $struct = $des->run($params);
+
+print Dumper $struct;
+
 # uncomment below line to inject the code
 # after you're certain the return is correct
 
 #$des->add_functionality({add_functionality => 'engine'});
 
-my $des = Devel::Examine::Subs->new($params);
-my $struct = $des->run($params);
-
-print Dumper $struct;

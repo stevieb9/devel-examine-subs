@@ -1,6 +1,6 @@
 package Devel::Examine::Subs;
-
-use strict; use warnings;
+use warnings;
+use strict; 
 
 our $VERSION = '1.18';
 
@@ -48,7 +48,14 @@ sub run_directory {
     my $p = shift;
 
     $self->_config($p);
-   
+
+    # return early if cache is enabled
+
+    my $cache_enabled = $self->{params}{cache};
+    my $cache = $self->_cache() if $cache_enabled;
+
+    return $cache if $cache;
+
     my $dir = $self->{params}{file};
     
     my @files;
@@ -64,12 +71,12 @@ sub run_directory {
                         }
                         
                         my $file = "$File::Find::name";
-                        
+
                         push @files, $file;
                       },
                         no_chdir => 1 }, $dir );
 
-    my %return;
+    my %struct;
 
     for my $file (@files){
         $self->{params}{file} = $file;
@@ -79,9 +86,12 @@ sub run_directory {
         $exists = %$data if ref($data) eq 'HASH';
         $exists = @$data if ref($data) eq 'ARRAY';
 
-        $return{$file} = $data if $exists;
+        $struct{$file} = $data if $exists;
     }
-    return \%return;
+
+    $self->_cache(\%struct) if $cache_enabled;
+
+    return \%struct;
 }
 sub _config {
 
@@ -114,6 +124,29 @@ sub _config {
 
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
+    }
+}
+sub _cache {
+
+    my $self = shift;
+    my $struct = shift;
+
+    return $struct if ! $self->{params}{cache};
+    
+    if ($self->{params}{cache} && $self->{cache}){
+
+        # cache dump
+
+        if ($self->{params}{cache_dump}){
+            print "Dumping cache\n\n";
+            print Dumper $self->{cache};
+            exit;
+        }
+
+        return $self->{cache};
+    }
+    else {
+        $self->{cache} = $struct;
     }
 }
 sub _file {
@@ -669,7 +702,8 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 
-sub _pod{} #vim placeholder 1; __END__
+sub _pod{} #vim placeholder 1;
+__END__
 
 =head1 NAME
 

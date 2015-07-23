@@ -16,6 +16,15 @@ SYNOPSIS
 
         my $aref = $des->all();
 
+    Print all subs within each Perl file under a directory
+
+        my $href = $des->all({ file => 'lib/Devel/Examine' });
+    
+        for my $file (keys %$href){
+            print "\n$file\n";
+            print "\t$_\n" for @{$href->{$file}};
+        }
+
     Get all subs containing "string" in the body
 
         my $aref = $des->has({search => $search});
@@ -23,8 +32,8 @@ SYNOPSIS
     Search and replace code in subs
 
         $des->search_replace({
-                        search => '$template = 'one.tmpl',
-                        replace => '$template = 'two.tmpl',
+                        search => "$template = 'one.tmpl'",
+                        replace => "$template = 'two.tmpl'",
                       });
 
     Inject code into sub after a search term (preserves previous line's
@@ -69,6 +78,15 @@ SYNOPSIS
             }
         }
 
+    Same, but after searching a directory, not a single file
+
+    my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
+
+    for my $file (keys %$ret){ print "\n$file\n"; for my $sub (keys
+    %{$ret->{$file}}){ print "\nSub: $sub\n"; for my $lines
+    (@{$ret->{$file}{$sub}}){ while (my ($line_no, $code) = each
+    (%$lines)){ print "\tLine num: $line_no:\t $code\n"; } } } }
+
 DESCRIPTION
 
     Gather information about subroutines in Perl files (and in-memory
@@ -109,8 +127,9 @@ METHODS
 
     Optionally takes the name of a file to search. If $filename is a
     directory, it will be searched recursively for files. You can set any
-    and all parameters this module uses in new(), however only 'file' will
-    remain persistent across runs under the same DES object.
+    and all parameters this module uses in new(), however only 'file',
+    'include' and 'exclude' will remain persistent across runs under the
+    same DES object.
 
     Note that all public methods of this module can accept all documented
     parameters, but of course will only use the ones they're capable of
@@ -152,10 +171,36 @@ METHODS
     This method will create a backup copy of the file with the same name
     appended with '.bak'.
 
+ run()
+
+    All public methods call this method internally. The public methods set
+    certain variables (filters, engines etc). You can get the same effect
+    programatically by using run(). Here's an example that performs the
+    same operation as the has() public method:
+
+        my $params = {
+                search => 'text',
+                pre_filter => 'file_lines_contain',
+                engine => 'has',
+        };
+    
+        my $return = $des->run($params);
+
+    This allows for very fine-grained interaction with the application, and
+    makes it easy to write new engines and for testing.
+
  inject_after({ file = $file, search => 'this', code => \@code })>
 
+    WARNING!: This functionality is risky. For starters, there's no way
+    currently to disable it from inserting after each found term, so if you
+    don't want that, you have to use a search term that you're confident
+    only appears once in each sub (my $self = shift; for example). This
+    will be fixed in the next release.
+
     Injects the code in @code into the sub within the file, where the sub
-    contains the search term.
+    contains the search term. The same indentation level of the line that
+    contains the search term is used for any new code injected. Set
+    no_indent parameter to a true value to disable this feature.
 
     The code array should contain one line of code (or blank line) per each
     element. (See SYNOPSIS for an example).
@@ -182,7 +227,10 @@ METHODS
 
     WARNING!: This method is highly experimental and is used for developing
     internal processors only. Only 'engine' is functional, and only half
-    way. DO NOT USE.
+    way. It's simply a proof-of-concept of the 'Processor' structure which
+    I will be incorporating into a new module template system that allows
+    people to replicate the base structure of this module (less the data
+    and processors). DO NOT USE.
 
     While writing new processors, set the processor type to a callback
     within the local working file. When the code performs the actions you
@@ -216,14 +264,22 @@ PARAMETERS
     include
 
       An array reference containing the names of subs to include. This (and
-      exclude) tell the Processor engine to generate only these subs,
+      exclude) tell the Processor phase to generate only these subs,
       significantly reducing the work that needs to be done in subsequent
-      method calls.
+      method calls. Best to set it in the new() method.
 
     exclude
 
       An array reference of the names of subs to exclude. See include for
       further details.
+
+    no_indent
+
+      In the processes that write new code to files, the indentation level
+      of the line the search term was found on is used for inserting the
+      new code by default. Set this parameter to a true value to disable
+      this feature and set the new code at the beginning column of the
+      file.
 
     pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 
@@ -264,11 +320,14 @@ PARAMETERS
       Prints to STDOUT with Data::Dumper the current state of all loaded
       configuration parameters.
 
-    extension
+    extensions
 
-      By default, we load only .pm and .pl files. Use this parameter to
+      By default, we load only *.pm and *.pl files. Use this parameter to
       load different files. Only useful when a directory is passed in as
       opposed to a file.
+
+      Values: Array reference where each element is the name of the
+      extension (less the dot). For example, ['pm', 'pl'] is the default.
 
 CAVEATS
 
@@ -276,6 +335,9 @@ CAVEATS
     disabled until further extensive testing has been done.
 
 SEE ALSO
+
+    As of 1.19 pre release, the following POD documents haven't been
+    created.
 
     perldoc Devel::Examine::Subs::Preprocessor
 

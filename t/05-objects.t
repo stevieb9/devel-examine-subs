@@ -37,8 +37,6 @@ for my $o (@$objects){
 eval { $objects = $des->objects(); };
 ok (! $@, "objects() is callable and works" );
 
-print Dumper @$objects;
-
 for my $o (@$objects){
     if ($o->name() eq 'four'){
         is ($o->start(), 29, "sub four starts at the right line");

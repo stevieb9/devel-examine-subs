@@ -95,7 +95,7 @@ sub file_lines_contain {
                 my $found = 0;
                 my @has;
                 for (@{$s->{$f}{subs}{$sub}{TIE_file_sub}}){
-                    if ($_ and /\Q$search/){
+                    if ($_ and /$search/){
                         $found++;
                         push @has, $_;
                      }

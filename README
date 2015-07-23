@@ -21,8 +21,8 @@ SYNOPSIS
         my $href = $des->all({ file => 'lib/Devel/Examine' });
     
         for my $file (keys %$href){
-            print "\n$file\n";
-            print "\t$_\n" for @{$href->{$file}};
+            print "$file\n";
+            print join('\t', @{$href->{$file}});
         }
 
     Get all subs containing "string" in the body
@@ -59,12 +59,12 @@ SYNOPSIS
         $aref = $des->objects(...)
     
         for my $sub (@$aref){
-            $sub->name(); # name of sub
-            $sub->start(); # first line of sub
-            $sub->stop(); # last line of sub
-            $sub->num_lines(); # number of lines in sub
-            $sub->code(); # entire sub code from file
-            $sub->lines(); # see next example...
+            $sub->name();       # name of sub
+            $sub->start();      # first line of sub
+            $sub->stop();       # last line of sub
+            $sub->num_lines();  # number of lines in sub
+            $sub->code();       # entire sub code from file
+            $sub->lines();      # see next example...
     
         }
 
@@ -122,6 +122,9 @@ FEATURES
     - pre-defined callbacks are used by default, but user-supplied ones are
     loaded dynamically
 
+    - can cache internally for repeated runs with the same object (in
+    directory mode)
+
 METHODS
 
  new({ file = $filename, cache => 1 })>
@@ -130,9 +133,9 @@ METHODS
 
     Optionally takes the name of a file to search. If $filename is a
     directory, it will be searched recursively for files. You can set any
-    and all parameters this module uses in new(), however only 'file',
-    'cache', 'include' and 'exclude' will remain persistent across runs
-    under the same DES object (see PARAMETERS section).
+    and all parameters this module uses in new(), however only 'file' and
+    'cache' are guaranteed to remain persistent across runs under the same
+    DES object (see PARAMETERS section).
 
     Note that all public methods of this module can accept all documented
     parameters, but of course will only use the ones they're capable of
@@ -166,10 +169,14 @@ METHODS
     an array reference which contains a hash reference in the format
     line_number => line_text.
 
- search_replace({ file = $file, $search => 'this', $replace => 'that' })>
+ search_replace({ file = $file, $search => 'this', $replace => 'that', copy
+ => 'file.ext' })>
 
     Search for lines that contain certain text, and replace the search term
-    with the replace term.
+    with the replace term. If the optional parameter 'copy' is sent in, a
+    copy of the original file will be created in the current directory with
+    the name specified, and that file will be worked on instead. Good for
+    testing to ensure The Right Thing will happen in a production file.
 
     This method will create a backup copy of the file with the same name
     appended with '.bak'.
@@ -257,8 +264,10 @@ METHODS
 
     Optional parameters:
 
-    copy Set it to a new file name which will copy the original, and only
-    change the copy. Useful for verifying the changes took properly.
+    copy
+
+      Set it to a new file name which will copy the original, and only
+      change the copy. Useful for verifying the changes took properly.
 
 PARAMETERS
 
@@ -296,6 +305,12 @@ PARAMETERS
       new code by default. Set this parameter to a true value to disable
       this feature and set the new code at the beginning column of the
       file.
+
+    regex
+
+      Set to a true value, all values in the 'search' parameter become
+      regexes. For example with regex on, /thi?s/ will match "this", but
+      without regex, it won't.
 
     cache_dump, pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 

@@ -146,6 +146,25 @@ sub objects {
         return \@return;
     };
 }
+sub end_of_last_sub {
+    
+    return sub {
+        
+        my $p = shift;
+        my $struct = shift;
+
+        my @last_line_nums;
+
+        for my $sub (@$struct){
+            push @last_line_nums, $sub->{end};
+        }
+
+        @last_line_nums = sort {$a<=>$b} @last_line_nums;
+
+        return $last_line_nums[-1];
+
+    };
+}
 sub _test {
 
     return sub {
@@ -153,4 +172,3 @@ sub _test {
         return $struct;
     };
 }
-

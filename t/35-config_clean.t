@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 10;
+use Test::More tests => 6;
 use Test::Trap;
 
 BEGIN {#1

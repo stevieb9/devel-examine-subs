@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Carp;
-use Test::More tests => 37;
+use Test::More tests => 40;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";

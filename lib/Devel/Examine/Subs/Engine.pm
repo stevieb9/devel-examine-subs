@@ -32,13 +32,14 @@ sub _dt {
         has => \&has,
         missing => \&missing,
         lines => \&lines,
-        objects =>\&objects,
+        objects => \&objects,
         search_replace => \&search_replace,
         inject_after => \&inject_after,
         dt_test => \&dt_test,
         _test => \&_test,
         _test_print => \&_test_print,
         _test_bad => \&_test_bad,
+
     };
 
     return $dt;
@@ -96,36 +97,6 @@ sub has {
         return \@has || [];
     };
 }
-sub orig_has {
-
-    return sub {
-
-        my $p = shift;
-        my $struct = shift;
-
-        my $file = $p->{file};
-        my $search = $p->{search};
-
-        my @has;
-
-        for my $file (keys %$struct){
-            for my $sub (keys %{$struct->{$file}{subs}}){
-                my $found = 0;
-
-                my @code_block = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
-                for my $code (@code_block){
-                    next if not $search;
-                    if ($code and $code =~ /\Q$search/){
-                        push @has, $sub;
-                        $found = 1;
-                    }
-                    last if $found;
-                }
-            }
-        }
-        return \@has;
-    };
-}
 sub missing {
 
     return sub {
@@ -178,6 +149,59 @@ sub lines {
             }
         }
         return \%return;
+    };
+}
+sub objects {
+
+    # uses 'subs' pre_filter
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my @return;
+
+        return if not ref($struct) eq 'ARRAY';
+
+        my $file = $p->{file};
+        my $search = $p->{search};
+        my $lines;
+
+        if ($search){
+            my $des = Devel::Examine::Subs->new({
+                                            file => $file, 
+                                            search => $search
+                                        });
+            $lines = $des->lines();
+        }
+
+
+        my $des_sub;
+        
+        for my $sub (@$struct){
+
+            # if the name of the callback method is mistyped in the
+            # dispatch table, this will be triggered
+
+            if ($lines){
+                $sub->{lines_with} = $lines->{$sub->{name}};
+            }
+
+            $des_sub
+              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
+
+            #FIXME: this eval catch catches bad dispatch and "not a hashref"
+
+            if ($@){
+                print "dispatch table in engine has a mistyped function value\n\n";
+                confess $@;
+            }
+
+            push @return, $des_sub;
+        }
+
+        return \@return;
     };
 }
 sub search_replace {

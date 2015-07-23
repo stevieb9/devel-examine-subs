@@ -775,7 +775,7 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =item - uses PPI for Perl file parsing
 
-=item - search and replace code within subs
+=item - search and replace code within subs, with the ability to include or exclude subs, something a global search/replace can't do
 
 =item - inject new code into subs following a found search pattern
 

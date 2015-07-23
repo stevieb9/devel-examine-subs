@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Data::Dumper;
 
-our $VERSION = '1.18';
+our $VERSION = '1.20_01';
 
 sub new {
 
@@ -25,10 +25,10 @@ sub _dt {
     my $dt = {
         file_lines_contain => \&file_lines_contain,
         subs => \&subs,
+        objects => \&objects,
         _default => \&_default,
         _test => \&_test,
         _test_bad => \&_test_bad,
-        objects => \&objects,
         end_of_last_sub => \&end_of_last_sub,
     };
 
@@ -57,6 +57,10 @@ sub subs {
 
         my $search = $p->{search};
 
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         for my $f (keys %$s){
         
             for my $sub (keys %{$s->{$f}{subs}}){
@@ -83,8 +87,11 @@ sub file_lines_contain {
 
         my $search = $p->{search};
 
-        my $s = $struct;
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
 
+        my $s = $struct;
 
         if (not $search){
             return $struct;
@@ -95,7 +102,7 @@ sub file_lines_contain {
                 my $found = 0;
                 my @has;
                 for (@{$s->{$f}{subs}{$sub}{TIE_file_sub}}){
-                    if ($_ and /\Q$search/){
+                    if ($_ and /$search/){
                         $found++;
                         push @has, $_;
                      }
@@ -110,6 +117,32 @@ sub file_lines_contain {
         return $struct;
     };
 }
+sub end_of_last_sub {
+    
+    return sub {
+        
+        my $p = shift;
+        my $struct = shift;
+
+        my @last_line_nums;
+
+        for my $sub (@$struct){
+            push @last_line_nums, $sub->{end};
+        }
+
+        @last_line_nums = sort {$a<=>$b} @last_line_nums;
+
+        return $last_line_nums[-1];
+
+    };
+}
+sub _test {
+
+    return sub {
+        my $struct = shift;
+        return $struct;
+    };
+}
 sub objects {
 
     # uses 'subs' pre_filter
@@ -121,9 +154,18 @@ sub objects {
 
         my @return;
 
-        my $des_sub;
-       
         return if not ref($struct) eq 'ARRAY';
+
+        my $file = $p->{file};
+        my $search = $p->{search};
+
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
+        my $lines;
+
+        my $des_sub;
 
         for my $sub (@$struct){
 
@@ -144,13 +186,6 @@ sub objects {
         }
 
         return \@return;
-    };
-}
-sub _test {
-
-    return sub {
-        my $struct = shift;
-        return $struct;
     };
 }
 

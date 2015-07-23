@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 18;
+use Test::More tests => 30;
 use Data::Dumper;
 
 BEGIN {#1
@@ -13,9 +13,8 @@ my $file = 't/sample.data';
 
 my $p = {
     file => $file, 
-    pre_filter => 'subs && objects',
-    #pre_filter_dump => 1,
-    pre_filter_return => 1,
+    pre_filter => 'subs',
+    engine => 'objects',
 };
 
 my $des = Devel::Examine::Subs->new($p);

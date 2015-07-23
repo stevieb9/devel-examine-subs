@@ -25,7 +25,7 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     
     ok ( ref($res) eq 'HASH', "no prefilter, data is sent through untouched" );
     for my $f (keys %$res){
-        for my $s (keys $res->{$f}{subs}){
+        for my $s (keys %{$res->{$f}{subs}}){
             ok ( ref($res->{$f}{subs}{$s}) eq 'HASH', "\$s->{file}{subs}{sub}: no prefilter, data is sent through untouched" );
 
         }

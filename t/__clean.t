@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -24,6 +24,8 @@ my @files_to_delete = qw(
                     t/search_replace.data
                     t/search.replace.data.bak
                     t/inject_after.data
+                    t/test.bak
+                    t/test.data
                 );
 
 for (@files_to_delete){

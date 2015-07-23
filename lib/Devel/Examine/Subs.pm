@@ -126,6 +126,17 @@ sub _config {
         print Dumper $self->{params};
     }
 }
+sub _config_clean {
+    my $self = shift;
+
+    my @persistent = qw(cache file include exclude);
+
+    for my $p (keys %{$self->{params}}){
+        if (! grep {$p eq $_} @persistent){
+            delete $self->{params}{$p};
+        }
+    }
+}
 sub _cache {
 
     my $self = shift;

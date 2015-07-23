@@ -90,11 +90,6 @@ sub _config {
     my $self = shift;
     my $p = shift;
 
-    if ($p->{clean_config}){
-        delete $self->{params};
-        return;
-    }
-
     for my $param (keys %$p){
 
         # validate the file
@@ -104,14 +99,7 @@ sub _config {
             next;
         }
 
-        # validate search
-
-        if (! exists $p->{search} or $p->{search} eq ''){
-            $self->{params}{bad_search} = 1;
-        }
-
         $self->{params}{$param} = $p->{$param};
-
     }
 
     if ($self->{params}{config_dump}){
@@ -119,14 +107,39 @@ sub _config {
     }
 }
 sub _config_clean {
-    my $self = shift;
 
-    my @persistent = qw(cache file include exclude);
+    my $self = shift;
+    my $params = shift;
+
+    my @params = keys %$params;
+    
+    my @persistent = qw(
+                        cache 
+                        file 
+                        include 
+                        exclude
+                        pre_proc
+                        pre_filter
+                        engine
+                    );
 
     for my $p (keys %{$self->{params}}){
-        if (! grep {$p eq $_} @persistent){
-            delete $self->{params}{$p};
+        
+        # don't dump persistent core params
+
+        if (grep {$p eq $_} @persistent){
+            next;
         }
+        else {
+            print "$p not in persistent\n";
+        }
+        if (grep /$p/, @params){
+            next;
+        }
+        else {
+            print "$p not in PARAMS\n";
+        }
+        delete $self->{params}{$p};
     }
 }
 sub _cache {
@@ -244,9 +257,9 @@ sub _core {
 
         exit;
     }
-    return $subs;
-
+    
     $self->{data} = $subs;
+    return $subs;
 }
 sub _subs {
 
@@ -272,6 +285,8 @@ sub _subs {
 
         my $include = $self->{params}{include} // [];
         my $exclude = $self->{params}{exclude} // [];
+
+        delete $self->{params}{include} if $exclude->[0];
 
         my $name = $PPI_sub->name;
 

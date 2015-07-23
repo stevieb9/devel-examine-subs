@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Data::Dumper;
 
-our $VERSION = '1.18';
+our $VERSION = '1.20_01';
 
 sub new {
 
@@ -57,6 +57,10 @@ sub subs {
 
         my $search = $p->{search};
 
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         for my $f (keys %$s){
         
             for my $sub (keys %{$s->{$f}{subs}}){
@@ -83,8 +87,11 @@ sub file_lines_contain {
 
         my $search = $p->{search};
 
-        my $s = $struct;
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
 
+        my $s = $struct;
 
         if (not $search){
             return $struct;
@@ -151,6 +158,11 @@ sub objects {
 
         my $file = $p->{file};
         my $search = $p->{search};
+
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         my $lines;
 
         my $des_sub;

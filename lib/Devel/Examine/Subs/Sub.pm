@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '1.18';
+our $VERSION = '1.20_01';
 
 sub new {
 

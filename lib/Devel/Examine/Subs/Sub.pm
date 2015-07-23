@@ -3,6 +3,8 @@ package Devel::Examine::Subs::Sub;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 our $VERSION = '1.18';
 
 sub new {
@@ -33,5 +35,30 @@ sub end {
 sub line_count {
     my $self = shift;
     return $self->{data}{num_lines};
+}
+sub lines {
+
+    my $self = shift;
+
+    my @line_linenum;
+
+    if ($self->{data}{lines_with}){
+        my $lines_with = $self->{data}{lines_with};
+
+        for (@$lines_with){
+            my ($k, $v) = each (%$_);
+            push @line_linenum, "$k: $v";
+        }
+    }
+
+    return \@line_linenum;
+}
+sub code {
+
+    my $self = shift;
+
+    my $code = $self->{data}{TIE_file_sub};
+
+    return $code;
 }
 1;

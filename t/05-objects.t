@@ -13,9 +13,8 @@ my $file = 't/sample.data';
 
 my $p = {
     file => $file, 
-    pre_filter => 'subs && objects',
-    #pre_filter_dump => 1,
-    pre_filter_return => 1,
+    pre_filter => 'subs',
+    engine => 'objects',
 };
 
 my $des = Devel::Examine::Subs->new($p);
@@ -37,6 +36,8 @@ for my $o (@$objects){
 
 eval { $objects = $des->objects(); };
 ok (! $@, "objects() is callable and works" );
+
+print Dumper @$objects;
 
 for my $o (@$objects){
     if ($o->name() eq 'four'){

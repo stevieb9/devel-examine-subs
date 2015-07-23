@@ -1,17 +1,9 @@
-package Devel::Examine::Subs;
-use warnings;
-use strict; 
+package Devel::Examine::Subs; use warnings; use strict;
 
 our $VERSION = '1.18';
 
-use Carp; 
-use Data::Dumper; 
-use Devel::Examine::Subs::Engine; 
-use Devel::Examine::Subs::Preprocessor; 
-use Devel::Examine::Subs::Prefilter; 
-use File::Find; 
-use PPI; 
-use Tie::File;
+use Carp; use Data::Dumper; use Devel::Examine::Subs::Engine; use Devel::Examine::Subs::Preprocessor; use 
+Devel::Examine::Subs::Prefilter; use File::Find; use PPI; use Tie::File;
 
 sub new {
     
@@ -201,8 +193,7 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        # for things that don't need to process files
-        # (such as 'module'), return early
+        # for things that don't need to process files (such as 'module'), return early
 
         if ($self->{params}{pre_proc_return}){
             return $data;
@@ -309,8 +300,7 @@ sub _subs {
 
         my $line_num = $subs{$file}{subs}{$name}{start};
        
-        # pull out just the subroutine from the file 
-        # array and attach it to the structure
+        # pull out just the subroutine from the file array and attach it to the structure
 
         my @sub_definition = @TIE_file[
                                     $subs{$file}{subs}{$name}{start}
@@ -339,8 +329,7 @@ sub _pre_proc {
         return $subs;
     }
    
-    # tell _core() to return directly from the pre_processor 
-    # if necessary, and bypass pre_filter and engine
+    # tell _core() to return directly from the pre_processor if necessary, and bypass pre_filter and engine
 
     if ($pre_proc eq 'module'){
        $self->{params}{pre_proc_return} = 1;
@@ -598,8 +587,7 @@ sub module {
 
     $self->_config($p);
 
-    # set the preprocessor up, and have it return 
-    # before the building/compiling of file data happens
+    # set the preprocessor up, and have it return before the building/compiling of file data happens
 
     $self->{params}{pre_proc} = 'module';
     $self->{params}{pre_proc_return} = 1;
@@ -615,9 +603,9 @@ sub objects {
 
     $self->_config($p);
 
-    $self->{params}{pre_filter} = 'subs && objects';
-    $self->{params}{pre_filter_return} = 2;
- 
+    $self->{params}{pre_filter} = 'subs';
+    $self->{params}{engine} = 'objects';
+
     $self->run();
 }
 sub search_replace {
@@ -713,8 +701,7 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 
-sub _pod{} #vim placeholder 1;
-__END__
+sub _pod{} #vim placeholder 1; __END__
 
 =head1 NAME
 
@@ -758,8 +745,8 @@ Inject code into sub after a search term (preserves previous line's indenting)
     my @code = <DATA>;
 
     $des->inject_after({
-                    search => 'this', 
-                    code => \@code, 
+                    search => 'this',
+                    code => \@code,
                   });
 
     __DATA__
@@ -775,44 +762,39 @@ Get all the subs as objects
     $aref = $des->objects(...)
 
     for my $sub (@$aref){
-        print $sub->name() # name of sub
-        print $sub->start() # first line of sub
-        print $sub->stop() # last line of sub
-        print $sub->num_lines() # number of lines in sub
+        $sub->name(); # name of sub
+        $sub->start(); # first line of sub
+        $sub->stop(); # last line of sub
+        $sub->num_lines(); # number of lines in sub
+        $sub->code(); # entire sub code from file
+        $sub->lines(); # see next example...
+
     }
 
 Print out all lines in all subs that contain a search term
 
-    my $ret = $des->lines({search => 'this'});
+    my $lines_with_search_term = $sub->lines();
 
-    for my $sub (%$ret){
-        for my $lines (@{$ret->{$sub}}){
-            print "\nSubroutine $sub:\n";
-            while (my ($line_no, $code) = each (%$lines)){
-                print "Line num: $line_no, Code: $code\n";
-            }
-        }
+    for (@$lines_with_search_term){
+        my ($line_num, $text) = split /:/;
+        say "Line num: $line_num";
+        say "Code: $text\n";
     }
 
-Same, but after searching a directory, not a single file
+The structures look a bit differently when 'file' is a directory. You need to add one more layer of extraction.
 
-    my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
+    my $files = $des->objects();
 
-    for my $file (keys %$ret){
-        print "\n$file\n";
-        for my $sub (keys %{$ret->{$file}}){
-            print "\nSub: $sub\n";
-            for my $lines (@{$ret->{$file}{$sub}}){
-                while (my ($line_no, $code) = each (%$lines)){
-                    print "\tLine num: $line_no:\t $code\n";
-                }
-            }
+    for my $file (keys %$files){
+        for my $sub (@{$files->{$file}}){
+            ...
         }
     }
 
 =head1 DESCRIPTION
 
-Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, get line counts and a myriad of other options.
+Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, 
+get line counts and a myriad of other options.
 
 =head1 FEATURES
 
@@ -826,7 +808,8 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =item - retrieve all sub names where the sub does or doesn't contain a search term
 
-=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
+=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with 
+the full lines that match
 
 =item - include or exclude subs to be processed
 
@@ -844,9 +827,12 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 Instantiates a new object.
 
-Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'cache', 'include' and 'exclude' will remain persistent across runs under the same DES object (see PARAMETERS section).
+Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
+and all parameters this module uses in new(), however only 'file', 'cache', 'include' and 'exclude' will remain persistent across runs 
+under the same DES object (see PARAMETERS section).
 
-Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable of using.
+Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable 
+of using.
 
 =head2 C<has({ file => $filename, search => $text })>
 
@@ -868,7 +854,8 @@ Returns an array reference containing the names of all subs found in the module'
 
 Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
-Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format line_number => line_text.
+Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format 
+line_number => line_text.
 
 =head2 C<search_replace({ file => $file, $search => 'this', $replace => 'that' })>
 
@@ -878,7 +865,8 @@ This method will create a backup copy of the file with the same name appended wi
 
 =head2 C<run()>
 
-All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
+All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same 
+effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
 
     my $params = {
             search => 'text',
@@ -892,9 +880,13 @@ This allows for very fine-grained interaction with the application, and makes it
 
 =head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
 
-WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for example). This will be fixed in the next release.
+WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if 
+you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for 
+example). This will be fixed in the next release.
 
-Injects the code in C<@code> into the sub within the file, where the sub contains the search term. The same indentation level of the line that contains the search term is used for any new code injected. Set C<no_indent> parameter to a true value to disable this feature.
+Injects the code in C<@code> into the sub within the file, where the sub contains the search term. The same indentation level of the 
+line that contains the search term is used for any new code injected. Set C<no_indent> parameter to a true value to disable this 
+feature.
 
 The C<code> array should contain one line of code (or blank line) per each element. (See SYNOPSIS for an example).
 
@@ -922,9 +914,14 @@ Returns a list of all available built-in 'engine' modules.
 
 =head2 C<add_functionality()>
 
-WARNING!: This method is highly experimental and is used for developing internal processors only. Only 'engine' is functional, and only half way. It's simply a proof-of-concept of the 'Processor' structure which I will be incorporating into a new module template system that allows people to replicate the base structure of this module (less the data and processors). DO NOT USE.
+WARNING!: This method is highly experimental and is used for developing internal processors only. Only 'engine' is functional, and only 
+half way. It's simply a proof-of-concept of the 'Processor' structure which I will be incorporating into a new module template system 
+that allows people to replicate the base structure of this module (less the data and processors). DO NOT USE.
 
-While writing new processors, set the processor type to a callback within the local working file. When the code performs the actions you want it to, put a comment line before the code with C<#<des>> and a line following the code with C<#</des>>. DES will slurp in all of that code live-time, inject it into the specified processor, and configure it for use. See C<examples/write_new_engine.pl> for an example of creating a new 'engine' processor.
+While writing new processors, set the processor type to a callback within the local working file. When the code performs the actions you 
+want it to, put a comment line before the code with C<#<des>> and a line following the code with C<#</des>>. DES will slurp in all of 
+that code live-time, inject it into the specified processor, and configure it for use. See C<examples/write_new_engine.pl> for an 
+example of creating a new 'engine' processor.
 
 Parameters:
 
@@ -944,8 +941,8 @@ Optional parameters:
 
 =over 4
 
-=item C<copy>
-Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took properly.
+=item C<copy> Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took 
+properly.
 
 =back
 
@@ -960,13 +957,16 @@ There are various optional parameters that can be used.
 
 Cache results when working with a directory.
 
-If you'll be making multiple calls with the same instantiated object, set this parameter to a true value. It will cache the results of the Processor (collector) phase on the first run, and use that cache on subsequent runs, avoiding the need to recurse directories and recompile all of the data.
+If you'll be making multiple calls with the same instantiated object, set this parameter to a true value. It will cache the results of 
+the Processor (collector) phase on the first run, and use that cache on subsequent runs, avoiding the need to recurse directories and 
+recompile all of the data.
 
 Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
 
 =item C<include>
 
-An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
+An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, 
+significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
 
 =item C<exclude>
 
@@ -974,23 +974,30 @@ An array reference of the names of subs to exclude. See C<include> for further d
 
 =item C<no_indent>
 
-In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the file.
+In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the 
+new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
+file.
 
 =item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
 Set to 1 to activate.
 
-Print to STDOUT using Data::Dumper the structure of the data following the respective phase. The C<core_dump> will print the state of the data, as well as the current state of the entire DES object.
+Print to STDOUT using Data::Dumper the structure of the data following the respective phase. The C<core_dump> will print the state of 
+the data, as well as the current state of the entire DES object.
 
-NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be daisy-chained. Due to this reason, the value of C<pre_filter_dump> works a little differently. For example:
+NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be daisy-chained. Due to this reason, the value of 
+C<pre_filter_dump> works a little differently. For example:
 
     pre_filter => 'one && two';
 
-...will execute filter 'one' first, then filter 'two' with the data that came out of filter 'one'. Simply set the value to the number that coincides with the location of the filter. For instance, C<pre_filter_dump => 2;> will dump the output from the second filter and likewise, C<1> will dump after the first.
+...will execute filter 'one' first, then filter 'two' with the data that came out of filter 'one'. Simply set the value to the number 
+that coincides with the location of the filter. For instance, C<pre_filter_dump => 2;> will dump the output from the second filter and 
+likewise, C<1> will dump after the first.
 
 =item C<pre_proc_return>, C<pre_filter_return>, C<engine_return>
 
-Returns the structure of data immediately after being processed by the respective phase. Useful for writing new 'phases'. (See "SEE ALSO" for details).
+Returns the structure of data immediately after being processed by the respective phase. Useful for writing new 'phases'. (See "SEE 
+ALSO" for details).
 
 NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only return after all pre-filters have executed.
 
@@ -1004,7 +1011,8 @@ Prints to STDOUT with Data::Dumper the current state of all loaded configuration
 
 =item C<extensions>
 
-By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file.
+By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed 
+in as opposed to a file.
 
 Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
 

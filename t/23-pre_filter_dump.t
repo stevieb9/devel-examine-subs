@@ -25,7 +25,7 @@ my $des = Devel::Examine::Subs->new({
 
         my @exit = trap { $des->run({pre_filter_dump => 1}); };
 
-        print STDOUT $trap->stdout;
+        eval { print STDOUT $trap->stdout; };
         is (! $trap->stdout, '', "output to stdout" );
         ok (! $@, "pre_filter dump gave no errors" );
 
@@ -36,7 +36,7 @@ my $des = Devel::Examine::Subs->new({
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 145, "Based on test data, pre_filter dump dumps the correct info" );
+    is (@lines, 717, "Based on test data, pre_filter dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "pre_filter dump output file closed successfully" );

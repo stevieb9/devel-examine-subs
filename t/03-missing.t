@@ -1,8 +1,8 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
-use Test::More tests => 10;
+use Test::More tests => 15;
 use Data::Dumper;
 
 BEGIN {#1
@@ -74,5 +74,20 @@ my $des = Devel::Examine::Subs->new();
     my $missing = $des->run();
     
     is ( @$missing, 11, "'missing' engine returns the proper count of subs through run() with 'asdf'" );
+}
+
+{
+    my $params = { file => 't/test', search => 'this' };
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $ret = $des->missing();
+
+    is (keys %$ret, 2, "missing() directory has the correct number of keys" );
+
+    for (keys %$ret){
+        ok (ref $ret->{$_} eq 'ARRAY', "missing() directory keys contain arefs" );
+        is (@{$ret->{$_}}, 6, "missing() directory keys have the correct number of elements" );
+    }
 }
 

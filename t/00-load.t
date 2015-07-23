@@ -32,8 +32,8 @@ my $sub_namespace = "Devel::Examine::Subs::Sub";
 can_ok( $sub_namespace, 'new' );
 can_ok( $sub_namespace, 'name' );
 can_ok( $sub_namespace, 'start' );
-can_ok( $sub_namespace, 'stop' );
-can_ok( $sub_namespace, 'count' );
+can_ok( $sub_namespace, 'end' );
+can_ok( $sub_namespace, 'line_count' );
 
 my $engine_namespace = "Devel::Examine::Subs::Engine";
 

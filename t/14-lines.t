@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 78;
+use Test::More tests => 28;
 use Data::Dumper;
 
 BEGIN {#1
@@ -27,9 +27,8 @@ my $p = {
     for my $sub (keys %subs){    
 
         for my $line_info (@{$subs{$sub}}){
-            my @lines = values %$line_info;
-            for (@lines){
-                ok ($_ =~ /$search/, "lines() uses file_lines_contain prefilter correctly");
+            while (my ($k, $v) = each (%$line_info)){
+                ok ($v =~ /$search/, "lines() uses file_lines_contain prefilter correctly");
             }
         }
     }

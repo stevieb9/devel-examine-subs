@@ -10,7 +10,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.18';
+our $VERSION = '1.20_01';
 
 sub new {
 
@@ -104,7 +104,11 @@ sub missing {
 
         my $file = $p->{file};
         my $search = $p->{search};
-
+ 
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+       
         return [] if not $search;
 
         my @missing;
@@ -164,6 +168,11 @@ sub objects {
 
         my $file = $p->{file};
         my $search = $p->{search};
+
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         my $lines;
 
         if ($search){
@@ -211,6 +220,11 @@ sub search_replace {
 
         my $file = $p->{file};
         my $search = $p->{search};
+        
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         my $replace = $p->{replace};
         my $copy = $p->{copy};
 
@@ -276,6 +290,11 @@ sub inject_after {
         my $struct = shift;
     
         my $search = $p->{search};
+
+        if ($search && ! $p->{regex}){
+            $search = "\Q$search";
+        }
+
         my $code = $p->{code};
         my $copy = $p->{copy};
 

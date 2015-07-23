@@ -1,9 +1,15 @@
 package Devel::Examine::Subs; use warnings; use strict;
 
-our $VERSION = '1.18';
+our $VERSION = '1.20_01';
 
-use Carp; use Data::Dumper; use Devel::Examine::Subs::Engine; use Devel::Examine::Subs::Preprocessor; use 
-Devel::Examine::Subs::Prefilter; use File::Find; use PPI; use Tie::File;
+use Carp; 
+use Data::Dumper; 
+use Devel::Examine::Subs::Engine; 
+use Devel::Examine::Subs::Preprocessor; 
+use Devel::Examine::Subs::Prefilter; 
+use File::Find; 
+use PPI; 
+use Tie::File;
 
 sub new {
     
@@ -99,20 +105,8 @@ sub _config {
             next;
         }
 
-        # configure search (w/wo regex)
-
-        if ($param eq 'search'){
-            if ($self->{params}{regex} or $p->{regex}){
-                $self->{params}{search} = qr/$p->{$param}/;
-            }
-            else {
-                $self->{params}{search} = qr/\Q$p->{$param}/;
-            }
-            next;
-        }
         $self->{params}{$param} = $p->{$param};
     }
-
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
     }
@@ -141,15 +135,10 @@ sub _config_clean {
         if (grep {$p eq $_} @persistent){
             next;
         }
-        else {
-            print "$p not in persistent\n";
-        }
         if (grep /$p/, @params){
             next;
         }
-        else {
-            print "$p not in PARAMS\n";
-        }
+        
         delete $self->{params}{$p};
     }
 }
@@ -858,8 +847,7 @@ get line counts and a myriad of other options.
 
 =item - retrieve all sub names where the sub does or doesn't contain a search term
 
-=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with 
-the full lines that match
+=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
 
 =item - include or exclude subs to be processed
 
@@ -880,13 +868,13 @@ the full lines that match
 
 =head1 METHODS
 
-=head2 C<new({ file => $filename, cache => 1 })>
+=head2 C<new({ file ==E<gt> $filename, cache ==E<gt> 1 })>
 
 Instantiates a new object.
 
 Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
 and all parameters this module uses in new(), however only 'file' and 'cache' are guaranteed to remain persistent across runs 
-under the same DES object (see PARAMETERS section).
+under the same DES object (see L<"PARAMETERS"> section).
 
 Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable 
 of using.
@@ -894,45 +882,45 @@ of using.
 
 
 
-=head2 C<has({ file => $filename, search => $text })>
+=head2 C<has({ file =E<gt> $filename, search =E<gt> $text })>
 
 Returns an array reference containing the names of the subs where the subroutine contains the text.
 
 
 
 
-=head2 C<missing({ file => $filename, search => $text })>
+=head2 C<missing({ file =E<gt> $filename, search =E<gt> $text })>
 
 The exact opposite of has.
 
 
 
 
-=head2 C<all({ file => $filename })>
+=head2 C<all({ file =E<gt> $filename })>
 
 Returns an array reference containing the names of all subroutines found in the file.
 
 
 
 
-=head2 C<module({ module => 'Devel::Examine::Subs' } )>
+=head2 C<module({ module =E<gt> 'Devel::Examine::Subs' } )>
 
 Returns an array reference containing the names of all subs found in the module's namespace symbol table.
 
 
 
 
-=head2 C<lines({ file => $filename, search => $text })>
+=head2 C<lines({ file =E<gt> $filename, search =E<gt> $text })>
 
 Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
 Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format 
-line_number => line_text.
+line_number =E<gt> line_text.
 
 
 
 
-=head2 C<search_replace({ file => $file, $search => 'this', $replace => 'that', copy => 'file.ext' })>
+=head2 C<search_replace({ file =E<gt> $file, $search =E<gt> 'this', $replace =E<gt> 'that', copy =E<gt> 'file.ext' })>
 
 Search for lines that contain certain text, and replace the search term with the replace term. If the optional parameter 'copy' is sent in, a copy of the original file will be created in the current directory with the name specified, and that file will be worked on instead. Good for testing to ensure The Right Thing will happen in a production file.
 
@@ -959,7 +947,7 @@ This allows for very fine-grained interaction with the application, and makes it
 
 
 
-=head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
+=head2 C<inject_after({ file =E<gt> $file, search =E<gt> 'this', code =E<gt> \@code })>
 
 WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if 
 you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for 
@@ -1107,10 +1095,10 @@ the data, as well as the current state of the entire DES object.
 NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be daisy-chained. Due to this reason, the value of 
 C<pre_filter_dump> works a little differently. For example:
 
-    pre_filter => 'one && two';
+    pre_filter =E<gt> 'one && two';
 
 ...will execute filter 'one' first, then filter 'two' with the data that came out of filter 'one'. Simply set the value to the number 
-that coincides with the location of the filter. For instance, C<pre_filter_dump => 2;> will dump the output from the second filter and 
+that coincides with the location of the filter. For instance, C<pre_filter_dump =E<gt> 2;> will dump the output from the second filter and 
 likewise, C<1> will dump after the first.
 
 
@@ -1150,18 +1138,11 @@ Values: Array reference where each element is the name of the extension (less th
 
 
 
-=head1 CAVEATS
-
-The search parameter is currently only literal text. Regexes have been disabled until further extensive testing has been done.
-
-
-
-
 
 
 =head1 SEE ALSO
 
-As of 1.19 pre release, the following POD documents haven't been created.
+As of 1.20 pre release, the following POD documents haven't been created.
 
 =over 4
 

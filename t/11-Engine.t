@@ -1,8 +1,8 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 use Data::Dumper;
 
@@ -34,6 +34,25 @@ my $engine = $compiler->{engines}{_test}->();
     is ( ref($engine), 'CODE', "_load_engine() returns a cref properly" );
     is ( ref($engine->()), 'HASH', "the _test engine returns a hashref" );
 }
+{#8
+    my $des = Devel::Examine::Subs->new();
+
+    eval {
+        $des->run({engine => '_test_bad'});
+    };
+
+    like ( $@, qr/dispatch table/, "engine module croaks if the dt key is ok, but the value doesn't point to a callback" );
+}
+{#9
+    my $des = Devel::Examine::Subs->new();
+
+    eval {
+        $des->run({engine => 'asdfasdf'});
+    };
+
+    like ( $@, qr/'asdfasdf'/, "engine module croaks if an invalid internal engine is called" );
+}
+
 sub _engine { 
     my $p = shift; 
     return \&{$compiler->{engines}{$p}}; 

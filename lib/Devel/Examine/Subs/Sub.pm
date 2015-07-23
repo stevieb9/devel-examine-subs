@@ -6,35 +6,32 @@ use warnings;
 our $VERSION = '1.18';
 
 sub new {
+
     my $class = shift;
     my $data = shift;
     my $name = shift;
+
     my $self = bless {}, $class;
 
     $self->{data} = $data;
-    $self->{name} = $name || '';
-    $self->{start_line} = $data->{start};
-    $self->{stop_line} = $data->{stop};
-    if ($data->{stop} and $data->{start}){
-        $self->{count_line} = $data->{stop} - $data->{start};
-    }
-             
+    $self->{data}{name} = $name || '';
+
     return $self;
 }
 sub name {
     my $self = shift;
-    return $self->{name};
+    return $self->{data}{name};
 }
 sub start {
     my $self = shift;
-    return $self->{start_line};
+    return $self->{data}{start};
 }
-sub stop {
+sub end {
     my $self = shift;
-    return $self->{stop_line};
+    return $self->{data}{end};
 }
-sub count {
+sub line_count {
     my $self = shift;
-    return $self->{count_line};
+    return $self->{data}{num_lines};
 }
 1;

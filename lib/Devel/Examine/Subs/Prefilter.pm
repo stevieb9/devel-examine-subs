@@ -1,24 +1,25 @@
 package Devel::Examine::Subs::Prefilter;
-
 use strict;
 use warnings;
 
+use Carp;
 use Data::Dumper;
 
 our $VERSION = '1.18';
 
 sub new {
+
     my $self = {};
     bless $self, shift;
 
     my $struct = shift;
 
     $self->{pre_filters} = $self->_dt();
-    
+
     return $self;
 }
-
 sub _dt {
+
     my $self = shift;
 
     my $dt = {
@@ -26,12 +27,24 @@ sub _dt {
         subs => \&subs,
         _default => \&_default,
         _test => \&_test,
-        object => \&object,
+        _test_bad => \&_test_bad,
+        objects => \&objects,
+        end_of_last_sub => \&end_of_last_sub,
     };
 
     return $dt;
 }
+sub exists {
+    my $self = shift;
+    my $string = shift;
 
+    if (exists $self->{pre_filters}{$string}){
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
 sub subs {
     
     return sub {
@@ -43,19 +56,24 @@ sub subs {
         my @subs;
 
         my $search = $p->{search};
-                   
+
         for my $f (keys %$s){
+        
             for my $sub (keys %{$s->{$f}{subs}}){
+                
                 if ($search && $sub eq $search){
                     next;
                 }
+                $s->{$f}{subs}{$sub}{start}++;
+                $s->{$f}{subs}{$sub}{end}++;
+                $s->{$f}{subs}{$sub}{name} = $sub;
+                @{ $s->{$f}{subs}{$sub}{file} } = @{ $s->{$f}{TIE_file} };
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }
         return \@subs;
     };
-} 
-
+}
 sub file_lines_contain {
 
     return sub {
@@ -66,7 +84,6 @@ sub file_lines_contain {
         my $search = $p->{search};
 
         my $s = $struct;
-        my @has;
 
 
         if (not $search){
@@ -75,21 +92,60 @@ sub file_lines_contain {
 
         for my $f (keys %$s){
             for my $sub (keys %{$s->{$f}{subs}}){
-                for (@{$s->{$f}{subs}{$sub}{TIE_perl_file_sub}}){
-                    for (@$_){
-                        if ($_ and /$search/){
-                            push @has, $_;
-                        }
-                    }
+                my $found = 0;
+                my @has;
+                for (@{$s->{$f}{subs}{$sub}{TIE_file_sub}}){
+                    if ($_ and /\Q$search/){
+                        $found++;
+                        push @has, $_;
+                     }
                 }
-                $s->{$f}{subs}{$sub}{TIE_perl_file_sub} = [\@has];
+                if (! $found){
+                    delete $s->{$f}{subs}{$sub};                
+                    next;
+                }
+                $s->{$f}{subs}{$sub}{TIE_file_sub} = \@has;
             }
         }
-
         return $struct;
     };
 }
+sub objects {
 
+    # uses 'subs' pre_filter
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my @return;
+
+        my $des_sub;
+       
+        return if not ref($struct) eq 'ARRAY';
+
+        for my $sub (@$struct){
+
+            # if the name of the callback method is mistyped in the
+            # dispatch table, this will be triggered
+
+            $des_sub
+              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
+
+            #FIXME: this eval catch catches bad dispatch and "not a hashref"
+
+            if ($@){
+                print "dispatch table in engine has a mistyped function value\n\n";
+                confess $@;
+            }
+
+            push @return, $des_sub;
+        }
+
+        return \@return;
+    };
+}
 sub _test {
 
     return sub {
@@ -98,53 +154,3 @@ sub _test {
     };
 }
 
-__END__
-sub object {
-    my $des = shift;
-    my $struct = shift;
-
-    my %return;
-
-    for my $file (keys %$struct){
-        $return{$file} = $des->_objects($struct->{$file});
-    }
-    
-    return \%return;
-}
-
-
-    if (not $search eq ''){
-        
-        # pull out just the subroutine from the file array
-
-        my @sub_section = @fh[$subs{$name}{start}..$subs{$name}{stop}];
-       
-        my $line_num = $subs{$name}{start};
-        
-        for (@sub_section){
-           
-            # we havent found the search term yet
-
-            $subs{$name}{found} = 0;
-
-            if ($_ and /$search/){
-                if ($want ne 'has_lines'){
-                    $subs{$name}{found} = 1;
-                }
-                else {
-                    push @{$subs{$name}{lines}}, {$line_num => $_};
-                }
-            }
-
-            $line_num++;
-            last if $subs{$name}{found};
-        }
-    }
-    else { 
-        return {};
-    }
-
-    return \%subs;
-}
-
-1;

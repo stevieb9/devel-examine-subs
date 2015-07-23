@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 2;
+use Test::More tests => 7;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -17,3 +17,24 @@ eval {
 };
 
 like ( $@, qr/open the write/, "Test sample.data unlinked/deleted successfully" );
+
+my @files_to_delete = qw(
+                    t/sample.data.bak
+                    t/sample.data.orig
+                    t/search_replace.data
+                    t/search.replace.data.bak
+                    t/inject_after.data
+                );
+
+for (@files_to_delete){
+    eval { unlink $_ if -f $_; };
+    ok (! $@, "test file >>$_<< deleted ok" );
+}
+
+exit if $@;
+
+#for (@files_to_delete){
+#    unlink $_ if -f $_;
+#};
+
+

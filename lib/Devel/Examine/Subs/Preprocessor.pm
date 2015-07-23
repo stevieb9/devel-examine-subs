@@ -8,6 +8,7 @@ use Data::Dumper;
 our $VERSION = '1.18';
 
 sub new {
+
     my $self = {};
     bless $self, shift;
 
@@ -19,13 +20,27 @@ sub new {
 }
 
 sub _dt {
+
     my $self = shift;
 
     my $dt = {
         module => \&module,
+        _test_bad => \&test_bad,
     };
 
     return $dt;
+}
+
+sub exists {
+    my $self = shift;
+    my $string = shift;
+
+    if (exists $self->{pre_procs}{$string}){
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 sub module {

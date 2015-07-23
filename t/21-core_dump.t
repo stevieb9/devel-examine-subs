@@ -24,7 +24,7 @@ my $des = Devel::Examine::Subs->new({
 
         my @exit = trap { $des->run({core_dump => 1}); };
 
-        print STDOUT $trap->stdout;
+        eval { print STDOUT $trap->stdout; };
         is (! $trap->stdout, '', "output to stdout" );
         ok (! $@, "core dump gave no errors" );
 
@@ -35,7 +35,7 @@ my $des = Devel::Examine::Subs->new({
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 183, "Based on test data, core dump dumps the correct info" );
+    is (@lines, 223, "Based on test data, core dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "core dump output file closed successfully" );

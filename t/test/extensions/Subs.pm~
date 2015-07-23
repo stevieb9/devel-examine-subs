@@ -1,6 +1,6 @@
 package Devel::Examine::Subs;
-use warnings;
-use strict; 
+
+use strict; use warnings;
 
 our $VERSION = '1.18';
 
@@ -48,35 +48,27 @@ sub run_directory {
     my $p = shift;
 
     $self->_config($p);
-
-    # return early if cache is enabled
-
-    my $cache_enabled = $self->{params}{cache};
-    my $cache = $self->_cache() if $cache_enabled;
-
-    return $cache if $cache;
-
+   
     my $dir = $self->{params}{file};
     
     my @files;
 
     find({wanted => sub {
-                        return if ! -f;
-                       
                         my @extensions = @{$self->{params}{extensions}};
-                        my $exts = join('|', @extensions);
-
-                        if ($_ !~ /\.(?:$exts)$/i){
-                            return;
+                        return if ! -f;
+                        for my $ext (@extensions){
+                            if (! $_ =~ /\.(?:$ext)$/){
+                                return;
+                            }
                         }
-                        
                         my $file = "$File::Find::name";
-
+                        print "###### $file\n";
+                        return;
                         push @files, $file;
                       },
                         no_chdir => 1 }, $dir );
 
-    my %struct;
+    my %return;
 
     for my $file (@files){
         $self->{params}{file} = $file;
@@ -86,12 +78,9 @@ sub run_directory {
         $exists = %$data if ref($data) eq 'HASH';
         $exists = @$data if ref($data) eq 'ARRAY';
 
-        $struct{$file} = $data if $exists;
+        $return{$file} = $data if $exists;
     }
-
-    $self->_cache(\%struct) if $cache_enabled;
-
-    return \%struct;
+    return \%return;
 }
 sub _config {
 
@@ -124,40 +113,6 @@ sub _config {
 
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
-    }
-}
-sub _config_clean {
-    my $self = shift;
-
-    my @persistent = qw(cache file include exclude);
-
-    for my $p (keys %{$self->{params}}){
-        if (! grep {$p eq $_} @persistent){
-            delete $self->{params}{$p};
-        }
-    }
-}
-sub _cache {
-
-    my $self = shift;
-    my $struct = shift;
-
-    return $struct if ! $self->{params}{cache};
-    
-    if ($self->{params}{cache} && $self->{cache}){
-
-        # cache dump
-
-        if ($self->{params}{cache_dump}){
-            print "Dumping cache\n\n";
-            print Dumper $self->{cache};
-            exit;
-        }
-
-        return $self->{cache};
-    }
-    else {
-        $self->{cache} = $struct;
     }
 }
 sub _file {
@@ -713,8 +668,7 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 
-sub _pod{} #vim placeholder 1;
-__END__
+sub _pod{} #vim placeholder 1; __END__
 
 =head1 NAME
 
@@ -732,15 +686,6 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 Get all sub names in a file
 
     my $aref = $des->all();
-
-Print all subs within each Perl file under a directory
-
-    my $href = $des->all({ file => 'lib/Devel/Examine' });
-
-    for my $file (keys %$href){
-        print "\n$file\n";
-        print "\t$_\n" for @{$href->{$file}};
-    }
 
 Get all subs containing "string" in the body
 
@@ -794,22 +739,6 @@ Print out all lines in all subs that contain a search term
         }
     }
 
-Same, but after searching a directory, not a single file
-
-    my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
-
-    for my $file (keys %$ret){
-        print "\n$file\n";
-        for my $sub (keys %{$ret->{$file}}){
-            print "\nSub: $sub\n";
-            for my $lines (@{$ret->{$file}{$sub}}){
-                while (my ($line_no, $code) = each (%$lines)){
-                    print "\tLine num: $line_no:\t $code\n";
-                }
-            }
-        }
-    }
-
 =head1 DESCRIPTION
 
 Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, get line counts and a myriad of other options.
@@ -820,7 +749,7 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =item - uses PPI for Perl file parsing
 
-=item - search and replace code within subs, with the ability to include or exclude subs, something a global search/replace can't do
+=item - search and replace code within subs
 
 =item - inject new code into subs following a found search pattern
 
@@ -840,11 +769,11 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =head1 METHODS
 
-=head2 C<new({ file => $filename, cache => 1 })>
+=head2 C<new({ file => $filename })>
 
 Instantiates a new object.
 
-Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'cache', 'include' and 'exclude' will remain persistent across runs under the same DES object (see PARAMETERS section).
+Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'include' and 'exclude' will remain persistent across runs under the same DES object.
 
 Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable of using.
 
@@ -875,20 +804,6 @@ Returns a hash reference with the sub name as the key, the value being an array 
 Search for lines that contain certain text, and replace the search term with the replace term.
 
 This method will create a backup copy of the file with the same name appended with '.bak'.
-
-=head2 C<run()>
-
-All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
-
-    my $params = {
-            search => 'text',
-            pre_filter => 'file_lines_contain',
-            engine => 'has',
-    };
-
-    my $return = $des->run($params);
-
-This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
 
 =head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
 
@@ -956,14 +871,6 @@ There are various optional parameters that can be used.
 
 =over 4
 
-=item C<cache>
-
-Cache results when working with a directory.
-
-If you'll be making multiple calls with the same instantiated object, set this parameter to a true value. It will cache the results of the Processor (collector) phase on the first run, and use that cache on subsequent runs, avoiding the need to recurse directories and recompile all of the data.
-
-Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
-
 =item C<include>
 
 An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
@@ -976,7 +883,7 @@ An array reference of the names of subs to exclude. See C<include> for further d
 
 In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the file.
 
-=item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
+=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
 Set to 1 to activate.
 

@@ -12,7 +12,7 @@ my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
 
 {#2
      my $res = $des->has({ search => 'thi?s' });
-         ok ( @$res, "search acts as a regex when unescaped" );
+         ok ( ! @$res, "search doesn't act as a regex when unescaped" );
 }
 {#3
      my $res = $des->has({ search => 'thi\?s' });

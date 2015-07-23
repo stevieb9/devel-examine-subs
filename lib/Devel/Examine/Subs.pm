@@ -829,11 +829,11 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 =head1 METHODS
 
-=head2 C<new({ file => $filename })>
+=head2 C<new({ file => $filename, cache => 1 })>
 
 Instantiates a new object.
 
-Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'include' and 'exclude' will remain persistent across runs under the same DES object.
+Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any and all parameters this module uses in new(), however only 'file', 'cache', 'include' and 'exclude' will remain persistent across runs under the same DES object (see PARAMETERS section).
 
 Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable of using.
 
@@ -945,6 +945,14 @@ There are various optional parameters that can be used.
 
 =over 4
 
+=item C<cache>
+
+Cache results when working with a directory.
+
+If you'll be making multiple calls with the same instantiated object, set this parameter to a true value. It will cache the results of the Processor (collector) phase on the first run, and use that cache on subsequent runs, avoiding the need to recurse directories and recompile all of the data.
+
+Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
+
 =item C<include>
 
 An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
@@ -957,7 +965,7 @@ An array reference of the names of subs to exclude. See C<include> for further d
 
 In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the file.
 
-=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
+=item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
 Set to 1 to activate.
 

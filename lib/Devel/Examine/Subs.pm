@@ -755,8 +755,8 @@ Print all subs within each Perl file under a directory
     my $href = $des->all({ file => 'lib/Devel/Examine' });
 
     for my $file (keys %$href){
-        print "\n$file\n";
-        print "\t$_\n" for @{$href->{$file}};
+        print "$file\n";
+        print join('\t', @{$href->{$file}});
     }
 
 Get all subs containing "string" in the body
@@ -792,12 +792,12 @@ Get all the subs as objects
     $aref = $des->objects(...)
 
     for my $sub (@$aref){
-        $sub->name(); # name of sub
-        $sub->start(); # first line of sub
-        $sub->stop(); # last line of sub
-        $sub->num_lines(); # number of lines in sub
-        $sub->code(); # entire sub code from file
-        $sub->lines(); # see next example...
+        $sub->name();       # name of sub
+        $sub->start();      # first line of sub
+        $sub->stop();       # last line of sub
+        $sub->num_lines();  # number of lines in sub
+        $sub->code();       # entire sub code from file
+        $sub->lines();      # see next example...
 
     }
 
@@ -821,10 +821,19 @@ The structures look a bit differently when 'file' is a directory. You need to ad
         }
     }
 
+
+
+
+
 =head1 DESCRIPTION
 
 Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, 
 get line counts and a myriad of other options.
+
+
+
+
+
 
 =head1 FEATURES
 
@@ -849,7 +858,14 @@ the full lines that match
 
 =item - pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
 
+=item - can cache internally for repeated runs with the same object (in directory mode)
+
 =back
+
+
+
+
+
 
 =head1 METHODS
 
@@ -858,27 +874,42 @@ the full lines that match
 Instantiates a new object.
 
 Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
-and all parameters this module uses in new(), however only 'file', 'cache', 'include' and 'exclude' will remain persistent across runs 
+and all parameters this module uses in new(), however only 'file' and 'cache' are guaranteed to remain persistent across runs 
 under the same DES object (see PARAMETERS section).
 
 Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable 
 of using.
 
+
+
+
 =head2 C<has({ file => $filename, search => $text })>
 
 Returns an array reference containing the names of the subs where the subroutine contains the text.
+
+
+
 
 =head2 C<missing({ file => $filename, search => $text })>
 
 The exact opposite of has.
 
+
+
+
 =head2 C<all({ file => $filename })>
 
 Returns an array reference containing the names of all subroutines found in the file.
 
+
+
+
 =head2 C<module({ module => 'Devel::Examine::Subs' } )>
 
 Returns an array reference containing the names of all subs found in the module's namespace symbol table.
+
+
+
 
 =head2 C<lines({ file => $filename, search => $text })>
 
@@ -887,11 +918,17 @@ Gathers together all line text and line number of all subs where the sub contain
 Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format 
 line_number => line_text.
 
-=head2 C<search_replace({ file => $file, $search => 'this', $replace => 'that' })>
 
-Search for lines that contain certain text, and replace the search term with the replace term.
+
+
+=head2 C<search_replace({ file => $file, $search => 'this', $replace => 'that', copy => 'file.ext' })>
+
+Search for lines that contain certain text, and replace the search term with the replace term. If the optional parameter 'copy' is sent in, a copy of the original file will be created in the current directory with the name specified, and that file will be worked on instead. Good for testing to ensure The Right Thing will happen in a production file.
 
 This method will create a backup copy of the file with the same name appended with '.bak'.
+
+
+
 
 =head2 C<run()>
 
@@ -908,6 +945,9 @@ effect programatically by using C<run()>. Here's an example that performs the sa
 
 This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
 
+
+
+
 =head2 C<inject_after({ file => $file, search => 'this', code => \@code })>
 
 WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if 
@@ -920,9 +960,12 @@ feature.
 
 The C<code> array should contain one line of code (or blank line) per each element. (See SYNOPSIS for an example).
 
+
 Optional parameters:
 
 =over 4
+
+
 
 =item C<copy>
 
@@ -930,17 +973,25 @@ See C<search_replace()> for a description of how this parameter is used.
 
 =back
 
+
+
 =head2 C<pre_procs()>
 
 Returns a list of all available pre processor modules.
+
+
 
 =head2 C<pre_filters()>
 
 Returns a list of all available built-in pre engine filter modules.
 
+
+
 =head2 C<engines()>
 
 Returns a list of all available built-in 'engine' modules.
+
+
 
 =head2 C<add_functionality()>
 
@@ -952,6 +1003,9 @@ While writing new processors, set the processor type to a callback within the lo
 want it to, put a comment line before the code with C<#<des>> and a line following the code with C<#</des>>. DES will slurp in all of 
 that code live-time, inject it into the specified processor, and configure it for use. See C<examples/write_new_engine.pl> for an 
 example of creating a new 'engine' processor.
+
+
+
 
 Parameters:
 
@@ -967,14 +1021,25 @@ Set to a true value, will update the code in the actual installed Perl module fi
 
 =back
 
+
+
+
+
 Optional parameters:
 
 =over 4
 
-=item C<copy> Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took 
+=item C<copy> 
+
+Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took 
 properly.
 
 =back
+
+
+
+
+
 
 
 =head1 PARAMETERS
@@ -982,6 +1047,8 @@ properly.
 There are various optional parameters that can be used.
 
 =over 4
+
+
 
 =item C<cache>
 
@@ -993,20 +1060,31 @@ recompile all of the data.
 
 Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
 
+
+
 =item C<include>
 
 An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, 
 significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
 
+
+
 =item C<exclude>
 
 An array reference of the names of subs to exclude. See C<include> for further details.
+
+
 
 =item C<no_indent>
 
 In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the 
 new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
 file.
+
+
+=item C<regex>
+
+Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't.
 
 =item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
@@ -1024,6 +1102,8 @@ C<pre_filter_dump> works a little differently. For example:
 that coincides with the location of the filter. For instance, C<pre_filter_dump => 2;> will dump the output from the second filter and 
 likewise, C<1> will dump after the first.
 
+
+
 =item C<pre_proc_return>, C<pre_filter_return>, C<engine_return>
 
 Returns the structure of data immediately after being processed by the respective phase. Useful for writing new 'phases'. (See "SEE 
@@ -1031,13 +1111,19 @@ ALSO" for details).
 
 NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only return after all pre-filters have executed.
 
+
+
 =item C<clean_config>
 
 Resets all configuration parameters back to pristine condition (ie. it deletes them all)
 
+
+
 =item C<config_dump>
 
 Prints to STDOUT with Data::Dumper the current state of all loaded configuration parameters.
+
+
 
 =item C<extensions>
 
@@ -1048,9 +1134,19 @@ Values: Array reference where each element is the name of the extension (less th
 
 =back
 
+
+
+
+
+
 =head1 CAVEATS
 
 The search parameter is currently only literal text. Regexes have been disabled until further extensive testing has been done.
+
+
+
+
+
 
 =head1 SEE ALSO
 
@@ -1071,6 +1167,12 @@ Information related to the 'pre_filter' phase core modules.
 Information related to the 'engine' phase core modules.
 
 =back
+
+
+
+
+
+
 
 =head1 AUTHOR
 

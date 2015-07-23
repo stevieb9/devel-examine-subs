@@ -42,8 +42,8 @@ SYNOPSIS
         my @code = <DATA>;
     
         $des->inject_after({
-                        search => 'this', 
-                        code => \@code, 
+                        search => 'this',
+                        code => \@code,
                       });
     
         __DATA__
@@ -59,38 +59,33 @@ SYNOPSIS
         $aref = $des->objects(...)
     
         for my $sub (@$aref){
-            print $sub->name() # name of sub
-            print $sub->start() # first line of sub
-            print $sub->stop() # last line of sub
-            print $sub->num_lines() # number of lines in sub
+            $sub->name(); # name of sub
+            $sub->start(); # first line of sub
+            $sub->stop(); # last line of sub
+            $sub->num_lines(); # number of lines in sub
+            $sub->code(); # entire sub code from file
+            $sub->lines(); # see next example...
+    
         }
 
     Print out all lines in all subs that contain a search term
 
-        my $ret = $des->lines({search => 'this'});
+        my $lines_with_search_term = $sub->lines();
     
-        for my $sub (%$ret){
-            for my $lines (@{$ret->{$sub}}){
-                print "\nSubroutine $sub:\n";
-                while (my ($line_no, $code) = each (%$lines)){
-                    print "Line num: $line_no, Code: $code\n";
-                }
-            }
+        for (@$lines_with_search_term){
+            my ($line_num, $text) = split /:/;
+            say "Line num: $line_num";
+            say "Code: $text\n";
         }
 
-    Same, but after searching a directory, not a single file
+    The structures look a bit differently when 'file' is a directory. You
+    need to add one more layer of extraction.
 
-        my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
+        my $files = $des->objects();
     
-        for my $file (keys %$ret){
-            print "\n$file\n";
-            for my $sub (keys %{$ret->{$file}}){
-                print "\nSub: $sub\n";
-                for my $lines (@{$ret->{$file}{$sub}}){
-                    while (my ($line_no, $code) = each (%$lines)){
-                        print "\tLine num: $line_no:\t $code\n";
-                    }
-                }
+        for my $file (keys %$files){
+            for my $sub (@{$files->{$file}}){
+                ...
             }
         }
 
@@ -129,15 +124,15 @@ FEATURES
 
 METHODS
 
- new({ file = $filename })>
+ new({ file = $filename, cache => 1 })>
 
     Instantiates a new object.
 
     Optionally takes the name of a file to search. If $filename is a
     directory, it will be searched recursively for files. You can set any
     and all parameters this module uses in new(), however only 'file',
-    'include' and 'exclude' will remain persistent across runs under the
-    same DES object.
+    'cache', 'include' and 'exclude' will remain persistent across runs
+    under the same DES object (see PARAMETERS section).
 
     Note that all public methods of this module can accept all documented
     parameters, but of course will only use the ones they're capable of
@@ -269,6 +264,19 @@ PARAMETERS
 
     There are various optional parameters that can be used.
 
+    cache
+
+      Cache results when working with a directory.
+
+      If you'll be making multiple calls with the same instantiated object,
+      set this parameter to a true value. It will cache the results of the
+      Processor (collector) phase on the first run, and use that cache on
+      subsequent runs, avoiding the need to recurse directories and
+      recompile all of the data.
+
+      Note that if any files change in the meantime, they will not be
+      picked up until 'cache' is disabled.
+
     include
 
       An array reference containing the names of subs to include. This (and
@@ -289,7 +297,7 @@ PARAMETERS
       this feature and set the new code at the beginning column of the
       file.
 
-    pre_proc_dump, pre_filter_dump, engine_dump, core_dump
+    cache_dump, pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 
       Set to 1 to activate.
 

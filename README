@@ -104,7 +104,8 @@ FEATURES
 
     - uses PPI for Perl file parsing
 
-    - search and replace code within subs
+    - search and replace code within subs, with the ability to include or
+    exclude subs, something a global search/replace can't do
 
     - inject new code into subs following a found search pattern
 

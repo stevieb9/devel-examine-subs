@@ -751,7 +751,7 @@ Print out all lines in all subs that contain a search term
 
 Same, but after searching a directory, not a single file
 
-my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
+    my $ret = $des->lines({file => 'lib/Devel/Examine', search => 'core'});
 
     for my $file (keys %$ret){
         print "\n$file\n";

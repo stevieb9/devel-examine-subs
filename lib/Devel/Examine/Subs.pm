@@ -108,6 +108,7 @@ sub _config {
             else {
                 $self->{params}{search} = qr/\Q$p->{$param}/;
             }
+            next;
         }
         $self->{params}{$param} = $p->{$param};
     }

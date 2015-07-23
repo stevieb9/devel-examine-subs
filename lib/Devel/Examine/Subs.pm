@@ -99,6 +99,16 @@ sub _config {
             next;
         }
 
+        # configure search (w/wo regex)
+
+        if ($param eq 'search'){
+            if ($self->{params}{regex} or $p->{regex}){
+                $self->{params}{search} = qr/$p->{$param}/;
+            }
+            else {
+                $self->{params}{search} = qr/\Q$p->{$param}/;
+            }
+        }
         $self->{params}{$param} = $p->{$param};
     }
 

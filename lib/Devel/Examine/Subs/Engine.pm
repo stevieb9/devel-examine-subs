@@ -119,7 +119,7 @@ sub missing {
                     push @clean, $_ if $_;
                 } 
 
-                if (! grep {/\Q$search/ and $_} @clean){
+                if (! grep {/$search/ and $_} @clean){
                     push @missing, $sub;
                 }
             }
@@ -257,9 +257,9 @@ sub search_replace {
                     last;
                 }
                 
-                if ($line =~ /\Q$search/){
+                if ($line =~ /$search/){
                     my $orig = $line;
-                    $line =~ s/\Q$search/$replace/g;
+                    $line =~ s/$search/$replace/g;
                     push @changed_lines, [$orig, $line];
                 }
             }
@@ -344,7 +344,7 @@ sub inject_after {
                         last;
                     }
                     
-                    if ($line =~ /\Q$search/ && ! $new_lines){
+                    if ($line =~ /$search/ && ! $new_lines){
                         
                         my $location = $line_num;
 

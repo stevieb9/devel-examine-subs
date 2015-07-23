@@ -25,10 +25,10 @@ sub _dt {
     my $dt = {
         file_lines_contain => \&file_lines_contain,
         subs => \&subs,
+        objects => \&objects,
         _default => \&_default,
         _test => \&_test,
         _test_bad => \&_test_bad,
-        objects => \&objects,
         end_of_last_sub => \&end_of_last_sub,
     };
 
@@ -110,42 +110,6 @@ sub file_lines_contain {
         return $struct;
     };
 }
-sub objects {
-
-    # uses 'subs' pre_filter
-
-    return sub {
-
-        my $p = shift;
-        my $struct = shift;
-
-        my @return;
-
-        my $des_sub;
-       
-        return if not ref($struct) eq 'ARRAY';
-
-        for my $sub (@$struct){
-
-            # if the name of the callback method is mistyped in the
-            # dispatch table, this will be triggered
-
-            $des_sub
-              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
-
-            #FIXME: this eval catch catches bad dispatch and "not a hashref"
-
-            if ($@){
-                print "dispatch table in engine has a mistyped function value\n\n";
-                confess $@;
-            }
-
-            push @return, $des_sub;
-        }
-
-        return \@return;
-    };
-}
 sub end_of_last_sub {
     
     return sub {
@@ -172,3 +136,44 @@ sub _test {
         return $struct;
     };
 }
+sub objects {
+
+    # uses 'subs' pre_filter
+
+    return sub {
+
+        my $p = shift;
+        my $struct = shift;
+
+        my @return;
+
+        return if not ref($struct) eq 'ARRAY';
+
+        my $file = $p->{file};
+        my $search = $p->{search};
+        my $lines;
+
+        my $des_sub;
+
+        for my $sub (@$struct){
+
+            # if the name of the callback method is mistyped in the
+            # dispatch table, this will be triggered
+
+            $des_sub
+              = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
+
+            #FIXME: this eval catch catches bad dispatch and "not a hashref"
+
+            if ($@){
+                print "dispatch table in engine has a mistyped function value\n\n";
+                confess $@;
+            }
+
+            push @return, $des_sub;
+        }
+
+        return \@return;
+    };
+}
+

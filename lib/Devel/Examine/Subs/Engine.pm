@@ -12,8 +12,6 @@ use Tie::File;
 
 our $VERSION = '1.18';
 
-# new
-
 sub new {
 
     my $self = {};
@@ -175,7 +173,6 @@ sub objects {
                                         });
             $lines = $des->lines();
         }
-
 
         my $des_sub;
         

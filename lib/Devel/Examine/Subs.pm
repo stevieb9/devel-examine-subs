@@ -518,9 +518,14 @@ sub pre_procs {
 
     my $self = shift;
     my $module = $self->{namespace} . "::Preprocessor";
-    my $pre_procs = $module->new();
+    my $pre_proc = $module->new();
 
-    return keys (%{$pre_procs->_dt()});
+    my @pre_procs;
+
+    for (keys %{$pre_proc->_dt()}){
+        push @pre_procs, $_ if $_ !~ /^_/;
+    }
+    return @pre_procs;
 }
 sub pre_filters {
 
@@ -528,15 +533,25 @@ sub pre_filters {
     my $module = $self->{namespace} . "::Prefilter";
     my $pre_filter = $module->new();
 
-    return keys (%{$pre_filter->_dt()});
+    my @pre_filters;
+
+    for (keys %{$pre_filter->_dt()}){
+        push @pre_filters, $_ if $_ !~ /^_/;
+    }
+    return @pre_filters;
 }
 sub engines {
 
     my $self = shift;
     my $module = $self->{namespace} . "::Engine";
     my $engine = $module->new();
+ 
+    my @engines;
 
-    return keys (%{$engine->_dt()});
+    for (keys %{$engine->_dt()}){
+        push @engines, $_ if $_ !~ /^_/;
+    }
+    return @engines;
 }
 sub has {
 

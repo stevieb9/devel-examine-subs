@@ -21,6 +21,7 @@ timethese(100, {
             'enabled' => 'cache_enabled',
             'disabled' => 'cache_disabled',
         });
+
 sub cache_disabled {
     $des->all({cache => 0,}) for (1..10);
 }
@@ -29,7 +30,6 @@ sub cache_enabled {
 }
 
 __END__
-Benchmark: timing 10 iterations of disabled, enabled...
-  disabled: 76 wallclock secs (66.49 usr +  5.31 sys = 71.80 CPU) @  0.14/s (n=10)
-   enabled:  0 wallclock secs ( 0.07 usr +  0.01 sys =  0.08 CPU) @ 125.00/s (n=10)
-
+Benchmark: timing 100 iterations of disabled, enabled...
+  disabled: 72 wallclock secs (66.33 usr +  5.18 sys = 71.51 CPU) @  1.40/s (n=100)
+   enabled:  0 wallclock secs ( 0.06 usr +  0.01 sys =  0.07 CPU) @ 1428.57/s (n=100)

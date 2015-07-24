@@ -1,3 +1,4 @@
+1
 Build.PL
 Changes
 examples/add_functionality.pl
@@ -21,7 +22,6 @@ lib/Devel/Examine/Subs/Preprocessor.pm
 lib/Devel/Examine/Subs/Sub.pm
 MANIFEST			This list of files
 MANIFEST.SKIP
-pod2htmd.tmp
 README
 t/00-load.t
 t/01-internal.t
@@ -68,6 +68,10 @@ t/sample.data
 t/test/bug-50.data
 t/test/extensions/this.pl
 t/test/extensions/this.text
+t/test/files/no_subs.pm
+t/test/files/other.pm
+t/test/files/sample.pm
+t/test/inject_after/inject_after.pm
 t/test/no_subs.pm
 t/test/other.pm
 t/test/sample.pm

@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 158;
+use Test::More tests => 161;
 use Tie::File;
 
 BEGIN {#1
@@ -181,6 +181,34 @@ BEGIN {#1
 
     is ($count, 3, "'injects' injects after all search finds if a negative int is sent in");
 }
+{#7
+    my $file = 't/test/inject_after/inject_after.pm';
+
+    my $params = {
+                    file => $file,
+                    copy => 't/test/inject_after/inject_after.copy',
+                    search => 'this',
+                    code => ['# inject_after_test'],
+                  };
+
+    delete $params->{inject};
+    is ($params->{inject}, undef, "successfully deleted 'inject' param" );
+
+    my $des = Devel::Examine::Subs->new({injects => 2});
+
+    my $struct = $des->inject_after($params);
+
+    eval { open my $fh, '<', $params->{copy} or die $!; };
+    ok (! $@, "can open the inject_after copy file" );
+    open my $fh, '<', $params->{copy} or die $!;
+    
+    my @fh = <$fh>;
+    close $fh;
+
+    my $count = grep /inject_after_test/, @fh;
+
+    is ($count, 2, "'injects' param is carried through from new()");
+}
 
 my @tempfiles = qw(
                 t/test/inject_after/inject_after.copy 
@@ -202,25 +230,3 @@ for (@tempfiles){
     eval { open my $fh, '<', $_ or die $!; };
     ok ($@, "temp file really is deleted" );
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

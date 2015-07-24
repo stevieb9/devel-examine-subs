@@ -1,6 +1,6 @@
 package Devel::Examine::Subs; use warnings; use strict;
 
-our $VERSION = '1.21';
+our $VERSION = '1.22';
 
 use Carp; 
 use Data::Dumper; 
@@ -872,7 +872,7 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 
 =head1 METHODS
 
-=head2 C<new({ file ==E<gt> $filename, cache ==E<gt> 1 })>
+=head2 C<new({ file =E<gt> $filename, cache =E<gt> 1 })>
 
 Instantiates a new object.
 

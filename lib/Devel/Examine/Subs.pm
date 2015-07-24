@@ -659,6 +659,8 @@ sub inject_after {
 
     $self->_config($p);
 
+    $p->{injects} = 1 if ! $p->{injects};
+
     $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';
 

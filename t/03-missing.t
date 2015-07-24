@@ -77,7 +77,7 @@ my $des = Devel::Examine::Subs->new();
 }
 
 {
-    my $params = { file => 't/test', search => 'this' };
+    my $params = { file => 't/test/files', search => 'this' };
 
     my $des = Devel::Examine::Subs->new($params);
 

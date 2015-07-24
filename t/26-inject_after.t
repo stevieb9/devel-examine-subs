@@ -1,8 +1,8 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
-use Test::More tests => 141;
+use Test::More tests => 158;
 use Tie::File;
 
 BEGIN {#1
@@ -75,3 +75,152 @@ BEGIN {#1
         $i++;
     }
 }
+{#3
+    my $file = 't/test/inject_after/inject_after.pm';
+
+    my $params = {
+                    file => $file,
+                    copy => 't/test/inject_after/inject_after.copy',
+                    search => 'this',
+                    code => ['# inject_after_test'],
+                    injects => 1,
+                  };
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $struct = $des->inject_after($params);
+
+    eval { open my $fh, '<', $params->{copy} or die $!; };
+    ok (! $@, "can open the inject_after copy file" );
+    open my $fh, '<', $params->{copy} or die $!;
+    
+    my @fh = <$fh>;
+    close $fh;
+    
+    my $count = grep /inject_after_test/, @fh;
+
+    is ($count, 1, "setting 'injects' to 1 injects only once");
+}
+{#4
+    my $file = 't/test/inject_after/inject_after.pm';
+
+    my $params = {
+                    file => $file,
+                    copy => 't/test/inject_after/inject_after.copy',
+                    search => 'this',
+                    code => ['# inject_after_test'],
+                    injects => 2,
+                  };
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $struct = $des->inject_after($params);
+
+    eval { open my $fh, '<', $params->{copy} or die $!; };
+    ok (! $@, "can open the inject_after copy file" );
+    open my $fh, '<', $params->{copy} or die $!;
+    
+    my @fh = <$fh>;
+    close $fh;
+
+    my $count = grep /inject_after_test/, @fh;
+
+    is ($count, 2, "setting 'injects' to 2 injects only once");
+}
+{#5
+    my $file = 't/test/inject_after/inject_after.pm';
+
+    my $params = {
+                    file => $file,
+                    copy => 't/test/inject_after/inject_after.copy',
+                    search => 'this',
+                    code => ['# inject_after_test'],
+                  };
+
+    delete $params->{inject};
+    is ($params->{inject}, undef, "successfully deleted 'inject' param" );
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $struct = $des->inject_after($params);
+
+    eval { open my $fh, '<', $params->{copy} or die $!; };
+    ok (! $@, "can open the inject_after copy file" );
+    open my $fh, '<', $params->{copy} or die $!;
+    
+    my @fh = <$fh>;
+    close $fh;
+
+    my $count = grep /inject_after_test/, @fh;
+
+    is ($count, 1, "'injects' defaults to one inject only");
+}
+{#6
+    my $file = 't/test/inject_after/inject_after.pm';
+
+    my $params = {
+                    file => $file,
+                    copy => 't/test/inject_after/inject_after.copy',
+                    search => 'this',
+                    code => ['# inject_after_test'],
+                    injects => -1,
+                  };
+
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $struct = $des->inject_after($params);
+
+    eval { open my $fh, '<', $params->{copy} or die $!; };
+    ok (! $@, "can open the inject_after copy file" );
+    open my $fh, '<', $params->{copy} or die $!;
+    
+    my @fh = <$fh>;
+    close $fh;
+
+    my $count = grep /inject_after_test/, @fh;
+
+    is ($count, 3, "'injects' injects after all search finds if a negative int is sent in");
+}
+
+my @tempfiles = qw(
+                t/test/inject_after/inject_after.copy 
+                t/test/inject_after/inject_after.pm.bak
+              );
+
+my $fh;
+
+
+for (@tempfiles){
+    
+    eval { open $fh, '<', $_ or die $!; };
+    ok (! $@, "inject_after() properly creates a $_ file and it can be opened" );
+    eval {close $fh;};
+    ok (! $@, "successfully closed the $_ file" );
+
+    eval { unlink $_; };
+    ok (! $@, "unlinked $_ temp file" );
+    eval { open my $fh, '<', $_ or die $!; };
+    ok ($@, "temp file really is deleted" );
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -295,6 +295,7 @@ sub inject_after {
             $search = "\Q$search";
         }
 
+        my $num_injects = $p->{injects} // 1;
         my $code = $p->{code};
         my $copy = $p->{copy};
 
@@ -350,6 +351,7 @@ sub inject_after {
             
                 tie my @tie_file, 'Tie::File', $file;
 
+
                 my $line_num = 0;
                 my $new_lines = 0; # don't search added lines
 
@@ -362,9 +364,9 @@ sub inject_after {
                     if ($line_num > $end_line){
                         last;
                     }
-                    
+
                     if ($line =~ /$search/ && ! $new_lines){
-                        
+                       
                         my $location = $line_num;
 
                         my $indent;
@@ -377,8 +379,19 @@ sub inject_after {
                         for my $line (@$code){
                             splice @tie_file, $location++, 0, $indent . $line; 
                             $new_lines++;
+                            $end_line++;
                         }
                         splice @tie_file, $location++, 0, '';
+
+                        # stop injecting after N search finds
+
+                        $num_injects--;
+                        
+                        if ($num_injects == 0){
+                            untie @tie_file;
+                            last;
+                        }
+                        
                     }
                     $new_lines-- if $new_lines != 0;
                 }

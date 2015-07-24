@@ -67,7 +67,7 @@ my $des = Devel::Examine::Subs->new();
 
 
 {
-    my $des = Devel::Examine::Subs->new({ file => 't/test' });
+    my $des = Devel::Examine::Subs->new({ file => 't/test/files' });
     my $struct = $des->all();
 
     is (keys %$struct, 2, "all() directory has the correct number of keys");

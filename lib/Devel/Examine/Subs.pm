@@ -861,6 +861,8 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 
 =item - can cache internally for repeated runs with the same object (in directory mode)
 
+=item - extensive test suite
+
 =back
 
 
@@ -939,13 +941,11 @@ This method will create a backup copy of the file with the same name appended wi
 
 =head2 C<inject_after({ search =E<gt> 'this', code =E<gt> \@code })>
 
-WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if 
-you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for 
-example). This will be fixed in the next release.
-
 Injects the code in C<@code> into the sub within the file, where the sub contains the search term. The same indentation level of the 
 line that contains the search term is used for any new code injected. Set C<no_indent> parameter to a true value to disable this 
 feature.
+
+By default, an injection only happens after the first time a search term is found. Use the C<injects> parameter (see L<PARAMETERS>) to change this behaviour. Setting to a positive integer beyond 1 will inject after that many finds. Set to a negative integer will inject after all finds.
 
 The C<code> array should contain one line of code (or blank line) per each element. (See L<SYNOPSIS> for an example).
 
@@ -1106,10 +1106,23 @@ In the processes that write new code to files, the indentation level of the line
 new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
 file.
 
+=item C<injects>
+
+Informs C<inject_after()> how many injections to perform. For instance, if a search term is found five times in a sub, how many of those do you want to inject the code after?
+
+Default is 1. Set to a higher value to achieve more injects. Set to a negative integer to inject after all.
 
 =item C<regex>
 
 Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't.
+
+=item C<extensions>
+
+By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed 
+in as opposed to a file.
+
+Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
+
 
 =item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
@@ -1150,12 +1163,6 @@ Prints to STDOUT with Data::Dumper the current state of all loaded configuration
 
 
 
-=item C<extensions>
-
-By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed 
-in as opposed to a file.
-
-Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
 
 =back
 

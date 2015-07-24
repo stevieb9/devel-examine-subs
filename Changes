@@ -1,5 +1,17 @@
 Revision history for Devel-Examine::Subs
 
+1.20_01 20150723
+        - engine framework in place
+        - uses pre_proc, pre_filter and engine callbacks
+        - callbacks can be sent in by user code
+        - search uses optional regex
+        - directory or file can be sent in
+        - refined objects, they now have 'lines'
+        - began making things more generic
+        - can search/replace and inject code
+        - can cache results in directory searching
+        - countless bug fixes        
+
 1.17    20150715
         - implemented PPI sub checking, much safer
         - removed the old _subs() that was not PPI-based

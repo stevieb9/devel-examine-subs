@@ -23,12 +23,14 @@ sub three {
     # four
     # five
     my $str = 'this';
+    # this
     # six
 
 }
 sub four {
     # hello
     # there
+    my $this = 'one';
     # wonderful
     # world
 }

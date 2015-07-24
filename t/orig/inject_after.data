@@ -23,6 +23,9 @@ sub three {
     # four
     # five
     my $str = 'this';
+    # comment line one
+    # comment line 2
+
     # six
 
 }
@@ -38,13 +41,25 @@ sub function {
 }
     sub five {
         my $str = this;
+        # comment line one
+        # comment line 2
+
 }
 sub six {
     my $str = this;
+    # comment line one
+    # comment line 2
+
 }
 sub seven {
     my $str = this;
+    # comment line one
+    # comment line 2
+
     }
 sub eight {
     my $str = this;
+    # comment line one
+    # comment line 2
+
 }

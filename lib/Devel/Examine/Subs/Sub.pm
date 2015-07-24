@@ -44,10 +44,11 @@ sub lines {
 
     if ($self->{data}{lines_with}){
         my $lines_with = $self->{data}{lines_with};
-
+        
         for (@$lines_with){
-            my ($k, $v) = each (%$_);
-            push @line_linenum, "$k: $v";
+            for my $num (keys %$_){
+                push @line_linenum, "$num: $_->{$num}";
+            }
         }
     }
 

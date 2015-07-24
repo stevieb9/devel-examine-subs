@@ -12,9 +12,13 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     requires => {
+        'Carp' => 0,
+        'Data::Dumper' => 0,
+        'File::Find' => 0,
         'perl' => 5.006,
         'PPI' => 0,
         'Tie::File' => 0,
+        'Test::Trap' => 0,
     },
     meta_merge => {
         resources => {
@@ -23,7 +27,7 @@ my $builder = Module::Build->new(
         },
     },
     add_to_cleanup      => [ 'Devel-Examine::Subs-*' ],
-    #create_makefile_pl => 'traditional',
+    create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();

@@ -3,9 +3,12 @@ package Devel::Examine::Subs::Sub;
 use strict;
 use warnings;
 
-our $VERSION = '1.18';
+use Data::Dumper;
+
+our $VERSION = '1.21';
 
 sub new {
+
     my $class = shift;
     my $data = shift;
     my $name = shift;
@@ -13,29 +16,49 @@ sub new {
     my $self = bless {}, $class;
 
     $self->{data} = $data;
-    $self->{name} = $name || '';
-    $self->{start_line} = $data->{start};
-    $self->{stop_line} = $data->{stop};
-    if ($data->{stop} and $data->{start}){
-        $self->{count_line} = $data->{stop} - $data->{start};
-    }
-             
+    $self->{data}{name} = $name || '';
+
     return $self;
 }
 sub name {
     my $self = shift;
-    return $self->{name};
+    return $self->{data}{name};
 }
 sub start {
     my $self = shift;
-    return $self->{start_line};
+    return $self->{data}{start};
 }
-sub stop {
+sub end {
     my $self = shift;
-    return $self->{stop_line};
+    return $self->{data}{end};
 }
-sub count {
+sub line_count {
     my $self = shift;
-    return $self->{count_line};
+    return $self->{data}{num_lines};
+}
+sub lines {
+
+    my $self = shift;
+
+    my @line_linenum;
+
+    if ($self->{data}{lines_with}){
+        my $lines_with = $self->{data}{lines_with};
+
+        for (@$lines_with){
+            my ($k, $v) = each (%$_);
+            push @line_linenum, "$k: $v";
+        }
+    }
+
+    return \@line_linenum;
+}
+sub code {
+
+    my $self = shift;
+
+    my $code = $self->{data}{TIE_file_sub};
+
+    return $code;
 }
 1;

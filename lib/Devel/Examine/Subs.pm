@@ -752,11 +752,11 @@ Get all sub names in a file
 
 Print all subs within each Perl file under a directory
 
-    my $href = $des->all({ file => 'lib/Devel/Examine' });
+    my $files = $des->all({ file => 'lib/Devel/Examine' });
 
-    for my $file (keys %$href){
+    for my $file (keys %$files){
         print "$file\n";
-        print join('\t', @{$href->{$file}});
+        print join('\t', @{$files->{$file}});
     }
 
 Get all subs containing "string" in the body
@@ -793,8 +793,8 @@ Get all the subs as objects
 
     for my $sub (@$aref){
         $sub->name();       # name of sub
-        $sub->start();      # first line of sub
-        $sub->stop();       # last line of sub
+        $sub->start();      # number of first line in sub
+        $sub->end();        # number of last line in sub
         $sub->num_lines();  # number of lines in sub
         $sub->code();       # entire sub code from file
         $sub->lines();      # see next example...
@@ -806,7 +806,7 @@ Print out all lines in all subs that contain a search term
     my $lines_with_search_term = $sub->lines();
 
     for (@$lines_with_search_term){
-        my ($line_num, $text) = split /:/;
+        my ($line_num, $text) = split /:/, $_, 2;
         say "Line num: $line_num";
         say "Code: $text\n";
     }
@@ -828,7 +828,7 @@ The structures look a bit differently when 'file' is a directory. You need to ad
 =head1 DESCRIPTION
 
 Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, 
-get line counts and a myriad of other options.
+get line counts, get start and end line numbers, access the sub's code and a myriad of other options.
 
 
 
@@ -841,13 +841,13 @@ get line counts and a myriad of other options.
 
 =item - uses PPI for Perl file parsing
 
-=item - search and replace code within subs, with the ability to include or exclude subs, something a global search/replace can't do
+=item - search and replace code within subs, with the ability to include or exclude subs, something a global search/replace can't do (easily)
 
 =item - inject new code into subs following a found search pattern
 
 =item - retrieve all sub names where the sub does or doesn't contain a search term
 
-=item - retrieve a list of sub objects for subs that match a search term, where each object contains a list of line numbers along with the full lines that match
+=item - retrieve a list of sub objects for subs that match a search term, where each object contains a variety of information about itself, acessible via access methods
 
 =item - include or exclude subs to be processed
 
@@ -872,31 +872,27 @@ get line counts and a myriad of other options.
 
 Instantiates a new object.
 
-Optionally takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
-and all parameters this module uses in new(), however only 'file' and 'cache' are guaranteed to remain persistent across runs 
-under the same DES object (see L<"PARAMETERS"> section).
+Takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
+and all parameters this module uses in any method, however only paramaters described in the L<PARAMETERS> section are guaranteed to remain persistent until changed manually by the user.
 
-Note that all public methods of this module can accept all documented parameters, but of course will only use the ones they're capable 
-of using.
+The L<PARAMETERS> section contains the optional core global parameters that can and should be set here if you're to use them, which can then be omitted in subsequent call. If you set 'C<file>' in C<new()>, you can omit it in all subsequent method calls.
 
 
-
-
-=head2 C<has({ file =E<gt> $filename, search =E<gt> $text })>
+=head2 C<has({ search =E<gt> $text })>
 
 Returns an array reference containing the names of the subs where the subroutine contains the text.
 
 
 
 
-=head2 C<missing({ file =E<gt> $filename, search =E<gt> $text })>
+=head2 C<missing({ search =E<gt> $text })>
 
 The exact opposite of has.
 
 
 
 
-=head2 C<all({ file =E<gt> $filename })>
+=head2 C<all()>
 
 Returns an array reference containing the names of all subroutines found in the file.
 
@@ -910,7 +906,7 @@ Returns an array reference containing the names of all subs found in the module'
 
 
 
-=head2 C<lines({ file =E<gt> $filename, search =E<gt> $text })>
+=head2 C<lines({ search =E<gt> $text })>
 
 Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
@@ -920,7 +916,7 @@ line_number =E<gt> line_text.
 
 
 
-=head2 C<search_replace({ file =E<gt> $file, $search =E<gt> 'this', $replace =E<gt> 'that', copy =E<gt> 'file.ext' })>
+=head2 C<search_replace({ $search =E<gt> 'this', $replace =E<gt> 'that', copy =E<gt> 'file.ext' })>
 
 Search for lines that contain certain text, and replace the search term with the replace term. If the optional parameter 'copy' is sent in, a copy of the original file will be created in the current directory with the name specified, and that file will be worked on instead. Good for testing to ensure The Right Thing will happen in a production file.
 
@@ -947,7 +943,7 @@ This allows for very fine-grained interaction with the application, and makes it
 
 
 
-=head2 C<inject_after({ file =E<gt> $file, search =E<gt> 'this', code =E<gt> \@code })>
+=head2 C<inject_after({ search =E<gt> 'this', code =E<gt> \@code })>
 
 WARNING!: This functionality is risky. For starters, there's no way currently to disable it from inserting after each found term, so if 
 you don't want that, you have to use a search term that you're confident only appears once in each sub (C<my $self = shift;> for 
@@ -957,7 +953,8 @@ Injects the code in C<@code> into the sub within the file, where the sub contain
 line that contains the search term is used for any new code injected. Set C<no_indent> parameter to a true value to disable this 
 feature.
 
-The C<code> array should contain one line of code (or blank line) per each element. (See SYNOPSIS for an example).
+The C<code> array should contain one line of code (or blank line) per each element. (See L<SYNOPSIS> for an example).
+
 
 
 Optional parameters:
@@ -1043,10 +1040,13 @@ properly.
 
 =head1 PARAMETERS
 
-There are various optional parameters that can be used.
+There are various optional global parameters that can be used. These should be set in C<new()>, unless you want them only briefly in which case just call them within the user public methods.
 
 =over 4
 
+=item C<file>
+
+The name of a file, or a directory. If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
 
 =item C<cache>
@@ -1072,6 +1072,8 @@ significantly reducing the work that needs to be done in subsequent method calls
 
 An array reference of the names of subs to exclude. See C<include> for further details.
 
+Note that C<exclude> renders C<include> useless.
+
 
 
 =item C<no_indent>
@@ -1087,7 +1089,7 @@ Set to a true value, all values in the 'search' parameter become regexes. For ex
 
 =item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
-Set to 1 to activate.
+Set to 1 to activate, C<exit()>s after completion.
 
 Print to STDOUT using Data::Dumper the structure of the data following the respective phase. The C<core_dump> will print the state of 
 the data, as well as the current state of the entire DES object.
@@ -1095,7 +1097,7 @@ the data, as well as the current state of the entire DES object.
 NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be daisy-chained. Due to this reason, the value of 
 C<pre_filter_dump> works a little differently. For example:
 
-    pre_filter =E<gt> 'one && two';
+    pre_filter => 'one && two';
 
 ...will execute filter 'one' first, then filter 'two' with the data that came out of filter 'one'. Simply set the value to the number 
 that coincides with the location of the filter. For instance, C<pre_filter_dump =E<gt> 2;> will dump the output from the second filter and 
@@ -1114,7 +1116,7 @@ NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only
 
 =item C<clean_config>
 
-Resets all configuration parameters back to pristine condition (ie. it deletes them all)
+Resets all configuration variables back to C<undef>, less the global ones specified in L<PARAMETERS>. Those ones need to be reset manually C<param => 0;> or C<delete $param->{param};>.
 
 
 

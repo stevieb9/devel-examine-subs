@@ -10,7 +10,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.21';
+our $VERSION = '1.22';
 
 sub new {
 
@@ -226,7 +226,7 @@ sub search_replace {
         }
 
         my $replace = $p->{replace};
-        my $copy = $p->{copy};
+        my $copy = $p->{copy} if $p->{copy};
 
         if (! $file){
             croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
@@ -245,7 +245,9 @@ sub search_replace {
  
         copy $file, "$file.bak";
 
-        unlink $copy if -f $copy;
+        if ($copy && -f $copy){
+            unlink $copy;
+        }
         
         if ($copy){
             copy $file, $copy;

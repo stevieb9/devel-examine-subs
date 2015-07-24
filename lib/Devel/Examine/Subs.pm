@@ -1,4 +1,6 @@
-package Devel::Examine::Subs; use warnings; use strict;
+package Devel::Examine::Subs; 
+use warnings; 
+use strict;
 
 our $VERSION = '1.22';
 
@@ -733,7 +735,8 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 
-sub _pod{} #vim placeholder 1; __END__
+sub _pod{} #vim placeholder 1; 
+__END__
 
 =head1 NAME
 

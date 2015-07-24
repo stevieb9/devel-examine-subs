@@ -1,6 +1,6 @@
 package Devel::Examine::Subs; use warnings; use strict;
 
-our $VERSION = '1.20_01';
+our $VERSION = '1.21';
 
 use Carp; 
 use Data::Dumper; 
@@ -878,6 +878,17 @@ and all parameters this module uses in any method, however only paramaters descr
 The L<PARAMETERS> section contains the optional core global parameters that can and should be set here if you're to use them, which can then be omitted in subsequent call. If you set 'C<file>' in C<new()>, you can omit it in all subsequent method calls.
 
 
+
+
+=head2 C<all()>
+
+Returns an array reference containing the names of all subroutines found in the file.
+
+
+
+
+
+
 =head2 C<has({ search =E<gt> $text })>
 
 Returns an array reference containing the names of the subs where the subroutine contains the text.
@@ -892,9 +903,6 @@ The exact opposite of has.
 
 
 
-=head2 C<all()>
-
-Returns an array reference containing the names of all subroutines found in the file.
 
 
 
@@ -923,22 +931,6 @@ Search for lines that contain certain text, and replace the search term with the
 This method will create a backup copy of the file with the same name appended with '.bak'.
 
 
-
-
-=head2 C<run()>
-
-All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same 
-effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
-
-    my $params = {
-            search => 'text',
-            pre_filter => 'file_lines_contain',
-            engine => 'has',
-    };
-
-    my $return = $des->run($params);
-
-This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
 
 
 
@@ -987,6 +979,21 @@ Returns a list of all available built-in pre engine filter modules.
 
 Returns a list of all available built-in 'engine' modules.
 
+
+=head2 C<run()>
+
+All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same 
+effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
+
+    my $params = {
+            search => 'text',
+            pre_filter => 'file_lines_contain',
+            engine => 'has',
+    };
+
+    my $return = $des->run($params);
+
+This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
 
 
 =head2 C<add_functionality()>
@@ -1058,6 +1065,21 @@ the Processor (collector) phase on the first run, and use that cache on subseque
 recompile all of the data.
 
 Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
+
+In a typical use case where the data is compiled and then nine subsequent calls are made through the same object, there's approximately a 1,000 times gain in speed by using C<cache>:
+
+    Benchmark: timing 100 iterations of disabled, enabled...
+      disabled: 72 wallclock secs (66.33 usr +  5.18 sys = 71.51 CPU) @  1.40/s (n=100)
+       enabled:  0 wallclock secs ( 0.06 usr +  0.01 sys =  0.07 CPU) @ 1428.57/s (n=100)
+
+See C<examples/cache_benchmark.pl> for details.
+
+=item C<diff>
+
+Not yet implemented. 
+
+Compiles a diff after each edit using the methods that edit files.
+
 
 
 

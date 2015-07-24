@@ -130,7 +130,7 @@ FEATURES
 
 METHODS
 
- new({ file ==> $filename, cache ==> 1 })
+ new({ file => $filename, cache => 1 })
 
     Instantiates a new object.
 

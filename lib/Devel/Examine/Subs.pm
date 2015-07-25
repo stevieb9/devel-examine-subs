@@ -49,32 +49,38 @@ sub run_directory {
 
     $self->_config($p);
 
-    # return early if cache is enabled
-
-    my $cache_enabled = $self->{params}{cache};
-    my $cache = $self->_cache() if $cache_enabled;
-
-    return $cache if $cache;
-
     my $dir = $self->{params}{file};
     
     my @files;
 
-    find({wanted => sub {
-                        return if ! -f;
-                       
-                        my @extensions = @{$self->{params}{extensions}};
-                        my $exts = join('|', @extensions);
+    # return early if cache is enabled
 
-                        if ($_ !~ /\.(?:$exts)$/i){
-                            return;
-                        }
-                        
-                        my $file = "$File::Find::name";
+    my $cache_enabled = $self->{params}{cache};
 
-                        push @files, $file;
-                      },
-                        no_chdir => 1 }, $dir );
+    if ($cache_enabled && ($self->_cache('file'))[0]){
+        @files = @{$self->_cache('file')};
+        #    print "$_\n" for @files;
+    }
+    else {
+
+        find({wanted => sub {
+                            return if ! -f;
+                           
+                            my @extensions = @{$self->{params}{extensions}};
+                            my $exts = join('|', @extensions);
+
+                            if ($_ !~ /\.(?:$exts)$/i){
+                                return;
+                            }
+                            
+                            my $file = "$File::Find::name";
+
+                            push @files, $file;
+                          },
+                            no_chdir => 1 }, $dir );
+    }
+
+    $self->_cache('file', \@files) if $cache_enabled;
 
     my %struct;
 
@@ -147,25 +153,34 @@ sub _config_clean {
 sub _cache {
 
     my $self = shift;
-    my $struct = shift;
+    my $slot = shift;
+    my $data = shift;
 
-    return $struct if ! $self->{params}{cache};
-    
-    if ($self->{params}{cache} && $self->{cache}){
+    print "c: $_\n" for @$data;
 
-        # cache dump
+    my @cached = qw(file _subs);
 
-        if ($self->{params}{cache_dump}){
-            print "Dumping cache\n\n";
-            print Dumper $self->{cache};
-            exit;
-        }
+    my %dt = (
+        file => sub { return $self->{cache}{file} },#  if ! $self->{config_changes}{extension}; };
+    );
 
-        return $self->{cache};
+    if (ref $slot eq 'HASH'){
+        print Dumper $slot;
+    }
+    print "*********>$slot<***\n";
+    if (!(grep {$slot eq $_ } @cached)){
+        print "returning 0\n";
+        return 0;
+    }
+
+    if ($data){
+        $self->{cache}{$slot} = $data;
     }
     else {
-        $self->{cache} = $struct;
+        $dt{$slot}->();
     }
+
+    return 0;
 }
 sub _file {
 

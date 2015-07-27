@@ -21,7 +21,6 @@ sub new {
     my $p = shift;
 
     $self->{namespace} = 'Devel::Examine::Subs';
-    $self->{calling_script} = (caller)[1];
     
     $self->_config($p);
 
@@ -50,59 +49,39 @@ sub run_directory {
 
     $self->_config($p);
 
-    # return early if cache is enabled
-
-    my $cache_enabled = $self->{params}{cache};
-
     my @files;
 
-    @files = $self->_cache_files() if $cache_enabled;
-
-    if (! @files){
-        my $dir = $self->{params}{file};
-        
-        find({wanted => sub {
-                            return if ! -f;
-                           
-                            my @extensions = @{$self->{params}{extensions}};
-                            my $exts = join('|', @extensions);
-
-                            if ($_ !~ /\.(?:$exts)$/i){
-                                return;
-                            }
-                            
-                            my $file = "$File::Find::name";
-
-                            push @files, $file;
-                          },
-                            no_chdir => 1 }, $dir );
-    }
-
-    my $caller = $self->{calling_script};
+    my $dir = $self->{params}{file};
     
-    $self->_cache_files(@files) if $cache_enabled;
+    find({wanted => sub {
+                        return if ! -f;
+                       
+                        my @extensions = @{$self->{params}{extensions}};
+                        my $exts = join('|', @extensions);
 
-    if ($caller =~ /cache_benchmark\.pl|34-cache\.t/){
-        return @files;
-    }
+                        if ($_ !~ /\.(?:$exts)$/i){
+                            return;
+                        }
+                        
+                        my $file = "$File::Find::name";
+
+                        push @files, $file;
+                      },
+                        no_chdir => 1 }, $dir );
 
     my %struct;
+    
+    for my $file (@files){
+        $self->{params}{file} = $file;
+        my $data = $self->_core($self->{params});
+        
+        my $exists = 0;
+        $exists = %$data if ref($data) eq 'HASH';
+        $exists = @$data if ref($data) eq 'ARRAY';
 
-    %struct = $self->_cache() if $cache_enabled;
-
-    if (! %struct){
-        for my $file (@files){
-            $self->{params}{file} = $file;
-            my $data = $self->_core($self->{params});
-            
-            my $exists = 0;
-            $exists = %$data if ref($data) eq 'HASH';
-            $exists = @$data if ref($data) eq 'ARRAY';
-
-            $struct{$file} = $data if $exists;
-        }
+        $struct{$file} = $data if $exists;
     }
-     
+    
     return \%struct;
 }
 sub _config {
@@ -125,92 +104,7 @@ sub _config {
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
     }
-    
-    $self->_config_check();
 }
-sub _config_check {
-
-    my $self = shift;
-
-    my @persistent = qw (
-                        file
-                        cache
-                    );
-
-    my @volatile = qw(
-                        cache 
-                        file 
-                        include 
-                        exclude
-                        pre_proc
-                        pre_filter
-                        engine
-                    );
-
-    my $last_run = $self->{config_last_run};
-    delete $self->{config_diff};
-
-    for my $p (keys %{$self->{params}}){
-        
-        if ($last_run->{$p} && $last_run->{$p} ne $self->{params}{$p}){
-            $self->{config_diff}{$p} = $self->{params}{$p};
-        } 
-    }
-
-    %{$self->{config_last_run}} = %{$self->{params}};
-}
-sub _cache {
-
-    my $self = shift;
-    my $struct = shift;
-
-    return $struct if ! $self->{params}{cache};
-    
-    if ($self->{params}{cache} && $self->{cache}){
-
-        # cache dump
-
-        if ($self->{params}{cache_dump}){
-            print "Dumping cache\n\n";
-            print Dumper $self->{cache};
-            exit;
-        }
-
-        return $self->{cache};
-    }
-    else {
-        $self->{cache} = $struct;
-    }
-}
-sub _cache_files {
-    my $self = shift;
-    my @files = @_;
-
-    if (! $self->{config_diff}{extensions} && ! $self->{config_diff}{file}){ 
-        if ($self->{cache_files}){
-            $self->{cache_files_used} = 1;
-            return @{$self->{cache_files}};
-        }
-    }
-
-    if (@files){
-        @{$self->{cache_files}} = @files;
-    }
-
-    $self->{cache_files_used} = 0;
-
-    my @return = ();
-    return @return;  
-}
-sub cache_status {
-    
-    my $self = shift;
-    my $which = shift;
-
-    if ($which eq 'files'){
-        return $self->{cache_files_used};
-    }
-} 
 sub _file {
 
     my $self = shift;
@@ -242,7 +136,7 @@ sub _core {
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
-}
+    
     # pre processor
 
     my $data;
@@ -906,8 +800,6 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 
 =item - pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
 
-=item - can cache internally for repeated runs with the same object (in directory mode)
-
 =item - extensive test suite
 
 =back
@@ -919,7 +811,7 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 
 =head1 METHODS
 
-=head2 C<new({ file =E<gt> $filename, cache =E<gt> 1 })>
+=head2 C<new({ file =E<gt> $filename })>
 
 Instantiates a new object.
 
@@ -1105,24 +997,6 @@ There are various optional global parameters that can be used. These should be s
 The name of a file, or a directory. If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
 
-=item C<cache>
-
-Cache results when working with a directory.
-
-If you'll be making multiple calls with the same instantiated object, set this parameter to a true value. It will cache the results of 
-the Processor (collector) phase on the first run, and use that cache on subsequent runs, avoiding the need to recurse directories and 
-recompile all of the data.
-
-Note that if any files change in the meantime, they will not be picked up until 'cache' is disabled.
-
-In a typical use case where the data is compiled and then nine subsequent calls are made through the same object, there's approximately a 1,000 times gain in speed by using C<cache>:
-
-    Benchmark: timing 100 iterations of disabled, enabled...
-      disabled: 72 wallclock secs (66.33 usr +  5.18 sys = 71.51 CPU) @  1.40/s (n=100)
-       enabled:  0 wallclock secs ( 0.06 usr +  0.01 sys =  0.07 CPU) @ 1428.57/s (n=100)
-
-See C<examples/cache_benchmark.pl> for details.
-
 =item C<diff>
 
 Not yet implemented. 
@@ -1171,7 +1045,7 @@ in as opposed to a file.
 Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
 
 
-=item C<cache_dump>, C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
+=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
 Set to 1 to activate, C<exit()>s after completion.
 

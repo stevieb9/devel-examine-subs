@@ -21,6 +21,7 @@ sub new {
     my $p = shift;
 
     $self->{namespace} = 'Devel::Examine::Subs';
+    $self->{calling_script} = (caller)[1];
     
     $self->_config($p);
 
@@ -52,29 +53,34 @@ sub run_directory {
     # return early if cache is enabled
 
     my $cache_enabled = $self->{params}{cache};
-    my $cache = $self->_cache() if $cache_enabled;
 
-    return $cache if $cache;
-
-    my $dir = $self->{params}{file};
-    
     my @files;
 
-    find({wanted => sub {
-                        return if ! -f;
-                       
-                        my @extensions = @{$self->{params}{extensions}};
-                        my $exts = join('|', @extensions);
+    @files = $self->_cache_files() if $cache_enabled;
 
-                        if ($_ !~ /\.(?:$exts)$/i){
-                            return;
-                        }
-                        
-                        my $file = "$File::Find::name";
+    if (! @files){
+        my $dir = $self->{params}{file};
+        
+        find({wanted => sub {
+                            return if ! -f;
+                           
+                            my @extensions = @{$self->{params}{extensions}};
+                            my $exts = join('|', @extensions);
 
-                        push @files, $file;
-                      },
-                        no_chdir => 1 }, $dir );
+                            if ($_ !~ /\.(?:$exts)$/i){
+                                return;
+                            }
+                            
+                            my $file = "$File::Find::name";
+
+                            push @files, $file;
+                          },
+                            no_chdir => 1 }, $dir );
+    }
+
+    if ($self->{calling_script} =~ /cache_benchmark/){
+        return @files;
+    }
 
     my %struct;
 
@@ -89,7 +95,7 @@ sub run_directory {
         $struct{$file} = $data if $exists;
     }
 
-    $self->_cache(\%struct) if $cache_enabled;
+    $self->_cache_files(\@files) if $cache_enabled;
 
     return \%struct;
 }
@@ -97,6 +103,7 @@ sub _config {
 
     my $self = shift;
     my $p = shift;
+
 
     for my $param (keys %$p){
 
@@ -112,15 +119,19 @@ sub _config {
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
     }
+    
+    $self->_config_check();
 }
-sub _config_clean {
+sub _config_check {
 
     my $self = shift;
-    my $params = shift;
 
-    my @params = keys %$params;
-    
-    my @persistent = qw(
+    my @persistent = qw (
+                        file
+                        cache
+                    );
+
+    my @volatile = qw(
                         cache 
                         file 
                         include 
@@ -130,18 +141,14 @@ sub _config_clean {
                         engine
                     );
 
+    my $last_run = $self->{config_last_run};
+
     for my $p (keys %{$self->{params}}){
         
-        # don't dump persistent core params
-
-        if (grep {$p eq $_} @persistent){
-            next;
-        }
-        if (grep /$p/, @params){
-            next;
-        }
-        
-        delete $self->{params}{$p};
+        if ($last_run->{$p} && $last_run->{$p} ne $self->{params}{$p}){
+            $self->{config_diff}{$p} = $self->{params}{$p};
+            $self->{config_last_run}{$p} = $self->{params}{$p};
+        } 
     }
 }
 sub _cache {
@@ -166,6 +173,22 @@ sub _cache {
     else {
         $self->{cache} = $struct;
     }
+}
+sub _cache_files {
+    my $self = shift;
+    my $files = shift;
+
+    if (! $self->{config_diff}{extensions} && ! $self->{config_diff}{file}){ 
+        if ($self->{cache_files}){
+            return @{$self->{cache_files}};
+        }
+    }
+    if ($files){
+        my @cache = @$files;
+        $self->{cache_files} = \@cache;
+    }
+
+    return 0;
 }
 sub _file {
 

@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 
+use Data::Dumper;
 use Test::More tests => 9;
 use Test::Trap;
 
@@ -10,9 +11,30 @@ BEGIN {#1
 }
 
 my $des = Devel::Examine::Subs->new({
-                            file => 'lib',
+                            file => 't',
                             cache => 1,
                           });
+{#3 cache file
+    $des->run_directory();
+    is($des->cache_status('files'), 0, "files cache not used on new call");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on subsequent call");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on further subsequent call");
+    $des->run_directory({extensions => ['data']});
+    is($des->cache_status('files'), 0, "files cache not used if extensions changed");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on subsequent call");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on subsequent call");
+    $des->run_directory({file => 'lib'});
+    is($des->cache_status('files'), 0, "files cache not used if 'file' changed");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on subsequent call");
+    $des->run_directory();
+    is($des->cache_status('files'), 1, "files cache is used on further subsequent call");
+}
+__END__
 {#2 - cache
 
     my $file = 't/cache_dump.debug';

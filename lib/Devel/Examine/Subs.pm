@@ -78,25 +78,31 @@ sub run_directory {
                             no_chdir => 1 }, $dir );
     }
 
-    if ($self->{calling_script} =~ /cache_benchmark/){
+    my $caller = $self->{calling_script};
+    
+    $self->_cache_files(@files) if $cache_enabled;
+
+    if ($caller =~ /cache_benchmark\.pl|34-cache\.t/){
         return @files;
     }
 
     my %struct;
 
-    for my $file (@files){
-        $self->{params}{file} = $file;
-        my $data = $self->_core($self->{params});
-        
-        my $exists = 0;
-        $exists = %$data if ref($data) eq 'HASH';
-        $exists = @$data if ref($data) eq 'ARRAY';
+    %struct = $self->_cache() if $cache_enabled;
 
-        $struct{$file} = $data if $exists;
+    if (! %struct){
+        for my $file (@files){
+            $self->{params}{file} = $file;
+            my $data = $self->_core($self->{params});
+            
+            my $exists = 0;
+            $exists = %$data if ref($data) eq 'HASH';
+            $exists = @$data if ref($data) eq 'ARRAY';
+
+            $struct{$file} = $data if $exists;
+        }
     }
-
-    $self->_cache_files(\@files) if $cache_enabled;
-
+     
     return \%struct;
 }
 sub _config {
@@ -142,14 +148,16 @@ sub _config_check {
                     );
 
     my $last_run = $self->{config_last_run};
+    delete $self->{config_diff};
 
     for my $p (keys %{$self->{params}}){
         
         if ($last_run->{$p} && $last_run->{$p} ne $self->{params}{$p}){
             $self->{config_diff}{$p} = $self->{params}{$p};
-            $self->{config_last_run}{$p} = $self->{params}{$p};
         } 
     }
+
+    %{$self->{config_last_run}} = %{$self->{params}};
 }
 sub _cache {
 
@@ -176,20 +184,33 @@ sub _cache {
 }
 sub _cache_files {
     my $self = shift;
-    my $files = shift;
+    my @files = @_;
 
     if (! $self->{config_diff}{extensions} && ! $self->{config_diff}{file}){ 
         if ($self->{cache_files}){
+            $self->{cache_files_used} = 1;
             return @{$self->{cache_files}};
         }
     }
-    if ($files){
-        my @cache = @$files;
-        $self->{cache_files} = \@cache;
+
+    if (@files){
+        @{$self->{cache_files}} = @files;
     }
 
-    return 0;
+    $self->{cache_files_used} = 0;
+
+    my @return = ();
+    return @return;  
 }
+sub cache_status {
+    
+    my $self = shift;
+    my $which = shift;
+
+    if ($which eq 'files'){
+        return $self->{cache_files_used};
+    }
+} 
 sub _file {
 
     my $self = shift;
@@ -221,7 +242,7 @@ sub _core {
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
-
+}
     # pre processor
 
     my $data;

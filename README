@@ -123,14 +123,11 @@ FEATURES
     - pre-defined callbacks are used by default, but user-supplied ones are
     loaded dynamically
 
-    - can cache internally for repeated runs with the same object (in
-    directory mode)
-
     - extensive test suite
 
 METHODS
 
- new({ file => $filename, cache => 1 })
+ new({ file => $filename })
 
     Instantiates a new object.
 
@@ -286,29 +283,6 @@ PARAMETERS
       changed in a call, the updated value will remain persistent until
       changed again.
 
-    cache
-
-      Cache results when working with a directory.
-
-      If you'll be making multiple calls with the same instantiated object,
-      set this parameter to a true value. It will cache the results of the
-      Processor (collector) phase on the first run, and use that cache on
-      subsequent runs, avoiding the need to recurse directories and
-      recompile all of the data.
-
-      Note that if any files change in the meantime, they will not be
-      picked up until 'cache' is disabled.
-
-      In a typical use case where the data is compiled and then nine
-      subsequent calls are made through the same object, there's
-      approximately a 1,000 times gain in speed by using cache:
-
-          Benchmark: timing 100 iterations of disabled, enabled...
-            disabled: 72 wallclock secs (66.33 usr +  5.18 sys = 71.51 CPU) @  1.40/s (n=100)
-             enabled:  0 wallclock secs ( 0.06 usr +  0.01 sys =  0.07 CPU) @ 1428.57/s (n=100)
-
-      See examples/cache_benchmark.pl for details.
-
     diff
 
       Not yet implemented.
@@ -361,7 +335,7 @@ PARAMETERS
       Values: Array reference where each element is the name of the
       extension (less the dot). For example, ['pm', 'pl'] is the default.
 
-    cache_dump, pre_proc_dump, pre_filter_dump, engine_dump, core_dump
+    pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 
       Set to 1 to activate, exit()s after completion.
 

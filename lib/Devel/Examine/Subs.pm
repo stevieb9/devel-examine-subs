@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings; 
 use strict;
 
-our $VERSION = '1.22';
+our $VERSION = '1.23';
 
 use Carp; 
 use Data::Dumper; 
@@ -770,8 +770,7 @@ The structures look a bit differently when 'file' is a directory. You need to ad
 
 =head1 DESCRIPTION
 
-Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, 
-get line counts, get start and end line numbers, access the sub's code and a myriad of other options.
+Gather information about subroutines in Perl files (and in-memory modules), with the ability to search/replace code, inject new code, get line counts, get start and end line numbers, access the sub's code and a myriad of other options.
 
 
 
@@ -800,8 +799,6 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 
 =item - pre-defined callbacks are used by default, but user-supplied ones are loaded dynamically
 
-=item - extensive test suite
-
 =back
 
 
@@ -816,9 +813,9 @@ get line counts, get start and end line numbers, access the sub's code and a myr
 Instantiates a new object.
 
 Takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
-and all parameters this module uses in any method, however only paramaters described in the L<PARAMETERS> section are guaranteed to remain persistent until changed manually by the user.
+and all parameters this module uses in any method, however, only the 'file' param is guaranteed to stay persistent, so best to supply your desired params to each call. 
 
-The L<PARAMETERS> section contains the optional core global parameters that can and should be set here if you're to use them, which can then be omitted in subsequent call. If you set 'C<file>' in C<new()>, you can omit it in all subsequent method calls.
+See the L<PARAMETERS> section for optional parameters that can and perhaps should be set here. 
 
 
 
@@ -861,17 +858,16 @@ Returns an array reference containing the names of all subs found in the module'
 
 Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
 
-Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format 
-line_number =E<gt> line_text.
+Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format line_number =E<gt> line_text.
 
 
 
 
-=head2 C<search_replace({ $search =E<gt> 'this', $replace =E<gt> 'that', copy =E<gt> 'file.ext' })>
+=head2 C<search_replace({ search =E<gt> 'this', replace =E<gt> 'that', copy =E<gt> 'file.ext' })>
 
 Search for lines that contain certain text, and replace the search term with the replace term. If the optional parameter 'copy' is sent in, a copy of the original file will be created in the current directory with the name specified, and that file will be worked on instead. Good for testing to ensure The Right Thing will happen in a production file.
 
-This method will create a backup copy of the file with the same name appended with '.bak'.
+This method will create a backup copy of the file with the same name appended with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 
 
@@ -1008,8 +1004,7 @@ Compiles a diff after each edit using the methods that edit files.
 
 =item C<include>
 
-An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, 
-significantly reducing the work that needs to be done in subsequent method calls. Best to set it in the C<new()> method.
+An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls.
 
 
 
@@ -1035,12 +1030,11 @@ Default is 1. Set to a higher value to achieve more injects. Set to a negative i
 
 =item C<regex>
 
-Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't.
+Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. This parameter is persistent; it remains until reset manually.
 
 =item C<extensions>
 
-By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed 
-in as opposed to a file.
+By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file. This parameter is persistent until manually reset and should be set in C<new>.
 
 Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
 
@@ -1074,7 +1068,7 @@ NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only
 
 =item C<clean_config>
 
-Resets all configuration variables back to C<undef>, less the global ones specified in L<PARAMETERS>. Those ones need to be reset manually C<param => 0;> or C<delete $param->{param};>.
+Resets all configuration variables back to C<undef>, less the persistent global ones ('file', 'extensions', 'regex').
 
 
 
@@ -1096,7 +1090,7 @@ Prints to STDOUT with Data::Dumper the current state of all loaded configuration
 
 =head1 SEE ALSO
 
-As of 1.20 pre release, the following POD documents haven't been created.
+As of v1.23, the following POD documents haven't been created.
 
 =over 4
 

@@ -1,5 +1,11 @@
 Revision history for Devel-Examine::Subs
 
+1.23    20150811
+        - removed all traces of cache
+        - dependency fixes
+        - cleaned up POD
+        - fixed typos and PPI var names
+
 1.20_01 20150723
         - engine framework in place
         - uses pre_proc, pre_filter and engine callbacks

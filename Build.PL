@@ -11,6 +11,9 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
+    configure_requires => {
+        'Module::Build' => 0,
+    },
     requires => {
         'Carp' => 0,
         'Data::Dumper' => 0,

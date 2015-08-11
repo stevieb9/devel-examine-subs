@@ -813,7 +813,7 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 Instantiates a new object.
 
 Takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
-and all parameters this module uses in any method, however, only the 'file' param is guaranteed to stay persistent, so best to supply your desired params to each call. 
+and all parameters this module uses in any method, however, only the 'file', 'extensions' and 'regex' params are guaranteed to stay persistent, so best to supply your desired params to each call. 
 
 See the L<PARAMETERS> section for optional parameters that can and perhaps should be set here. 
 
@@ -1089,8 +1089,6 @@ Prints to STDOUT with Data::Dumper the current state of all loaded configuration
 
 
 =head1 SEE ALSO
-
-As of v1.23, the following POD documents haven't been created.
 
 =over 4
 

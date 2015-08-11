@@ -403,3 +403,97 @@ sub inject_after {
         return \@processed;
     };                        
 }
+1;
+sub _vim_placeholder {}
+
+__END__
+
+=head1 NAME
+
+Devel::Examine::Subs::Engine - Provides core engine callbacks for Devel::Examine::Subs
+
+=head1 SYNOPSIS
+
+    use Devel::Examine::Subs::Engine;
+
+    my $compiler = Devel::Examine::Subs::Engine->new();
+
+    if (! $compiler->exists($engine)){
+        croak "engine '$engine' is not implemented.\n";
+    }
+
+    eval {
+        $engine_cref = $compiler->{engines}{$engine}->();
+    };
+
+
+=head1 METHODS
+
+All methods other than C<exists()> takes an href of configuration data as it's first parameter.
+
+=head2 C<exists('engine')>
+
+Verifies whether the engine name specified as the string parameter exists and is valid.
+
+=head2 C<all()>
+
+Takes C<$struct> params directly from the Processor module.
+
+Returns an aref.
+
+=head2 C<has()>
+
+Takes C<$struct> from the output of the 'file_lines_contain' Pre-filter.
+
+Returns an aref.
+
+=head2 C<missing()>
+
+Data comes directly from the Processor.
+
+Returns an aref.
+
+=head2 C<lines()>
+
+The module that passes data in is dependant on whether 'search' is set. Otherwise, it comes directly from the Processor.
+
+Returns an href.
+
+=head2 C<objects()>
+
+Uses C<Devel::Examine::Subs::Sub> to generate objects based on subs.
+
+Returns an aref of said objects.
+
+=head2 C<search_replace()>
+
+Takes params, struct and a des object.
+
+Returns aref of replaced lines if there are any.
+
+=head2 C<inject_after()>
+
+Returns aref of subs that had code injected.
+
+=head1 AUTHOR
+
+Steve Bertrand, C<< <steveb at cpan.org> >>
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Devel::Examine::Subs
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2015 Steve Bertrand.
+
+This program is free software; you can redistribute it and/or modify it under the terms of either: the GNU General Public License as 
+published by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
+
+

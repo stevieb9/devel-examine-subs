@@ -269,9 +269,13 @@ METHODS
 
 PARAMETERS
 
-    There are various optional global parameters that can be used. These
-    should be set in new(), unless you want them only briefly in which case
-    just call them within the user public methods.
+    There are various parameters that can be used to change the behaviour
+    of the application. Some are persistent across calls, and others
+    aren't. You can change or null any/all parameters in any call, but some
+    should be set in the new() method (set it and forget it).
+
+    The following list are persistent parameters, which need to be manually
+    changed or nulled. Consider setting these in new().
 
     file
 
@@ -280,11 +284,49 @@ PARAMETERS
       changed in a call, the updated value will remain persistent until
       changed again.
 
+    extensions
+
+      By default, we load only *.pm and *.pl files. Use this parameter to
+      load different files. Only useful when a directory is passed in as
+      opposed to a file. This parameter is persistent until manually reset
+      and should be set in new.
+
+      Values: Array reference where each element is the name of the
+      extension (less the dot). For example, ['pm', 'pl'] is the default.
+
+    copy
+
+      For methods that write to files, you can optionally work on a copy
+      that you specify in order to review the changes before modifying a
+      production file.
+
+      Set this parameter to the name of an output file. The original file
+      will be copied to this name, and we'll work on this copy.
+
+    regex
+
+      Set to a true value, all values in the 'search' parameter become
+      regexes. For example with regex on, /thi?s/ will match "this", but
+      without regex, it won't. This parameter is persistent; it remains
+      until reset manually.
+
+    no_indent
+
+      In the processes that write new code to files, the indentation level
+      of the line the search term was found on is used for inserting the
+      new code by default. Set this parameter to a true value to disable
+      this feature and set the new code at the beginning column of the
+      file.
+
     diff
 
       Not yet implemented.
 
       Compiles a diff after each edit using the methods that edit files.
+
+    The following parameters are not persistent, ie. they get reset before
+    entering the next call on the DES object. They must be passed in to
+    each subsequent call if the effect is still desired.
 
     include
 
@@ -300,14 +342,6 @@ PARAMETERS
 
       Note that exclude renders include useless.
 
-    no_indent
-
-      In the processes that write new code to files, the indentation level
-      of the line the search term was found on is used for inserting the
-      new code by default. Set this parameter to a true value to disable
-      this feature and set the new code at the beginning column of the
-      file.
-
     injects
 
       Informs inject_after() how many injections to perform. For instance,
@@ -316,23 +350,6 @@ PARAMETERS
 
       Default is 1. Set to a higher value to achieve more injects. Set to a
       negative integer to inject after all.
-
-    regex
-
-      Set to a true value, all values in the 'search' parameter become
-      regexes. For example with regex on, /thi?s/ will match "this", but
-      without regex, it won't. This parameter is persistent; it remains
-      until reset manually.
-
-    extensions
-
-      By default, we load only *.pm and *.pl files. Use this parameter to
-      load different files. Only useful when a directory is passed in as
-      opposed to a file. This parameter is persistent until manually reset
-      and should be set in new.
-
-      Values: Array reference where each element is the name of the
-      extension (less the dot). For example, ['pm', 'pl'] is the default.
 
     pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 

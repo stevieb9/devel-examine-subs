@@ -77,7 +77,6 @@ t/30-bug-46_entire_file_in_sub.t
 t/31-bug-45-no_dt_val.t
 t/32-end_of_last_sub_prefilter.t
 t/33-Preprocessor.t
-t/34-REUSE
 t/34-valid_params.t
 t/35-config_clean.t-norun
 t/36-module_name_to_file.t

@@ -15,7 +15,7 @@ my $des = Devel::Examine::Subs->new({
 
 my $all = $des->all();
 
-is (@$all, 36, "using Data::Dumper as an example, file => module translates");
+ok (@$all > 30, "using Data::Dumper as an example, file => module translates");
 
 eval {
     $des->run({file => 'Bad::XXX'});

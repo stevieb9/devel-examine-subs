@@ -7,7 +7,7 @@ SYNOPSIS
 
         use Devel::Examine::Subs;
     
-        my $file = 'perl.pl'; # or directory name
+        my $file = 'perl.pl'; # or directory, or module name (D::E::S)
         my $search = 'string';
     
         my $des = Devel::Examine::Subs->new({file => $file);
@@ -250,10 +250,10 @@ METHODS
 
  valid_params()
 
-    Returns a hash reference where the keys are valid parameter names, and
-    the value is a bool where if true, the parameter is persistent (remains
-    between calls on the same object) and if false, the param is transient,
-    and will be made undef after each method call finishes.
+    Returns a hash where the keys are valid parameter names, and the value
+    is a bool where if true, the parameter is persistent (remains between
+    calls on the same object) and if false, the param is transient, and
+    will be made undef after each method call finishes.
 
  run()
 
@@ -320,10 +320,14 @@ PARAMETERS
 
       State: Persistent
 
-      The name of a file, or a directory. If set in new, you can omit it
-      from all subsequent method calls until you want it changed. Once
-      changed in a call, the updated value will remain persistent until
-      changed again.
+      The name of a file, directory or module name in the standard form
+      Devel::Examine::Subs. Will convert module name to a file name if the
+      module is installed on the system. It'll require the module
+      temporarily and then 'un'-require it immediately after use.
+
+      If set in new, you can omit it from all subsequent method calls until
+      you want it changed. Once changed in a call, the updated value will
+      remain persistent until changed again.
 
     extensions
 

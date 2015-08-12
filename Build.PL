@@ -20,6 +20,7 @@ my $builder = Module::Build->new(
         'File::Find' => 0,
         'perl' => 5.006,
         'PPI' => 0,
+        'Symbol' => 0,
         'Tie::File' => 0,
         'Test::Trap' => 0,
     },

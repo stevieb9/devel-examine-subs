@@ -11,6 +11,7 @@ use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter; 
 use File::Find; 
 use PPI; 
+use Symbol;
 use Tie::File;
 
 sub new {
@@ -209,6 +210,40 @@ sub _file {
     my $p = shift;
 
     $self->{params}{file} = $p->{file} // $self->{params}{file};
+
+    # if a module was passed in, dig up the file
+
+    if ($self->{params}{file} =~ /::/){
+
+        my $module = $self->{params}{file};
+        (my $file = $module) =~ s|::|/|g;
+        $file .= '.pm';
+       
+        my $module_is_loaded;
+        
+        if (! $INC{$file}){
+            eval { require $module; };
+
+            if ($@){
+                $@ = "Devel::Examine::Subs::_file() speaking ... " .
+                     "Can't transform module to a file name\n\n"
+                     . $@;
+                croak $@;
+            }
+        }
+        else {
+            $module_is_loaded = 1;
+        }
+
+        # set the file param
+
+        $self->{params}{file} = $INC{$file};
+       
+        if (! $module_is_loaded){ 
+            delete_package $module;
+            delete $INC{$file};
+        }
+    }
 
     # configure directory searching for run()
 
@@ -799,7 +834,7 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 
     use Devel::Examine::Subs;
 
-    my $file = 'perl.pl'; # or directory name
+    my $file = 'perl.pl'; # or directory, or module name (D::E::S)
     my $search = 'string';
 
     my $des = Devel::Examine::Subs->new({file => $file);
@@ -1152,7 +1187,9 @@ The following list are persistent parameters, which need to be manually changed 
 
 State: Persistent
 
-The name of a file, or a directory. If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
+The name of a file, directory or module name in the standard form C<Devel::Examine::Subs>. Will convert module name to a file name if the module is installed on the system. It'll require the module temporarily and then 'un'-require it immediately after use.
+
+If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
 
 =item C<extensions>

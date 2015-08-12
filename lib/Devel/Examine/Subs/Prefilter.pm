@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Data::Dumper;
 
-our $VERSION = '1.22';
+our $VERSION = '1.24';
 
 sub new {
 
@@ -188,4 +188,65 @@ sub objects {
         return \@return;
     };
 }
+1;
+sub _vim_placeholder {}
 
+__END__
+
+=head1 NAME
+
+Devel::Examine::Subs::Prefilter - Provides core Pre-Filter callbacks for Devel::Examine::Subs
+
+=head1 DESCRIPTION
+
+This module generates and supplies the core prefilter module callbacks. Prefilters run after the core Processor, and before any Engine is run.
+
+=head1 SYNOPSIS
+
+Pre-filters can be daisy chained as text strings that represent a built-in prefilter, or as callbacks, or both.
+
+See C<Devel::Examine::Subs::_pre_filter()> for implementation details.
+
+=head1 METHODS
+
+All methods other than C<exists()> takes an href of configuration data as it's first parameter.
+
+=head2 C<exists('prefilter')>
+
+Verifies whether the prefilter name specified as the string parameter exists and is valid.
+
+=head2 C<subs()>
+
+Returns an aref of hash refs, each containing info per sub.
+
+
+=head2 C<file_lines_contain()>
+
+Returns an aref similar to C<subs()>, but includes an array within each sub href that contains lines that match a search term.
+
+=head2 C<end_of_last_sub()>
+
+Takes data from C<subs()>.
+
+Returns a scalar containing the last line number of the last sub in a file.
+
+=head1 AUTHOR
+
+Steve Bertrand, C<< <steveb at cpan.org> >>
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Devel::Examine::Subs
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2015 Steve Bertrand.
+
+This program is free software; you can redistribute it and/or modify it under the terms of either: the GNU General Public License as 
+published by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut

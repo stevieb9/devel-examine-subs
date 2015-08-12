@@ -5,7 +5,7 @@ use strict; use warnings;
 use Carp;
 use Data::Dumper;
 
-our $VERSION = '1.22';
+our $VERSION = '1.24';
 
 sub new {
 

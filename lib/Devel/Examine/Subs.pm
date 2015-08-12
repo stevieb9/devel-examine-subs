@@ -141,6 +141,8 @@ sub _config {
         config_dump => 0,
     );
 
+    $self->{valid_params} = \%valid_params;
+
     # clean config
 
     $self->_clean_config(\%valid_params, $p);
@@ -182,6 +184,21 @@ sub _clean_config {
         if (! exists $config_vars->{$param}){
             delete $p->{$param};
         }
+    }
+}
+sub _clean_core_config {
+    # deletes core phase info after each run
+
+    my $self = shift;
+
+    my @core_phases = qw( 
+        pre_proc
+        pre_filter
+        engine
+    );
+
+    for (@core_phases){
+        delete $self->{params}{$_};
     }
 }
 sub _file {
@@ -285,21 +302,6 @@ sub _core {
 
     $self->{data} = $subs;
     return $subs;
-}
-sub _clean_core_config {
-    # deletes core phase info after each run
-
-    my $self = shift;
-
-    my @core_phases = qw( 
-        pre_proc
-        pre_filter
-        engine
-    );
-
-    for (@core_phases){
-        delete $self->{params}{$_};
-    }
 }
 sub _subs {
 
@@ -772,7 +774,10 @@ sub add_functionality {
 
     push @TIE_file, @code;
 }
-
+sub valid_params {
+    my $self = shift;
+    return $self->{valid_params};
+}
 sub _pod{} #vim placeholder 1; 
 __END__
 
@@ -1017,6 +1022,11 @@ Returns a list of all available built-in pre engine filter modules.
 Returns a list of all available built-in 'engine' modules.
 
 
+=head2 C<valid_params()>
+
+Returns a hash reference where the keys are valid parameter names, and the value is a bool where if true, the parameter is persistent (remains between calls on the same object) and if false, the param is transient, and will be made C<undef> after each method call finishes.
+
+
 =head2 C<run()>
 
 All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same 
@@ -1031,6 +1041,9 @@ effect programatically by using C<run()>. Here's an example that performs the sa
     my $return = $des->run($params);
 
 This allows for very fine-grained interaction with the application, and makes it easy to write new engines and for testing.
+
+
+
 
 
 =head2 C<add_functionality()>

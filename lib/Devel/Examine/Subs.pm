@@ -31,6 +31,11 @@ sub run {
     my $self = shift;
     my $p = shift;
 
+    # we're starting the run
+    # gets set to true at end of _core()
+
+    $self->{run_end} = 0;
+
     $self->_config($p);
 
     # do something different for a dir
@@ -41,11 +46,17 @@ sub run {
     else {
         $self->_core($self->{params});
     }
+
 }
 sub run_directory {
 
     my $self = shift;
     my $p = shift;
+
+    # we're starting the run
+    # gets set to true at end of _core()
+
+    $self->{run_end} = 0;
 
     $self->_config($p);
 
@@ -81,7 +92,12 @@ sub run_directory {
 
         $struct{$file} = $data if $exists;
     }
-    
+
+    # we've got to clean up core/config here
+
+    $self->{run_end} = 1;    
+    $self->_clean_core_config();
+
     return \%struct;
 }
 sub _config {
@@ -89,6 +105,45 @@ sub _config {
     my $self = shift;
     my $p = shift;
 
+    my %valid_params = (
+
+        # persistent
+
+        file => 1,
+        extensions => 1,
+        regex => 1,
+        copy => 1,
+        diff => 1,
+        no_indent => 1,
+
+        # persistent - core phases
+
+        pre_proc => 1,
+        pre_filter => 1,
+        engine => 1,
+
+        # transient
+
+        directory => 0,
+        search => 0,
+        lines => 0,
+        injects => 0,
+        include => 0,
+        exclude => 0,
+        pre_proc_dump => 0,
+        pre_filter_dump => 0,
+        engine_dump => 0,
+        core_dump => 0,
+        pre_proc_return => 0,
+        pre_filter_return => 0,
+        engine_return => 0,
+        clean_config => 0,
+        config_dump => 0,
+    );
+
+    # clean config
+
+    $self->_clean_config(\%valid_params, $p);
 
     for my $param (keys %$p){
 
@@ -103,6 +158,30 @@ sub _config {
     }
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
+    }
+}
+sub _clean_config {
+    my $self = shift;
+    my $config_vars = shift; # href of valid params
+    my $p = shift; # href of params passed in
+
+    for my $var (keys %$config_vars){
+       
+        last if ! $self->{run_end};
+
+        # skip if it's a persistent var
+
+        next if $config_vars->{$var} == 1;
+
+        delete $self->{params}{$var};
+    }
+
+    # delete non-valid params
+
+    for my $param (keys %$p){
+        if (! exists $config_vars->{$param}){
+            delete $p->{$param};
+        }
     }
 }
 sub _file {
@@ -136,7 +215,7 @@ sub _core {
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
-    
+
     # pre processor
 
     my $data;
@@ -197,9 +276,30 @@ sub _core {
 
         exit;
     }
-    
+
+    # do some config cleaning
+    # run_directory() takes care of cleanup if it's enabled
+
+    $self->{run_end} = 1 if ! $self->{params}{directory};
+    $self->_clean_core_config() if ! $self->{params}{directory};
+
     $self->{data} = $subs;
     return $subs;
+}
+sub _clean_core_config {
+    # deletes core phase info after each run
+
+    my $self = shift;
+
+    my @core_phases = qw( 
+        pre_proc
+        pre_filter
+        engine
+    );
+
+    for (@core_phases){
+        delete $self->{params}{$_};
+    }
 }
 sub _subs {
 
@@ -812,7 +912,7 @@ Gather information about subroutines in Perl files (and in-memory modules), with
 
 Instantiates a new object.
 
-Takes the name of a file to search. If $filename is a directory, it will be searched recursively for files. You can set any 
+Takes the name of a file to search. If C<$filename> is a directory, it will be searched recursively for files. You can set any 
 and all parameters this module uses in any method, however, only the 'file', 'extensions' and 'regex' params are guaranteed to stay persistent, so best to supply your desired params to each call. 
 
 See the L<PARAMETERS> section for optional parameters that can and perhaps should be set here. 
@@ -984,7 +1084,10 @@ properly.
 
 =head1 PARAMETERS
 
-There are various optional global parameters that can be used. These should be set in C<new()>, unless you want them only briefly in which case just call them within the user public methods.
+There are various parameters that can be used to change the behaviour of the application. Some are persistent across calls, and others aren't.
+ You can change or null any/all parameters in any call, but some should be set in the C<new()> method (set it and forget it).
+
+The following list are persistent parameters, which need to be manually changed or nulled. Consider setting these in C<new()>.
 
 =over 4
 
@@ -993,14 +1096,43 @@ There are various optional global parameters that can be used. These should be s
 The name of a file, or a directory. If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
 
+=item C<extensions>
+
+By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file. This parameter is persistent until manually reset and should be set in C<new>.
+
+Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
+
+
+=item C<copy>
+
+For methods that write to files, you can optionally work on a copy that you specify in order to review the changes before modifying a production file.
+
+Set this parameter to the name of an output file. The original file will be copied to this name, and we'll work on this copy.
+
+
+=item C<regex>
+
+Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. This parameter is persistent; it remains until reset manually.
+
+
+=item C<no_indent>
+
+In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the 
+new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
+file.
+
 =item C<diff>
 
 Not yet implemented. 
 
 Compiles a diff after each edit using the methods that edit files.
 
+=back
+
+The following parameters are not persistent, ie. they get reset before entering the next call on the DES object. They must be passed in to each subsequent call if the effect is still desired.
 
 
+=over 4
 
 =item C<include>
 
@@ -1016,11 +1148,6 @@ Note that C<exclude> renders C<include> useless.
 
 
 
-=item C<no_indent>
-
-In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the 
-new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
-file.
 
 =item C<injects>
 
@@ -1028,15 +1155,6 @@ Informs C<inject_after()> how many injections to perform. For instance, if a sea
 
 Default is 1. Set to a higher value to achieve more injects. Set to a negative integer to inject after all.
 
-=item C<regex>
-
-Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. This parameter is persistent; it remains until reset manually.
-
-=item C<extensions>
-
-By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file. This parameter is persistent until manually reset and should be set in C<new>.
-
-Values: Array reference where each element is the name of the extension (less the dot). For example, C<['pm', 'pl']> is the default.
 
 
 =item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
@@ -1063,7 +1181,6 @@ Returns the structure of data immediately after being processed by the respectiv
 ALSO" for details).
 
 NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only return after all pre-filters have executed.
-
 
 
 =item C<clean_config>

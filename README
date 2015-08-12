@@ -94,6 +94,14 @@ SYNOPSIS
             print join('\t', @{$files->{$file}});
         }
 
+    All methods can include or exclude specific subs
+
+        my $has = $des->has({ include => [qw(dump private)] });
+    
+        my $missing = $des->missing({ exclude => ['this', 'that'] });
+    
+        # note that 'exclude' param renders 'include' invalid
+
 DESCRIPTION
 
     Gather information about subroutines in Perl files (and in-memory
@@ -134,16 +142,20 @@ METHODS
     methods. See the PARAMETERS for the full list of params, and which ones
     are persistent across runs using the same object.
 
- new({ file => $filename )
+ new()
+
+    Mandatory parameters: { file => $filename }
 
     Instantiates a new object. If $filename is a directory, we'll iterate
     through it finding all Perl files.
 
     Only specific params are guaranteed to stay persistent throughout a run
-    on the same object, and are best set in new(). These parameters ar
+    on the same object, and are best set in new(). These parameters are
     file, extensions, regex, copy, no_indent and diff.
 
  all()
+
+    Mandatory parameters: None
 
     Returns an array reference containing the names of all subroutines
     found in the file.
@@ -173,10 +185,10 @@ METHODS
     Mandatory parameters: { search => $text }
 
     Gathers together all line text and line number of all subs where the
-    sub contains lines matching the search term.
+    subroutine contains lines matching the search term.
 
-    Returns a hash reference with the sub name as the key, the value being
-    an array reference which contains a hash reference in the format
+    Returns a hash reference with the subroutine name as the key, the value
+    being an array reference which contains a hash reference in the format
     line_number => line_text.
 
  search_replace()
@@ -218,6 +230,11 @@ METHODS
     copy
 
       See search_replace() for a description of how this parameter is used.
+
+    injects
+
+      How many injections do you want to do per sub? See PARAMETERS for
+      more details.
 
  pre_procs()
 

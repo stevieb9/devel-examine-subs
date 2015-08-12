@@ -27,7 +27,8 @@ my $des = Devel::Examine::Subs->new({
 
 is (keys %{$des->{params}}, 9, "config retains only valid params on init");
 
-$des->run();
+$des->has(); # use above params
+$des->has(); # at start of this run, params are cleaned out
 
 is (keys %{$des->{params}}, 6, "config dumps non-persistent params on subsequent runs");
 is (keys %{$des->{params}}, 6, "config retains all specified persistent params");

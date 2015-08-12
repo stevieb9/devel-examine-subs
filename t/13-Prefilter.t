@@ -109,3 +109,20 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
 
     like ( $@, qr/dispatch table/, "pre_filter module croaks if the dt key is ok, but the value doesn't point to a callback" );
 }
+__END__
+{#10
+    my $des = Devel::Examine::Subs->new();
+
+    my $cref = sub {
+                my $p = shift;
+                my $s = shift; 
+                $s = {a=>1, b=>2};
+                return $s; 
+            };
+
+    eval {
+        my $ret = $des->run({pre_filter => "$cref && _test", pre_filter_dump => 1});
+    };
+    print "***$ret\n";
+    like ( $@, qr/dispatch table/, "pre_filter module croaks if the dt key is ok, but the value doesn't point to a callback" );
+}

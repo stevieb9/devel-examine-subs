@@ -34,9 +34,3 @@ for (@files_to_delete){
 }
 
 exit if $@;
-
-#for (@files_to_delete){
-#    unlink $_ if -f $_;
-#};
-
-

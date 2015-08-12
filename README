@@ -14,9 +14,9 @@ SYNOPSIS
 
     Get all the subs as objects
 
-        $aref = $des->objects(...)
+        $subs = $des->objects(...)
     
-        for my $sub (@$aref){
+        for my $sub (@$subs){
             $sub->name();       # name of sub
             $sub->start();      # number of first line in sub
             $sub->end();        # number of last line in sub
@@ -147,7 +147,10 @@ METHODS
     Mandatory parameters: { file => $filename }
 
     Instantiates a new object. If $filename is a directory, we'll iterate
-    through it finding all Perl files.
+    through it finding all Perl files. If filename is a module name (eg:
+    Data::Dumper), we'll attempt to load the module, extract the file for
+    the module, and load it. Note that this'll be a production %INC file so
+    use caution.
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
@@ -169,13 +172,13 @@ METHODS
 
  missing()
 
-    Mandatory parameters: '{ search => 'term' }
+    Mandatory parameters: { search => 'term' }
 
     The exact opposite of has.
 
  module()
 
-    Mandatory parameters: { module => 'Devel::Examine::Subs' }
+    Mandatory parameters: { module => 'Module::Name' }
 
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
@@ -320,10 +323,10 @@ PARAMETERS
 
       State: Persistent
 
-      The name of a file, directory or module name in the standard form
-      Devel::Examine::Subs. Will convert module name to a file name if the
-      module is installed on the system. It'll require the module
-      temporarily and then 'un'-require it immediately after use.
+      The name of a file, directory or module name. Will convert module
+      name to a file name if the module is installed on the system. It'll
+      require the module temporarily and then 'un'-require it immediately
+      after use.
 
       If set in new, you can omit it from all subsequent method calls until
       you want it changed. Once changed in a call, the updated value will
@@ -358,8 +361,11 @@ PARAMETERS
 
       Set to a true value, all values in the 'search' parameter become
       regexes. For example with regex on, /thi?s/ will match "this", but
-      without regex, it won't. This parameter is persistent; it remains
-      until reset manually.
+      without regex, it won't. Without 'regex' enabled, all characters that
+      perl treats as special must be escaped. This parameter is persistent;
+      it remains until reset manually.
+
+      This parameter may be enabled by default in future versions.
 
     no_indent
 

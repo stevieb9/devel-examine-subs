@@ -139,6 +139,7 @@ sub end_of_last_sub {
 sub _test {
 
     return sub {
+        my $p = shift;
         my $struct = shift;
         return $struct;
     };

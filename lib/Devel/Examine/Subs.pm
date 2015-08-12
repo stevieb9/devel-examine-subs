@@ -436,7 +436,8 @@ sub _pre_proc {
         my $compiler = $pre_proc_module->new();
 
         if (! $compiler->exists($pre_proc)){
-            croak "pre_processor '$pre_proc' is not implemented.\n";
+            croak "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
+                  "pre_processor '$pre_proc' is not implemented.\n";
         }
 
         eval {
@@ -499,12 +500,7 @@ sub _pre_filter {
         }
                 
         for my $pf (@pre_filter_list){
- 
-            if (ref($pre_filter) && ref($pre_filter) ne 'CODE' && $pre_filter eq ''){
-                push @pre_filters, sub { my ($p, $struct); return $struct };
-                return @pre_filters;
-            }
-    
+
             my $cref;
 
             if (not ref($pf) eq 'CODE'){
@@ -514,7 +510,8 @@ sub _pre_filter {
                 # pre_filter isn't in the dispatch table
 
                 if (! $compiler->exists($pf)){
-                    croak "pre_filter '$pf' is not implemented. '$pre_filter' was sent in.\n";
+                    croak "\nDevel::Examine::Subs::_pre_filter() speaking...\n\n" .
+                          "pre_filter '$pf' is not implemented. '$pre_filter' was sent in.\n";
                 }
                 
                 eval {
@@ -841,9 +838,9 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 
 Get all the subs as objects
 
-    $aref = $des->objects(...)
+    $subs = $des->objects(...)
 
-    for my $sub (@$aref){
+    for my $sub (@$subs){
         $sub->name();       # name of sub
         $sub->start();      # number of first line in sub
         $sub->end();        # number of last line in sub
@@ -978,7 +975,7 @@ All parameters are passed in via a single hash reference in all public methods. 
 
 Mandatory parameters: C<{ file =E<gt> $filename }>
 
-Instantiates a new object. If C<$filename> is a directory, we'll iterate through it finding all Perl files.
+Instantiates a new object. If C<$filename> is a directory, we'll iterate through it finding all Perl files. If filename is a module name (eg: C<Data::Dumper>), we'll attempt to load the module, extract the file for the module, and load it. Note that this'll be a production C<%INC> file so use caution.
 
 Only specific params are guaranteed to stay persistent throughout a run on the same object, and are best set in C<new()>. These parameters are C<file>, C<extensions>, C<regex>, C<copy>, C<no_indent> and C<diff>. 
 
@@ -1008,7 +1005,7 @@ Returns an array reference containing the names of the subs where the subroutine
 
 =head2 C<missing()>
 
-Mandatory parameters: 'C<{ search =E<gt> 'term' }>
+Mandatory parameters: C<{ search =E<gt> 'term' }>
 
 The exact opposite of has.
 
@@ -1020,7 +1017,7 @@ The exact opposite of has.
 
 =head2 C<module()>
 
-Mandatory parameters: { module =E<gt> 'Devel::Examine::Subs' }
+Mandatory parameters: { module =E<gt> 'Module::Name' }
 
 Returns an array reference containing the names of all subs found in the module's namespace symbol table.
 
@@ -1187,7 +1184,7 @@ The following list are persistent parameters, which need to be manually changed 
 
 State: Persistent
 
-The name of a file, directory or module name in the standard form C<Devel::Examine::Subs>. Will convert module name to a file name if the module is installed on the system. It'll require the module temporarily and then 'un'-require it immediately after use.
+The name of a file, directory or module name. Will convert module name to a file name if the module is installed on the system. It'll require the module temporarily and then 'un'-require it immediately after use. 
 
 If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
@@ -1214,8 +1211,9 @@ Set this parameter to the name of an output file. The original file will be copi
 
 State: Persistent
 
-Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. This parameter is persistent; it remains until reset manually.
+Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. Without 'regex' enabled, all characters that perl treats as special must be escaped. This parameter is persistent; it remains until reset manually.
 
+This parameter may be enabled by default in future versions.
 
 =item C<no_indent>
 

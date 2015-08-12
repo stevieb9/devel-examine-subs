@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings; 
 use strict;
 
-our $VERSION = '1.23';
+our $VERSION = '1.24';
 
 use Carp; 
 use Data::Dumper; 
@@ -34,7 +34,7 @@ sub run {
     # we're starting the run
     # gets set to true at end of _core()
 
-    $self->{run_end} = 0;
+    $self->_run_end(0);
 
     $self->_config($p);
 
@@ -56,7 +56,7 @@ sub run_directory {
     # we're starting the run
     # gets set to true at end of _core()
 
-    $self->{run_end} = 0;
+    $self->_run_end(0);
 
     $self->_config($p);
 
@@ -95,7 +95,7 @@ sub run_directory {
 
     # we've got to clean up core/config here
 
-    $self->{run_end} = 1;    
+    $self->_run_end(1);    
     $self->_clean_core_config();
 
     return \%struct;
@@ -172,7 +172,7 @@ sub _clean_config {
 
     for my $var (keys %$config_vars){
        
-        last if ! $self->{run_end};
+        last if ! $self->_run_end();
 
         # skip if it's a persistent var
 
@@ -300,7 +300,7 @@ sub _core {
     # do some config cleaning
     # run_directory() takes care of cleanup if it's enabled
 
-    $self->{run_end} = 1 if ! $self->{params}{directory};
+    $self->_run_end(1) if ! $self->{params}{directory};
     $self->_clean_core_config() if ! $self->{params}{directory};
 
     $self->{data} = $subs;
@@ -573,6 +573,14 @@ sub _engine {
     }
 
     return $cref;
+}
+sub _run_end {
+    my $self = shift;
+    my $value = shift;
+
+    $self->{run_end} = $value if defined $value;
+
+    return $self->{run_end};
 }
 sub pre_procs {
 

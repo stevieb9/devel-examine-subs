@@ -1,5 +1,14 @@
 Revision history for Devel-Examine::Subs
 
+1.24    20150812
+        - fixes bug 54: implement _clean_config()
+        - fixes bug 56: allow 'file' param to be a module name
+        - params are separated into persistent and transient
+        - all params are now validated
+        - transient params get reset after each run()
+        - added valid_params()
+        - major pod rework
+
 1.23    20150811
         - removed all traces of cache
         - dependency fixes

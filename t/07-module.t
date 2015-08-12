@@ -31,6 +31,7 @@ BEGIN {#1
     my $des = Devel::Examine::Subs->new({module => 'Data::Dumper'});
 
     my $res = $des->module();
+    print Dumper $res;
     my $ok = grep /Dumper/, @$res;
 
     ok( $ok, "module() returns an array of sub names" );

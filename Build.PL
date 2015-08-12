@@ -11,12 +11,16 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
+    configure_requires => {
+        'Module::Build' => 0,
+    },
     requires => {
         'Carp' => 0,
         'Data::Dumper' => 0,
         'File::Find' => 0,
         'perl' => 5.006,
         'PPI' => 0,
+        'Symbol' => 0,
         'Tie::File' => 0,
         'Test::Trap' => 0,
     },

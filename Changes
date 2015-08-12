@@ -5,6 +5,8 @@ Revision history for Devel-Examine::Subs
         - dependency fixes
         - cleaned up POD
         - fixed typos and PPI var names
+        - added POD for Engine and Prefilter
+        - ./Build dist
 
 1.20_01 20150723
         - engine framework in place

@@ -786,7 +786,7 @@ sub add_functionality {
 }
 sub valid_params {
     my $self = shift;
-    return $self->{valid_params};
+    return %{$self->{valid_params}};
 }
 sub _pod{} #vim placeholder 1; 
 __END__
@@ -886,7 +886,13 @@ Print all subs within each Perl file under a directory
         print join('\t', @{$files->{$file}});
     }
 
+All methods can include or exclude specific subs
 
+    my $has = $des->has({ include => [qw(dump private)] });
+
+    my $missing = $des->missing({ exclude => ['this', 'that'] });
+
+    # note that 'exclude' param renders 'include' invalid
 
 
 =head1 DESCRIPTION
@@ -933,17 +939,21 @@ All parameters are passed in via a single hash reference in all public methods. 
 
 
 
-=head2 C<new({ file =E<gt> $filename )>
+=head2 C<new()>
+
+Mandatory parameters: C<{ file =E<gt> $filename }>
 
 Instantiates a new object. If C<$filename> is a directory, we'll iterate through it finding all Perl files.
 
-Only specific params are guaranteed to stay persistent throughout a run on the same object, and are best set in C<new()>. These parameters ar C<file>, C<extensions>, C<regex>, C<copy>, C<no_indent> and C<diff>. 
+Only specific params are guaranteed to stay persistent throughout a run on the same object, and are best set in C<new()>. These parameters are C<file>, C<extensions>, C<regex>, C<copy>, C<no_indent> and C<diff>. 
 
 
 
 
 
 =head2 C<all()>
+
+Mandatory parameters: None
 
 Returns an array reference containing the names of all subroutines found in the file.
 
@@ -986,9 +996,9 @@ Returns an array reference containing the names of all subs found in the module'
 
 Mandatory parameters: { search =E<gt> $text }
 
-Gathers together all line text and line number of all subs where the sub contains lines matching the search term.
+Gathers together all line text and line number of all subs where the subroutine contains lines matching the search term.
 
-Returns a hash reference with the sub name as the key, the value being an array reference which contains a hash reference in the format line_number =E<gt> line_text.
+Returns a hash reference with the subroutine name as the key, the value being an array reference which contains a hash reference in the format line_number =E<gt> line_text.
 
 
 
@@ -1032,6 +1042,10 @@ Optional parameters:
 
 See C<search_replace()> for a description of how this parameter is used.
 
+=item C<injects>
+
+How many injections do you want to do per sub? See L<PARAMETERS> for more details.
+
 =back
 
 
@@ -1055,7 +1069,7 @@ Returns a list of all available built-in 'engine' modules.
 
 =head2 C<valid_params()>
 
-Returns a hash reference where the keys are valid parameter names, and the value is a bool where if true, the parameter is persistent (remains between calls on the same object) and if false, the param is transient, and will be made C<undef> after each method call finishes.
+Returns a hash where the keys are valid parameter names, and the value is a bool where if true, the parameter is persistent (remains between calls on the same object) and if false, the param is transient, and will be made C<undef> after each method call finishes.
 
 
 =head2 C<run()>

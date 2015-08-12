@@ -13,14 +13,14 @@ BEGIN {#1
     
     my $des = Devel::Examine::Subs->new();
 
-    my $vp = $des->valid_params();
+    my %vp = $des->valid_params();
 
-    is( keys %$vp, 26, "valid_params() returns proper number of valid params");
+    is( keys %vp, 26, "valid_params() returns proper number of valid params");
     my @persistent;
     my @transient;
 
-    for (keys %$vp){
-        push @persistent, $_ and next if $vp->{$_};
+    for (keys %vp){
+        push @persistent, $_ and next if $vp{$_};
         push @transient, $_;
     }
 

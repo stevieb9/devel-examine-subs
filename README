@@ -7,28 +7,28 @@ SYNOPSIS
 
         use Devel::Examine::Subs;
     
-        my $file = 'perl.pl'; # or directory, or module name (D::E::S)
+        my $file = 'perl.pl'; # or directory, or C<Module::Name>
         my $search = 'string';
     
         my $des = Devel::Examine::Subs->new({file => $file);
 
     Get all the subs as objects
 
-        $subs = $des->objects(...)
+        $subs = $des->objects;
     
         for my $sub (@$subs){
-            $sub->name();       # name of sub
-            $sub->start();      # number of first line in sub
-            $sub->end();        # number of last line in sub
-            $sub->num_lines();  # number of lines in sub
-            $sub->code();       # entire sub code from file
-            $sub->lines();      # lines that match search term
+            $sub->name;       # name of sub
+            $sub->start;      # number of first line in sub
+            $sub->end;        # number of last line in sub
+            $sub->num_lines;  # number of lines in sub
+            $sub->code;       # entire sub code from file
+            $sub->lines;      # lines that match search term
     
         }
 
     Get all sub names in a file
 
-        my $aref = $des->all();
+        my $aref = $des->all;
 
     Get all subs containing "string" in the body
 
@@ -37,8 +37,8 @@ SYNOPSIS
     Search and replace code in subs
 
         $des->search_replace({
-                        search => "$template = 'one.tmpl'",
-                        replace => "$template = 'two.tmpl'",
+                        search => q/\$template = 'one\.tmpl'",
+                        replace => '$template = \'two.tmpl\'',
                       });
 
     Inject code into sub after a search term (preserves previous line's
@@ -61,7 +61,7 @@ SYNOPSIS
 
     Print out all lines in all subs that contain a search term
 
-        my $subs = $des->objects(...);
+        my $subs = $des->objects;
     
         for my $sub (@$subs){
         
@@ -77,7 +77,7 @@ SYNOPSIS
     The structures look a bit differently when 'file' is a directory. You
     need to add one more layer of extraction.
 
-        my $files = $des->objects();
+        my $files = $des->objects;
     
         for my $file (keys %$files){
             for my $sub (@{$files->{$file}}){
@@ -142,50 +142,57 @@ METHODS
     methods. See the PARAMETERS for the full list of params, and which ones
     are persistent across runs using the same object.
 
- new()
+ new
 
     Mandatory parameters: { file => $filename }
 
     Instantiates a new object. If $filename is a directory, we'll iterate
     through it finding all Perl files. If filename is a module name (eg:
     Data::Dumper), we'll attempt to load the module, extract the file for
-    the module, and load it. Note that this'll be a production %INC file so
-    use caution.
+    the module, and load the file. CAUTION: this will be a production %INC
+    file so be careful.
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
     file, extensions, regex, copy, no_indent and diff.
 
- all()
+ all
 
     Mandatory parameters: None
 
     Returns an array reference containing the names of all subroutines
     found in the file.
 
- has()
+ has
 
     Mandatory parameters: { search => 'term' }
 
     Returns an array reference containing the names of the subs where the
     subroutine contains the search text.
 
- missing()
+ missing
 
     Mandatory parameters: { search => 'term' }
 
     The exact opposite of has.
 
- module()
+ objects
+
+    Mandatory parameters: None
+
+    Returns an array reference of subroutine objects. See SYNOPSIS for the
+    structure of each object.
+
+ module
 
     Mandatory parameters: { module => 'Module::Name' }
 
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
 
- lines()
+ lines
 
-    Mandatory parameters: { search => $text }
+    Mandatory parameters: { search => 'text' }
 
     Gathers together all line text and line number of all subs where the
     subroutine contains lines matching the search term.
@@ -194,7 +201,7 @@ METHODS
     being an array reference which contains a hash reference in the format
     line_number => line_text.
 
- search_replace()
+ search_replace
 
     Mandatory parameters: { search => 'this', replace => 'that' }
 
@@ -210,7 +217,7 @@ METHODS
     appended with '.bak', but don't confuse this feature with the 'copy'
     parameter.
 
- inject_after()
+ inject_after
 
     Mandatory parameters: { search => 'this', code => \@code }
 
@@ -226,7 +233,9 @@ METHODS
     finds.
 
     The code array should contain one line of code (or blank line) per each
-    element. (See SYNOPSIS for an example).
+    element. (See SYNOPSIS for an example). The code is not manipulated
+    prior to injection, it is inserted exactly as typed. Best to use a
+    heredoc, __DATA__ section or an external text file for the code.
 
     Optional parameters:
 
@@ -239,26 +248,26 @@ METHODS
       How many injections do you want to do per sub? See PARAMETERS for
       more details.
 
- pre_procs()
+ pre_procs
 
     Returns a list of all available pre processor modules.
 
- pre_filters()
+ pre_filters
 
     Returns a list of all available built-in pre engine filter modules.
 
- engines()
+ engines
 
     Returns a list of all available built-in 'engine' modules.
 
- valid_params()
+ valid_params
 
     Returns a hash where the keys are valid parameter names, and the value
     is a bool where if true, the parameter is persistent (remains between
     calls on the same object) and if false, the param is transient, and
     will be made undef after each method call finishes.
 
- run()
+ run
 
     All public methods call this method internally. The public methods set
     certain variables (filters, engines etc). You can get the same effect
@@ -276,7 +285,7 @@ METHODS
     This allows for very fine-grained interaction with the application, and
     makes it easy to write new engines and for testing.
 
- add_functionality()
+ add_functionality
 
     WARNING!: This method is highly experimental and is used for developing
     internal processors only. Only 'engine' is functional, and only half
@@ -306,8 +315,9 @@ METHODS
 
     copy
 
-      Set it to a new file name which will copy the original, and only
-      change the copy. Useful for verifying the changes took properly.
+      Set it to a new file name which will be a copy of the specified file,
+      and only change the copy. Useful for verifying the changes took
+      properly.
 
 PARAMETERS
 
@@ -323,23 +333,27 @@ PARAMETERS
 
       State: Persistent
 
+      Default: None
+
       The name of a file, directory or module name. Will convert module
       name to a file name if the module is installed on the system. It'll
       require the module temporarily and then 'un'-require it immediately
       after use.
 
-      If set in new, you can omit it from all subsequent method calls until
-      you want it changed. Once changed in a call, the updated value will
-      remain persistent until changed again.
+      If set in new(), you can omit it from all subsequent method calls
+      until you want it changed. Once changed in a call, the updated value
+      will remain persistent until changed again.
 
     extensions
 
       State: Persistent
 
+      Default: [qw(pm pl)]
+
       By default, we load only *.pm and *.pl files. Use this parameter to
       load different files. Only useful when a directory is passed in as
       opposed to a file. This parameter is persistent until manually reset
-      and should be set in new.
+      and should be set in new().
 
       Values: Array reference where each element is the name of the
       extension (less the dot). For example, [qw(pm pl)] is the default.
@@ -347,6 +361,8 @@ PARAMETERS
     copy
 
       State: Persistent
+
+      Default: None
 
       For methods that write to files, you can optionally work on a copy
       that you specify in order to review the changes before modifying a
@@ -359,17 +375,19 @@ PARAMETERS
 
       State: Persistent
 
+      Default: Enabled
+
       Set to a true value, all values in the 'search' parameter become
       regexes. For example with regex on, /thi?s/ will match "this", but
       without regex, it won't. Without 'regex' enabled, all characters that
       perl treats as special must be escaped. This parameter is persistent;
       it remains until reset manually.
 
-      This parameter may be enabled by default in future versions.
-
     no_indent
 
       State: Persistent
+
+      Default: Disabled
 
       In the processes that write new code to files, the indentation level
       of the line the search term was found on is used for inserting the
@@ -393,6 +411,8 @@ PARAMETERS
 
       State: Transient
 
+      Default: None
+
       An array reference containing the names of subs to include. This (and
       exclude) tell the Processor phase to generate only these subs,
       significantly reducing the work that needs to be done in subsequent
@@ -402,6 +422,8 @@ PARAMETERS
 
       State: Transient
 
+      Default: None
+
       An array reference of the names of subs to exclude. See include for
       further details.
 
@@ -410,6 +432,8 @@ PARAMETERS
     injects
 
       State: Transient
+
+      Default: 1
 
       Informs inject_after() how many injections to perform. For instance,
       if a search term is found five times in a sub, how many of those do
@@ -421,6 +445,8 @@ PARAMETERS
     pre_proc_dump, pre_filter_dump, engine_dump, core_dump
 
       State: Transient
+
+      Default: Disabled
 
       Set to 1 to activate, exit()s after completion.
 
@@ -444,6 +470,8 @@ PARAMETERS
 
       State: Transient
 
+      Default: Disabled
+
       Returns the structure of data immediately after being processed by
       the respective phase. Useful for writing new 'phases'. (See "SEE
       ALSO" for details).
@@ -454,6 +482,8 @@ PARAMETERS
     config_dump
 
       State: Transient
+
+      Default: Disabled
 
       Prints to STDOUT with Data::Dumper the current state of all loaded
       configuration parameters.

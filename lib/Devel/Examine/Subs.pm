@@ -138,6 +138,7 @@ sub _config {
         exclude => 0,
         lines => 0,
         module => 0,
+        objects_in_hash => 0,
         pre_proc_dump => 0,
         pre_filter_dump => 0,
         engine_dump => 0,
@@ -189,6 +190,7 @@ sub _clean_config {
 
     for my $param (keys %$p){
         if (! exists $config_vars->{$param}){
+            # warn "\n\nDES::_clean_config() deleting invalid param: $param\n\n";
             delete $p->{$param};
         }
     }
@@ -852,7 +854,7 @@ Get all the subs as objects
         $sub->name;       # name of sub
         $sub->start;      # number of first line in sub
         $sub->end;        # number of last line in sub
-        $sub->num_lines;  # number of lines in sub
+        $sub->line_count; # number of lines in sub
         $sub->code;       # entire sub code from file
         $sub->lines;      # lines that match search term
 
@@ -1024,7 +1026,11 @@ The exact opposite of has.
 
 Mandatory parameters: None
 
-Returns an array reference of subroutine objects. See L<SYNOPSIS> for the structure of each object.
+Optional parameters: C<{objects_in_hash => 1}>
+
+Returns an array reference of subroutine objects. If the optional C<objects_in_hash> is sent in with a true value, the objects will be returned in a hash reference where the key is the sub's name, and the value is the sub object.
+
+See L<SYNOPSIS> for the structure of each object.
 
 
 

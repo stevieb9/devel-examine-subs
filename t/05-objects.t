@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 54;
+use Test::More tests => 132;
 use Data::Dumper;
 
 BEGIN {#1
@@ -75,4 +75,22 @@ for my $o (@$objects){
        }
     }
 }
-#print Dumper $des->objects();
+
+{
+    my $params = {file => 't/sample.data'};
+    my $des = Devel::Examine::Subs->new($params);
+
+    my $subs = $des->objects({objects_in_hash => 1});
+
+    is (keys %$subs, 11, "objects_in_hash has proper number of keys");
+
+    for (keys %$subs){
+        is (ref $subs->{$_}, 'Devel::Examine::Subs::Sub', "sub $_ is a proper object");
+        my @methods = qw(name start end lines line_count code);
+        my $obj = $subs->{$_};
+        for my $m (@methods){
+            ok ($obj->$m ne '', "objects in a hash can >$m<" );
+        }
+    }
+}
+

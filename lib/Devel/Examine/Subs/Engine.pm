@@ -162,7 +162,6 @@ sub objects {
         my $p = shift;
         my $struct = shift;
 
-        my @return;
 
         return if not ref($struct) eq 'ARRAY';
 
@@ -184,11 +183,10 @@ sub objects {
         }
 
         my $des_sub;
-        
-        for my $sub (@$struct){
+        my %obj_hash;
+        my @obj_array;
 
-            # if the name of the callback method is mistyped in the
-            # dispatch table, this will be triggered
+        for my $sub (@$struct){
 
             if ($lines){
                 $sub->{lines_with} = $lines->{$sub->{name}};
@@ -197,17 +195,20 @@ sub objects {
             $des_sub
               = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
 
-            #FIXME: this eval catch catches bad dispatch and "not a hashref"
-
-            if ($@){
-                print "dispatch table in engine has a mistyped function value\n\n";
-                confess $@;
+            if ($p->{objects_in_hash}){
+                $obj_hash{$sub->{name}} = $des_sub;
             }
-
-            push @return, $des_sub;
+            else {
+                push @obj_array, $des_sub;
+            }
         }
 
-        return \@return;
+        if ($p->{objects_in_hash}){
+            return \%obj_hash;
+        }
+        else {
+            return \@obj_array;
+        }
     };
 }
 sub search_replace {

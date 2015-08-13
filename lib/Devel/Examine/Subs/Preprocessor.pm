@@ -14,7 +14,7 @@ sub new {
 
     my $struct = shift;
 
-    $self->{pre_procs} = $self->_dt();
+    $self->{pre_procs} = $self->_dt;
 
     return $self;
 }

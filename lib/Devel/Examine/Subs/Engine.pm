@@ -17,7 +17,7 @@ sub new {
     my $self = {};
     bless $self, shift;
 
-    $self->{engines} = $self->_dt();
+    $self->{engines} = $self->_dt;
 
     return $self;
 }
@@ -180,7 +180,7 @@ sub objects {
                                             file => $file, 
                                             search => $search
                                         });
-            $lines = $des->lines();
+            $lines = $des->lines;
         }
 
         my $des_sub;
@@ -257,8 +257,8 @@ sub search_replace {
         my @changed_lines;
         
         for my $sub (@$struct){
-            my $start_line = $sub->start();
-            my $end_line = $sub->end();
+            my $start_line = $sub->start;
+            my $end_line = $sub->end;
 
             tie my @tie_file, 'Tie::File', $file;
 
@@ -326,12 +326,12 @@ sub inject_after {
         my @processed;
         
         for my $sub (@$struct){
-            push @unprocessed, $sub->name();
+            push @unprocessed, $sub->name;
         }
 
         for my $uname (@unprocessed){
         
-            my $des = Devel::Examine::Subs->new();
+            my $des = Devel::Examine::Subs->new;
 
             my $params = {
                         file => $file,
@@ -344,12 +344,12 @@ sub inject_after {
 
             for my $sub (@$struct){
 
-                next unless $sub->name() eq $uname;
+                next unless $sub->name eq $uname;
 
-                push @processed, $sub->name();
+                push @processed, $sub->name;
                 
-                my $start_line = $sub->start();
-                my $end_line = $sub->end();
+                my $start_line = $sub->start;
+                my $end_line = $sub->end;
             
                 tie my @tie_file, 'Tie::File', $file;
 
@@ -416,7 +416,7 @@ Devel::Examine::Subs::Engine - Provides core engine callbacks for Devel::Examine
 
     use Devel::Examine::Subs::Engine;
 
-    my $compiler = Devel::Examine::Subs::Engine->new();
+    my $compiler = Devel::Examine::Subs::Engine->new;
 
     if (! $compiler->exists($engine)){
         croak "engine '$engine' is not implemented.\n";
@@ -435,43 +435,43 @@ All methods other than C<exists()> takes an href of configuration data as it's f
 
 Verifies whether the engine name specified as the string parameter exists and is valid.
 
-=head2 C<all()>
+=head2 C<all>
 
 Takes C<$struct> params directly from the Processor module.
 
 Returns an aref.
 
-=head2 C<has()>
+=head2 C<has>
 
 Takes C<$struct> from the output of the 'file_lines_contain' Pre-filter.
 
 Returns an aref.
 
-=head2 C<missing()>
+=head2 C<missing>
 
 Data comes directly from the Processor.
 
 Returns an aref.
 
-=head2 C<lines()>
+=head2 C<lines>
 
 The module that passes data in is dependant on whether 'search' is set. Otherwise, it comes directly from the Processor.
 
 Returns an href.
 
-=head2 C<objects()>
+=head2 C<objects>
 
 Uses C<Devel::Examine::Subs::Sub> to generate objects based on subs.
 
 Returns an aref of said objects.
 
-=head2 C<search_replace()>
+=head2 C<search_replace>
 
 Takes params, struct and a des object.
 
 Returns aref of replaced lines if there are any.
 
-=head2 C<inject_after()>
+=head2 C<inject_after>
 
 Returns aref of subs that had code injected.
 

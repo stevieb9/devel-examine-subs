@@ -45,7 +45,7 @@ sub run {
     # do something different for a dir
 
     if ($self->{params}{directory}){
-        my $files = $self->run_directory();
+        my $files = $self->run_directory;
     }
     else {
         $self->_core($self->{params});
@@ -82,7 +82,8 @@ sub run_directory {
 
                         push @files, $file;
                       },
-                        no_chdir => 1 }, $dir );
+                        no_chdir => 1 
+                    }, $dir );
 
     my %struct;
     
@@ -100,7 +101,7 @@ sub run_directory {
     # we've got to clean up core/config here
 
     $self->_run_end(1);    
-    $self->_clean_core_config();
+    $self->_clean_core_config;
 
     return \%struct;
 }
@@ -175,7 +176,7 @@ sub _clean_config {
 
     for my $var (keys %$config_vars){
        
-        last if ! $self->_run_end();
+        last if ! $self->_run_end;
 
         # skip if it's a persistent var
 
@@ -278,7 +279,7 @@ sub _core {
     my $data;
 
     if ($self->{params}{pre_proc}){
-        my $pre_proc = $self->_pre_proc();
+        my $pre_proc = $self->_pre_proc;
 
         $data = $pre_proc->($p);
 
@@ -292,7 +293,7 @@ sub _core {
 
     # processor
 
-    my $subs = $self->_subs();
+    my $subs = $self->_subs;
     
     $subs = $subs // 0;
 
@@ -303,7 +304,7 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
-        for my $pre_filter ($self->_pre_filter()){
+        for my $pre_filter ($self->_pre_filter){
             $subs = $pre_filter->($p, $subs);
             $self->{data} = $subs;
         }
@@ -339,7 +340,7 @@ sub _core {
     # run_directory() takes care of cleanup if it's enabled
 
     $self->_run_end(1) if ! $self->{params}{directory};
-    $self->_clean_core_config() if ! $self->{params}{directory};
+    $self->_clean_core_config if ! $self->{params}{directory};
 
     $self->{data} = $subs;
     return $subs;
@@ -439,7 +440,7 @@ sub _pre_proc {
     
     if (not ref($pre_proc) eq 'CODE'){
         my $pre_proc_module = $self->{namespace} . "::Preprocessor";
-        my $compiler = $pre_proc_module->new();
+        my $compiler = $pre_proc_module->new;
 
         if (! $compiler->exists($pre_proc)){
             croak "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
@@ -511,7 +512,7 @@ sub _pre_filter {
 
             if (not ref($pf) eq 'CODE'){
                 my $pre_filter_module = $self->{namespace} . "::Prefilter";
-                my $compiler = $pre_filter_module->new();
+                my $compiler = $pre_filter_module->new;
 
                 # pre_filter isn't in the dispatch table
 
@@ -576,7 +577,7 @@ sub _engine {
         # engine is a name
 
         my $engine_module = $self->{namespace} . "::Engine";
-        my $compiler = $engine_module->new();
+        my $compiler = $engine_module->new;
 
         # engine isn't in the dispatch table
 
@@ -623,11 +624,11 @@ sub pre_procs {
 
     my $self = shift;
     my $module = $self->{namespace} . "::Preprocessor";
-    my $pre_proc = $module->new();
+    my $pre_proc = $module->new;
 
     my @pre_procs;
 
-    for (keys %{$pre_proc->_dt()}){
+    for (keys %{$pre_proc->_dt}){
         push @pre_procs, $_ if $_ !~ /^_/;
     }
     return @pre_procs;
@@ -636,11 +637,11 @@ sub pre_filters {
 
     my $self = shift;
     my $module = $self->{namespace} . "::Prefilter";
-    my $pre_filter = $module->new();
+    my $pre_filter = $module->new;
 
     my @pre_filters;
 
-    for (keys %{$pre_filter->_dt()}){
+    for (keys %{$pre_filter->_dt}){
         push @pre_filters, $_ if $_ !~ /^_/;
     }
     return @pre_filters;
@@ -649,11 +650,11 @@ sub engines {
 
     my $self = shift;
     my $module = $self->{namespace} . "::Engine";
-    my $engine = $module->new();
+    my $engine = $module->new;
  
     my @engines;
 
-    for (keys %{$engine->_dt()}){
+    for (keys %{$engine->_dt}){
         push @engines, $_ if $_ !~ /^_/;
     }
     return @engines;
@@ -666,7 +667,7 @@ sub has {
     $self->{params}{pre_filter} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
     $self->_config($p);
-    $self->run();
+    $self->run;
 }
 sub missing {
 
@@ -675,7 +676,7 @@ sub missing {
 
     $self->{params}{engine} = 'missing';
     $self->_config($p);
-    $self->run();
+    $self->run;
 }
 sub all {
 
@@ -684,7 +685,7 @@ sub all {
 
     $self->{params}{engine} = 'all';
     $self->_config($p);
-    $self->run();
+    $self->run;
 }
 sub lines {
 
@@ -698,7 +699,7 @@ sub lines {
         $self->{params}{pre_filter} = 'file_lines_contain';
     }
 
-    $self->run();
+    $self->run;
 }
 sub module {
 
@@ -714,7 +715,7 @@ sub module {
 
     $self->{params}{engine} = 'module';
 
-    $self->run();
+    $self->run;
 }
 sub objects {
 
@@ -726,7 +727,7 @@ sub objects {
     $self->{params}{pre_filter} = 'subs';
     $self->{params}{engine} = 'objects';
 
-    $self->run();
+    $self->run;
 }
 sub search_replace {
 
@@ -740,7 +741,7 @@ sub search_replace {
 
     $self->{params}{engine} = 'search_replace';
 
-    $self->run();
+    $self->run;
 }
 sub inject_after {
 
@@ -756,7 +757,7 @@ sub inject_after {
 
     $self->{params}{engine} = 'inject_after';
 
-    $self->run();
+    $self->run;
 }
 sub add_functionality {
     
@@ -788,7 +789,7 @@ sub add_functionality {
                       },
     );
 
-    my $caller = (caller())[1];
+    my $caller = (caller)[1];
 
     open my $fh, '<', $caller
       or confess "can't open the caller file $caller: $!";
@@ -818,7 +819,7 @@ sub add_functionality {
     tie my @TIE_file, 'Tie::File', $file
       or croak "can't Tie::File the file $file: $!";
 
-    my $end_line = $des->run();
+    my $end_line = $des->run;
 
     push @TIE_file, @code;
 }
@@ -897,7 +898,7 @@ Print out all lines in all subs that contain a search term
 
     for my $sub (@$subs){
     
-        my $lines_with_search_term = $sub->lines();
+        my $lines_with_search_term = $sub->lines;
 
         for (@$lines_with_search_term){
             my ($line_num, $text) = split /:/, $_, 2;

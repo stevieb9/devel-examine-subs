@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.27    20150813
+        - 'regex' param now enabled by default
+
 1.24    20150812
         - fixes bug 54: implement _clean_config()
         - fixes bug 56: allow 'file' param to be a module name

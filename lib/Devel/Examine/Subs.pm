@@ -838,7 +838,7 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 
     use Devel::Examine::Subs;
 
-    my $file = 'perl.pl'; # or directory, or C<Module::Name>
+    my $file = 'perl.pl'; # or directory, or Module::Name
     my $search = 'string';
 
     my $des = Devel::Examine::Subs->new({file => $file);

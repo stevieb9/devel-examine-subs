@@ -7,7 +7,7 @@ SYNOPSIS
 
         use Devel::Examine::Subs;
     
-        my $file = 'perl.pl'; # or directory, or C<Module::Name>
+        my $file = 'perl.pl'; # or directory, or Module::Name
         my $search = 'string';
     
         my $des = Devel::Examine::Subs->new({file => $file);

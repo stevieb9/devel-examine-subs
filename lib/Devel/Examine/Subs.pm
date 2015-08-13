@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings; 
 use strict;
 
-our $VERSION = '1.25';
+our $VERSION = '1.26';
 
 use Carp; 
 use Data::Dumper; 
@@ -836,31 +836,32 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 
     my $des = Devel::Examine::Subs->new({file => $file);
 
+
 Get all the subs as objects
 
-    $subs = $des->objects(...)
+    $subs = $des->objects;
 
     for my $sub (@$subs){
-        $sub->name();       # name of sub
-        $sub->start();      # number of first line in sub
-        $sub->end();        # number of last line in sub
-        $sub->num_lines();  # number of lines in sub
-        $sub->code();       # entire sub code from file
-        $sub->lines();      # lines that match search term
+        $sub->name;       # name of sub
+        $sub->start;      # number of first line in sub
+        $sub->end;        # number of last line in sub
+        $sub->num_lines;  # number of lines in sub
+        $sub->code;       # entire sub code from file
+        $sub->lines;      # lines that match search term
 
     }
 
 
 Get all sub names in a file
 
-    my $aref = $des->all();
+    my $aref = $des->all;
 
 
 Get all subs containing "string" in the body
 
     my $aref = $des->has({search => $search});
 
-Search and replace code in subs
+Search and replace code in subs (escape special chars unless using 'regex' param)
 
     $des->search_replace({
                     search => "$template = 'one.tmpl'",
@@ -886,7 +887,7 @@ Inject code into sub after a search term (preserves previous line's indenting)
 
 Print out all lines in all subs that contain a search term
 
-    my $subs = $des->objects(...);
+    my $subs = $des->objects;
 
     for my $sub (@$subs){
     
@@ -901,7 +902,7 @@ Print out all lines in all subs that contain a search term
 
 The structures look a bit differently when 'file' is a directory. You need to add one more layer of extraction.
 
-    my $files = $des->objects();
+    my $files = $des->objects;
 
     for my $file (keys %$files){
         for my $sub (@{$files->{$file}}){
@@ -971,11 +972,11 @@ All parameters are passed in via a single hash reference in all public methods. 
 
 
 
-=head2 C<new()>
+=head2 C<new>
 
 Mandatory parameters: C<{ file =E<gt> $filename }>
 
-Instantiates a new object. If C<$filename> is a directory, we'll iterate through it finding all Perl files. If filename is a module name (eg: C<Data::Dumper>), we'll attempt to load the module, extract the file for the module, and load it. Note that this'll be a production C<%INC> file so use caution.
+Instantiates a new object. If C<$filename> is a directory, we'll iterate through it finding all Perl files. If filename is a module name (eg: C<Data::Dumper>), we'll attempt to load the module, extract the file for the module, and load the file. CAUTION: this will be a production C<%INC> file so be careful.
 
 Only specific params are guaranteed to stay persistent throughout a run on the same object, and are best set in C<new()>. These parameters are C<file>, C<extensions>, C<regex>, C<copy>, C<no_indent> and C<diff>. 
 
@@ -983,7 +984,7 @@ Only specific params are guaranteed to stay persistent throughout a run on the s
 
 
 
-=head2 C<all()>
+=head2 C<all>
 
 Mandatory parameters: None
 
@@ -994,7 +995,7 @@ Returns an array reference containing the names of all subroutines found in the 
 
 
 
-=head2 C<has()>
+=head2 C<has>
 
 Mandatory parameters: C<{ search =E<gt> 'term' }>
 
@@ -1003,7 +1004,7 @@ Returns an array reference containing the names of the subs where the subroutine
 
 
 
-=head2 C<missing()>
+=head2 C<missing>
 
 Mandatory parameters: C<{ search =E<gt> 'term' }>
 
@@ -1012,10 +1013,16 @@ The exact opposite of has.
 
 
 
+=head2 C<objects>
+
+Mandatory parameters: None
+
+Returns an array reference of subroutine objects. See L<SYNOPSIS> for the structure of each object.
 
 
 
-=head2 C<module()>
+
+=head2 C<module>
 
 Mandatory parameters: { module =E<gt> 'Module::Name' }
 
@@ -1024,9 +1031,9 @@ Returns an array reference containing the names of all subs found in the module'
 
 
 
-=head2 C<lines()>
+=head2 C<lines>
 
-Mandatory parameters: { search =E<gt> $text }
+Mandatory parameters: { search =E<gt> 'text' }
 
 Gathers together all line text and line number of all subs where the subroutine contains lines matching the search term.
 
@@ -1035,7 +1042,7 @@ Returns a hash reference with the subroutine name as the key, the value being an
 
 
 
-=head2 C<search_replace()>
+=head2 C<search_replace>
 
 Mandatory parameters: { search =E<gt> 'this', replace =E<gt> 'that' }
 
@@ -1050,7 +1057,7 @@ This method will create a backup copy of the file with the same name appended wi
 
 
 
-=head2 C<inject_after()>
+=head2 C<inject_after>
 
 Mandatory parameters: { search =E<gt> 'this', code =E<gt> \@code }
 
@@ -1060,7 +1067,7 @@ feature.
 
 By default, an injection only happens after the first time a search term is found. Use the C<injects> parameter (see L<PARAMETERS>) to change this behaviour. Setting to a positive integer beyond 1 will inject after that many finds. Set to a negative integer will inject after all finds.
 
-The C<code> array should contain one line of code (or blank line) per each element. (See L<SYNOPSIS> for an example).
+The C<code> array should contain one line of code (or blank line) per each element. (See L<SYNOPSIS> for an example). The code is not manipulated prior to injection, it is inserted exactly as typed. Best to use a heredoc, C<__DATA__> section or an external text file for the code.
 
 
 
@@ -1082,29 +1089,29 @@ How many injections do you want to do per sub? See L<PARAMETERS> for more detail
 
 
 
-=head2 C<pre_procs()>
+=head2 C<pre_procs>
 
 Returns a list of all available pre processor modules.
 
 
 
-=head2 C<pre_filters()>
+=head2 C<pre_filters>
 
 Returns a list of all available built-in pre engine filter modules.
 
 
 
-=head2 C<engines()>
+=head2 C<engines>
 
 Returns a list of all available built-in 'engine' modules.
 
 
-=head2 C<valid_params()>
+=head2 C<valid_params>
 
 Returns a hash where the keys are valid parameter names, and the value is a bool where if true, the parameter is persistent (remains between calls on the same object) and if false, the param is transient, and will be made C<undef> after each method call finishes.
 
 
-=head2 C<run()>
+=head2 C<run>
 
 All public methods call this method internally. The public methods set certain variables (filters, engines etc). You can get the same 
 effect programatically by using C<run()>. Here's an example that performs the same operation as the C<has()> public method:
@@ -1123,7 +1130,7 @@ This allows for very fine-grained interaction with the application, and makes it
 
 
 
-=head2 C<add_functionality()>
+=head2 C<add_functionality>
 
 WARNING!: This method is highly experimental and is used for developing internal processors only. Only 'engine' is functional, and only 
 half way.
@@ -1160,7 +1167,7 @@ Optional parameters:
 
 =item C<copy> 
 
-Set it to a new file name which will copy the original, and only change the copy. Useful for verifying the changes took 
+Set it to a new file name which will be a copy of the specified file, and only change the copy. Useful for verifying the changes took 
 properly.
 
 =back
@@ -1184,16 +1191,20 @@ The following list are persistent parameters, which need to be manually changed 
 
 State: Persistent
 
-The name of a file, directory or module name. Will convert module name to a file name if the module is installed on the system. It'll require the module temporarily and then 'un'-require it immediately after use. 
+Default: None
 
-If set in C<new>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
+The name of a file, directory or module name. Will convert module name to a file name if the module is installed on the system. It'll C<require> the module temporarily and then 'un'-C<require> it immediately after use. 
+
+If set in C<new()>, you can omit it from all subsequent method calls until you want it changed. Once changed in a call, the updated value will remain persistent until changed again.
 
 
 =item C<extensions>
 
 State: Persistent
 
-By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file. This parameter is persistent until manually reset and should be set in C<new>.
+Default: C<[qw(pm pl)]>
+
+By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load different files. Only useful when a directory is passed in as opposed to a file. This parameter is persistent until manually reset and should be set in C<new()>.
 
 Values: Array reference where each element is the name of the extension (less the dot). For example, C<[qw(pm pl)]> is the default.
 
@@ -1201,6 +1212,8 @@ Values: Array reference where each element is the name of the extension (less th
 =item C<copy>
 
 State: Persistent
+
+Default: None
 
 For methods that write to files, you can optionally work on a copy that you specify in order to review the changes before modifying a production file.
 
@@ -1211,13 +1224,16 @@ Set this parameter to the name of an output file. The original file will be copi
 
 State: Persistent
 
+Default: Enabled
+
 Set to a true value, all values in the 'search' parameter become regexes. For example with regex on, C</thi?s/> will match "this", but without regex, it won't. Without 'regex' enabled, all characters that perl treats as special must be escaped. This parameter is persistent; it remains until reset manually.
 
-This parameter may be enabled by default in future versions.
 
 =item C<no_indent>
 
 State: Persistent
+
+Default: Disabled
 
 In the processes that write new code to files, the indentation level of the line the search term was found on is used for inserting the 
 new code by default. Set this parameter to a true value to disable this feature and set the new code at the beginning column of the 
@@ -1242,6 +1258,8 @@ The following parameters are not persistent, ie. they get reset before entering 
 
 State: Transient
 
+Default: None
+
 An array reference containing the names of subs to include. This (and C<exclude>) tell the Processor phase to generate only these subs, significantly reducing the work that needs to be done in subsequent method calls.
 
 
@@ -1249,6 +1267,8 @@ An array reference containing the names of subs to include. This (and C<exclude>
 =item C<exclude>
 
 State: Transient
+
+Default: None
 
 An array reference of the names of subs to exclude. See C<include> for further details.
 
@@ -1261,6 +1281,8 @@ Note that C<exclude> renders C<include> useless.
 
 State: Transient
 
+Default: 1
+
 Informs C<inject_after()> how many injections to perform. For instance, if a search term is found five times in a sub, how many of those do you want to inject the code after?
 
 Default is 1. Set to a higher value to achieve more injects. Set to a negative integer to inject after all.
@@ -1270,6 +1292,8 @@ Default is 1. Set to a higher value to achieve more injects. Set to a negative i
 =item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
 
 State: Transient
+
+Default: Disabled
 
 Set to 1 to activate, C<exit()>s after completion.
 
@@ -1291,6 +1315,8 @@ likewise, C<1> will dump after the first.
 
 State: Transient
 
+Default: Disabled
+
 Returns the structure of data immediately after being processed by the respective phase. Useful for writing new 'phases'. (See "SEE 
 ALSO" for details).
 
@@ -1303,7 +1329,9 @@ NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will only
 
 State: Transient
 
-Prints to STDOUT with Data::Dumper the current state of all loaded configuration parameters.
+Default: Disabled
+
+Prints to C<STDOUT> with C<Data::Dumper> the current state of all loaded configuration parameters.
 
 
 

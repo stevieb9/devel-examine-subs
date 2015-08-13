@@ -40,7 +40,7 @@ sub function {
         my $str = this;
 }
 sub six {
-    my $str = this;
+    my $str = 'this';
 }
 sub seven {
     my $str = this;

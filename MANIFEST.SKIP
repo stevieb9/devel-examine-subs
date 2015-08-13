@@ -1,7 +1,8 @@
 ~$
-^blib$
-^pm_to_blib$
+^blib/
+^pm_to_blib/
 .old$
+.orig$
 des.pl$
 .tar.gz$
 .bak$
@@ -15,3 +16,4 @@ des.pl$
 ^MYMETA\.yml$
 ^MYMETA\.json$
 ^README.bak$
+^Makefile$

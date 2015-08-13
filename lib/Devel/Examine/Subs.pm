@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings; 
 use strict;
 
-our $VERSION = '1.26';
+our $VERSION = '1.27';
 
 use Carp; 
 use Data::Dumper; 
@@ -21,8 +21,11 @@ sub new {
     
     my $p = shift;
 
+    # default configs
+
     $self->{namespace} = 'Devel::Examine::Subs';
-    
+    $self->{params}{regex} = 1;
+
     $self->_config($p);
 
     return $self;
@@ -834,7 +837,7 @@ Devel::Examine::Subs - Get info, search/replace and inject code in Perl file sub
 
     use Devel::Examine::Subs;
 
-    my $file = 'perl.pl'; # or directory, or module name (D::E::S)
+    my $file = 'perl.pl'; # or directory, or C<Module::Name>
     my $search = 'string';
 
     my $des = Devel::Examine::Subs->new({file => $file);
@@ -864,11 +867,11 @@ Get all subs containing "string" in the body
 
     my $aref = $des->has({search => $search});
 
-Search and replace code in subs (escape special chars unless using 'regex' param)
+Search and replace code in subs
 
     $des->search_replace({
-                    search => "$template = 'one.tmpl'",
-                    replace => "$template = 'two.tmpl'",
+                    search => q/\$template = 'one\.tmpl'",
+                    replace => '$template = \'two.tmpl\'',
                   });
 
 Inject code into sub after a search term (preserves previous line's indenting)

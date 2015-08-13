@@ -25,7 +25,7 @@ BEGIN {#1
                 test => 1,
               });
 
-    is ( keys %{$global_des->{params}}, 4, "_config() sets \$self->{params}, and properly" );
+    is ( keys %{$global_des->{params}}, 5, "_config() sets \$self->{params}, and properly" );
 }
 {
     my $des = Devel::Examine::Subs->new({file => 't/sample.data'});

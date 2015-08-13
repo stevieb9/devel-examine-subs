@@ -46,7 +46,7 @@ sub function {
 
 }
 sub six {
-    my $str = this;
+    my $str = 'this';
     # comment line one
     # comment line 2
 

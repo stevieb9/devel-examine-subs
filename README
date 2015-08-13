@@ -20,7 +20,7 @@ SYNOPSIS
             $sub->name;       # name of sub
             $sub->start;      # number of first line in sub
             $sub->end;        # number of last line in sub
-            $sub->num_lines;  # number of lines in sub
+            $sub->line_count; # number of lines in sub
             $sub->code;       # entire sub code from file
             $sub->lines;      # lines that match search term
     
@@ -180,8 +180,14 @@ METHODS
 
     Mandatory parameters: None
 
-    Returns an array reference of subroutine objects. See SYNOPSIS for the
-    structure of each object.
+    Optional parameters: {objects_in_hash = 1}>
+
+    Returns an array reference of subroutine objects. If the optional
+    objects_in_hash is sent in with a true value, the objects will be
+    returned in a hash reference where the key is the sub's name, and the
+    value is the sub object.
+
+    See SYNOPSIS for the structure of each object.
 
  module
 

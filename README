@@ -65,7 +65,7 @@ SYNOPSIS
     
         for my $sub (@$subs){
         
-            my $lines_with_search_term = $sub->lines();
+            my $lines_with_search_term = $sub->lines;
     
             for (@$lines_with_search_term){
                 my ($line_num, $text) = split /:/, $_, 2;

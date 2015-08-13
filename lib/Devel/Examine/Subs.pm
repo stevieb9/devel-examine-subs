@@ -1026,7 +1026,7 @@ The exact opposite of has.
 
 Mandatory parameters: None
 
-Optional parameters: C<{objects_in_hash => 1}>
+Optional parameters: C<{objects_in_hash =E<gt> 1}>
 
 Returns an array reference of subroutine objects. If the optional C<objects_in_hash> is sent in with a true value, the objects will be returned in a hash reference where the key is the sub's name, and the value is the sub object.
 

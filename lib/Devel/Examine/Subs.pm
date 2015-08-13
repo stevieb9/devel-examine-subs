@@ -32,8 +32,8 @@ sub run {
     my $self = shift;
     my $p = shift;
 
-    # we're starting the run
-    # gets set to true at end of _core()
+    # we're starting the run...
+    # is set to true at end of _core()
 
     $self->_run_end(0);
 
@@ -54,8 +54,8 @@ sub run_directory {
     my $self = shift;
     my $p = shift;
 
-    # we're starting the run
-    # gets set to true at end of _core()
+    # we're starting the run...
+    # we take care of setting this to true below
 
     $self->_run_end(0);
 
@@ -279,7 +279,8 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        # for things that don't need to process files (such as 'module'), return early
+        # for things that don't need to process files 
+        # (such as 'module'), return early
 
         if ($self->{params}{pre_proc_return}){
             return $data;
@@ -348,8 +349,8 @@ sub _subs {
 
     return {} if ! $file;
 
-    my $ppi_doc = PPI::Document->new($file);
-    my $PPI_subs = $ppi_doc->find("PPI::Statement::Sub");
+    my $PPI_doc = PPI::Document->new($file);
+    my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
 
     return if ! $PPI_subs;
 
@@ -369,7 +370,7 @@ sub _subs {
 
         my $name = $PPI_sub->name;
 
-        # bug 48: bail out if caller wants specific subs only
+        # skip over excluded subs
 
         next if grep {$name eq $_ } @$exclude;
 
@@ -394,7 +395,8 @@ sub _subs {
 
         my $line_num = $subs{$file}{subs}{$name}{start};
        
-        # pull out just the subroutine from the file array and attach it to the structure
+        # pull out just the subroutine from the file 
+        # array and attach it to the structure
 
         my @sub_definition = @TIE_file[
                                     $subs{$file}{subs}{$name}{start}
@@ -423,7 +425,8 @@ sub _pre_proc {
         return $subs;
     }
    
-    # tell _core() to return directly from the pre_processor if necessary, and bypass pre_filter and engine
+    # tell _core() to return directly from the pre_processor 
+    # if necessary, and bypass pre_filter and engine
 
     if ($pre_proc eq 'module'){
        $self->{params}{pre_proc_return} = 1;

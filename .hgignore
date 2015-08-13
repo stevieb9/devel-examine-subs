@@ -13,3 +13,4 @@ Makefile$
 ^META.json$
 ^META.yml$
 .old$
+.orig$

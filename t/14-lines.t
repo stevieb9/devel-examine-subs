@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
@@ -16,7 +16,7 @@ my $p = {
 {
     $p->{search} = 'this';
 
-    my $des = Devel::Examine::Subs->new();
+    my $des = Devel::Examine::Subs->new($p);
 
     my $ret = $des->lines($p);
     my %subs = %$ret;

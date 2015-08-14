@@ -733,7 +733,9 @@ sub inject_after {
     my $self = shift;
     my $p = shift;
 
-    $p->{injects} = 1 if ! $p->{injects};
+    if (! $p->{injects} && ! $self->{params}{injects}){
+        $p->{injects} = 1;
+    }
 
     $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';

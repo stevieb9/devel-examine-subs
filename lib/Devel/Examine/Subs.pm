@@ -105,6 +105,14 @@ sub run_directory {
 
     return \%struct;
 }
+sub _cache_safe {
+    my $self = shift;
+    my $value = shift if @_;
+
+    $self->{cache_safe} = $value if defined $value;
+
+    return $self->{cache_safe};
+}
 sub _config {
 
     my $self = shift;
@@ -171,7 +179,7 @@ sub _config {
         $self->{params}{$param} = $p->{$param};
     }
 
-    # set up for caching
+    # check if we can cache
 
     my @unsafe_cache_params 
       = qw(file extensions include exclude search);
@@ -179,13 +187,12 @@ sub _config {
     my $current = $self->{params};
     my $previous = $self->{previous_run_config};
 
-    $self->{cache_safe} = 0;
-    
     for (@unsafe_cache_params){
-        $self->{cache_safe} 
-          = Compare($current->{$_}, $previous->{$_});
+        my $safe = Compare($current->{$_}, $previous->{$_});
+        
+        $self->_cache_safe($safe);
 
-        last if ! $self->{cache_safe};
+        last if ! $self->_cache_safe;
     }
 
     if ($self->{params}{config_dump}){

@@ -16,6 +16,7 @@ my $builder = Module::Build->new(
     },
     requires => {
         'Carp' => 0,
+        'Data::Compare' => 0,
         'Data::Dumper' => 0,
         'File::Find' => 0,
         'perl' => 5.006,

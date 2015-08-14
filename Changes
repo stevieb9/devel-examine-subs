@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.28    
+        - Data::Compare to compare for caching
+
 1.27    20150813
         - 'regex' param now enabled by default
         - new 'objects_as_hash' param

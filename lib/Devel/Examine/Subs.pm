@@ -4,7 +4,8 @@ use strict;
 
 our $VERSION = '1.28';
 
-use Carp; 
+use Carp;
+use Data::Compare;
 use Data::Dumper; 
 use Devel::Examine::Subs::Engine; 
 use Devel::Examine::Subs::Preprocessor; 
@@ -172,32 +173,19 @@ sub _config {
 
     # set up for caching
 
-    $self->{cache_safe} = 1;
-
     my @unsafe_cache_params 
       = qw(file extensions include exclude search);
 
     my $current = $self->{params};
     my $previous = $self->{previous_run_config};
 
-    {
-        no warnings 'uninitialized';
-   
-        for (@unsafe_cache_params){
+    $self->{cache_safe} = 0;
+    
+    for (@unsafe_cache_params){
+        $self->{cache_safe} 
+          = Compare($current->{$_}, $previous->{$_});
 
-            if (defined $current->{$_} || defined $previous->{$_}){
-                if (ref $current->{$_} eq 'ARRAY' || ref $previous->{$_} eq 'ARRAY'){
-                    if (! (@{$current->{$_}} ~~ @{$previous->{$_}})){
-                        $self->{cache_safe} = 0;
-                        last;
-                    }
-                }
-                elsif ($current->{$_} ne $previous->{$_}){
-                    $self->{cache_safe} = 0;;
-                    last;
-                }
-            }
-        }
+        last if ! $self->{cache_safe};
     }
 
     if ($self->{params}{config_dump}){

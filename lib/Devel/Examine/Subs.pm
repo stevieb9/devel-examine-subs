@@ -48,7 +48,7 @@ sub run {
         my $files = $self->run_directory;
     }
     else {
-        $self->_core;
+        $self->_core($p);
     }
 
 }
@@ -87,7 +87,7 @@ sub run_directory {
     
     for my $file (@files){
         $self->{params}{file} = $file;
-        my $data = $self->_core;
+        my $data = $self->_core($p);
         
         my $exists = 0;
         $exists = %$data if ref($data) eq 'HASH';
@@ -107,8 +107,6 @@ sub _config {
 
     my $self = shift;
     my $p = shift;
-
-    print "**** " . (caller(1))[3] . "\n";
 
     my %valid_params = (
 
@@ -352,7 +350,7 @@ sub _subs {
     my $file = $self->{params}{file};
 
     return {} if ! $file;
-
+    
     my $PPI_doc = PPI::Document->new($file);
     my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
 
@@ -688,7 +686,7 @@ sub lines {
     
     $self->{params}{engine} = 'lines';
     
-    if ($self->{params}{search}){
+    if ($self->{params}{search} || $p->{search}){
         $self->{params}{pre_filter} = 'file_lines_contain';
     }
 

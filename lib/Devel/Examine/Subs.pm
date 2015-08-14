@@ -105,6 +105,12 @@ sub run_directory {
 
     return \%struct;
 }
+sub _cache {
+    my $self = shift;
+    my $struct = shift if @_;
+
+    $self->{cache} = $struct if defined $struct;
+} 
 sub _cache_safe {
     my $self = shift;
     my $value = shift if @_;

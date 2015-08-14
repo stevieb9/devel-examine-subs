@@ -48,7 +48,7 @@ sub run {
         my $files = $self->run_directory;
     }
     else {
-        $self->_core($self->{params});
+        $self->_core;
     }
 
 }
@@ -61,8 +61,6 @@ sub run_directory {
     # we take care of setting this to true below
 
     $self->_run_end(0);
-
-    #$self->_config($p);
 
     my @files;
 
@@ -89,7 +87,7 @@ sub run_directory {
     
     for my $file (@files){
         $self->{params}{file} = $file;
-        my $data = $self->_core($self->{params});
+        my $data = $self->_core;
         
         my $exists = 0;
         $exists = %$data if ref($data) eq 'HASH';
@@ -268,11 +266,9 @@ sub _file {
 sub _core {
     
     my $self = shift;
-#    my $p = shift;
 
     # config
     
-#    $self->_config($p);
     my $p = $self->{params};
 
     my $search = $self->{params}{search};
@@ -425,8 +421,6 @@ sub _pre_proc {
     my $p = shift;
     my $subs = shift;
 
-    #$self->_config($p);
-
     my $pre_proc = $self->{params}{pre_proc};
 
     if (not $pre_proc or $pre_proc eq ''){
@@ -482,8 +476,6 @@ sub _pre_filter {
     my $self = shift;
     my $p = shift;
     my $struct = shift;
-
-    #$self->_config($p);
 
     my $pre_filter = $self->{params}{pre_filter};
     my $pre_filter_dump = $self->{params}{pre_filter_dump};
@@ -565,8 +557,6 @@ sub _engine {
     my $self = shift;
     my $p = shift;
     my $struct = shift;
-
-    #$self->_config($p);
 
     my $engine = $p->{engine} // $self->{params}{engine};
 
@@ -670,7 +660,7 @@ sub has {
 
     $self->{params}{pre_filter} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
-#    $self->_config($p);
+    
     $self->run($p);
 }
 sub missing {
@@ -679,7 +669,7 @@ sub missing {
     my $p = shift;
 
     $self->{params}{engine} = 'missing';
-    #$self->_config($p);
+    
     $self->run($p);
 }
 sub all {
@@ -688,7 +678,7 @@ sub all {
     my $p = shift;
 
     $self->{params}{engine} = 'all';
-#    $self->_config($p);
+    
     $self->run($p);
 }
 sub lines {
@@ -697,7 +687,6 @@ sub lines {
     my $p = shift;
     
     $self->{params}{engine} = 'lines';
-    #$self->_config($p);
     
     if ($self->{params}{search}){
         $self->{params}{pre_filter} = 'file_lines_contain';
@@ -709,8 +698,6 @@ sub module {
 
     my $self = shift;
     my $p = shift;
-
-    #$self->_config($p);
 
     # set the preprocessor up, and have it return before the building/compiling of file data happens
 
@@ -726,8 +713,6 @@ sub objects {
     my $self = shift;
     my $p = shift;
 
-    #$self->_config($p);
-
     $self->{params}{pre_filter} = 'subs';
     $self->{params}{engine} = 'objects';
 
@@ -737,8 +722,6 @@ sub search_replace {
 
     my $self = shift;
     my $p = shift;
-
-    #$self->_config($p);
 
     $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';
@@ -751,8 +734,6 @@ sub inject_after {
 
     my $self = shift;
     my $p = shift;
-
-    #$self->_config($p);
 
     $p->{injects} = 1 if ! $p->{injects};
 

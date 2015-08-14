@@ -14,6 +14,7 @@ use PPI;
 use Symbol;
 use Tie::File;
 
+
 sub new {
     
     my $self = {};
@@ -149,6 +150,10 @@ sub _config {
 
     $self->{valid_params} = \%valid_params;
 
+    # get previous run's config
+
+    %{$self->{previous_run_config}} = %{$self->{params}};
+
     # clean config
 
     $self->_clean_config(\%valid_params, $p);
@@ -164,6 +169,37 @@ sub _config {
 
         $self->{params}{$param} = $p->{$param};
     }
+
+    # set up for caching
+
+    $self->{cache_safe} = 1;
+
+    my @unsafe_cache_params 
+      = qw(file extensions include exclude search);
+
+    my $current = $self->{params};
+    my $previous = $self->{previous_run_config};
+
+    {
+        no warnings 'uninitialized';
+   
+        for (@unsafe_cache_params){
+
+            if (defined $current->{$_} || defined $previous->{$_}){
+                if (ref $current->{$_} eq 'ARRAY' || ref $previous->{$_} eq 'ARRAY'){
+                    if (! (@{$current->{$_}} ~~ @{$previous->{$_}})){
+                        $self->{cache_safe} = 0;
+                        last;
+                    }
+                }
+                elsif ($current->{$_} ne $previous->{$_}){
+                    $self->{cache_safe} = 0;;
+                    last;
+                }
+            }
+        }
+    }
+
     if ($self->{params}{config_dump}){
         print Dumper $self->{params};
     }

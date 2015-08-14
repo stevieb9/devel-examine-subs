@@ -38,9 +38,9 @@ sub run {
     # we're starting the run...
     # is set to true at end of _core()
 
-    $self->_run_end(0);
-
     $self->_config($p);
+    
+    $self->_run_end(0);
 
     # do something different for a dir
 

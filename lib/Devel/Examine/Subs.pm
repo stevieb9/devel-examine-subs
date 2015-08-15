@@ -47,7 +47,7 @@ sub run {
     my $struct;
 
     if ($self->{params}{directory}){
-        $struct = $self->run_directory;
+        $struct = $self->_run_directory;
     }
     else {
         $struct = $self->_core($p);
@@ -58,7 +58,7 @@ sub run {
 
     return $struct;
 }
-sub run_directory {
+sub _run_directory {
 
     my $self = shift;
     my $p = shift;

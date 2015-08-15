@@ -44,25 +44,24 @@ sub run {
     
     $self->_run_end(0);
 
-    # do something different for a dir
+    my $struct;
 
     if ($self->{params}{directory}){
-        my $files = $self->run_directory;
+        $struct = $self->run_directory;
     }
     else {
-        $self->_core($p);
+        $struct = $self->_core($p);
     }
 
+    $self->_run_end(1);
+    $self->_clean_core_config;
+
+    return $struct;
 }
 sub run_directory {
 
     my $self = shift;
     my $p = shift;
-
-    # we're starting the run...
-    # we take care of setting this to true below
-
-    $self->_run_end(0);
 
     my @files;
 
@@ -97,11 +96,6 @@ sub run_directory {
 
         $struct{$file} = $data if $exists;
     }
-
-    # we've got to clean up core/config here
-
-    $self->_run_end(1);    
-    $self->_clean_core_config;
 
     return \%struct;
 }
@@ -302,8 +296,6 @@ sub _core {
     
     my $self = shift;
 
-    # config
-    
     my $p = $self->{params};
 
     my $search = $self->{params}{search};
@@ -371,13 +363,8 @@ sub _core {
         exit;
     }
 
-    # do some config cleaning
-    # run_directory() takes care of cleanup if it's enabled
-
-    $self->_run_end(1) if ! $self->{params}{directory};
-    $self->_clean_core_config if ! $self->{params}{directory};
-
     $self->{data} = $subs;
+    
     return $subs;
 }
 sub _subs {

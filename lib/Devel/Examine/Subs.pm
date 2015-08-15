@@ -27,7 +27,7 @@ sub new {
 
     $self->{namespace} = 'Devel::Examine::Subs';
     $self->{params}{regex} = 1;
-
+#    $self->{cache_enabled} = 1;
     $self->_config($p);
 
     return $self;
@@ -36,9 +36,6 @@ sub run {
 
     my $self = shift;
     my $p = shift;
-
-    # we're starting the run...
-    # is set to true at end of _core()
 
     $self->_config($p);
     
@@ -56,7 +53,6 @@ sub run {
     $self->_run_end(1);
     $self->_clean_core_config;
 
-    print Dumper $struct;
     return $struct;
 }
 sub _run_directory {
@@ -102,21 +98,19 @@ sub _run_directory {
 }
 sub _cache {
     my $self = shift;
-    my $file = shift if @_; # mandatory
+    my $file = shift if @_;
     my $struct = shift if @_;
 
-    if (! $file || ref $file eq 'ARRAY'){
-        # forgot file, sent in only $struct
-        return 0;
-    }
+#    if (! $file || ref $file eq 'ARRAY'){
+#        # forgot file, sent in only $struct
+#        return 0;
+#    }
     if (! $struct && $file){
         return $self->{cache}{$file};
     }
     if ($file && $struct){
         $self->{cache}{$file} = $struct;
     }
-
-    return $self->{cache}{$file};
 } 
 sub _cache_enabled {
     my $self = shift;
@@ -312,6 +306,8 @@ sub _file {
             die "Invalid file supplied: $self->{params}{file} $!";
         }
    }
+
+   return $self->{params}{file};
 }
 sub _core {
     

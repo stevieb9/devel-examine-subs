@@ -56,6 +56,7 @@ sub run {
     $self->_run_end(1);
     $self->_clean_core_config;
 
+    print Dumper $struct;
     return $struct;
 }
 sub _run_directory {
@@ -101,10 +102,30 @@ sub _run_directory {
 }
 sub _cache {
     my $self = shift;
+    my $file = shift if @_; # mandatory
     my $struct = shift if @_;
 
-    $self->{cache} = $struct if defined $struct;
+    if (! $file || ref $file eq 'ARRAY'){
+        # forgot file, sent in only $struct
+        return 0;
+    }
+    if (! $struct && $file){
+        return $self->{cache}{$file};
+    }
+    if ($file && $struct){
+        $self->{cache}{$file} = $struct;
+    }
+
+    return $self->{cache}{$file};
 } 
+sub _cache_enabled {
+    my $self = shift;
+    my $value = shift if @_;
+
+    $self->{cache_enabled} = $value if defined $value;
+
+    return $self->{cache_enabled};
+}
 sub _cache_safe {
     my $self = shift;
     my $value = shift if @_;
@@ -320,13 +341,28 @@ sub _core {
 
     # processor
 
-    my $subs = $self->_subs;
+    my $subs = $data;
+
+    # bypass the proc if cache
+
+    if ($self->_cache_enabled && $self->_cache($p->{file})){
+        $subs = $self->_cache($p->{file});
+    }
+    else {
+        $subs = $self->_subs;
+    } 
     
     $subs = $subs // 0;
 
     return if ! $subs;
 
     $self->{data} = $subs;
+
+    # write to cache
+
+    if ($self->_cache_enabled && ! $self->_cache($p->{file})){
+        $self->_cache($p->{file}, $subs);
+    }
 
     # pre engine filter
 

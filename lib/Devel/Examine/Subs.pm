@@ -101,6 +101,15 @@ sub _cache {
     my $file = shift if @_;
     my $struct = shift if @_;
 
+    if ($self->{params}{cache_dump}){
+
+        print Dumper $self->{cache};
+
+        if ($self->{params}{cache_dump} > 1){
+            exit;
+        }
+    }
+
     if (! $struct && $file){
         return $self->{cache}{$file};
     }
@@ -167,6 +176,7 @@ sub _config {
         pre_filter_return => 0,
         engine_return => 0,
         config_dump => 0,
+        cache_dump => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -1435,7 +1445,8 @@ integer to inject after all.
 
 
 
-=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<core_dump>
+=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<cache_dump>,
+C<core_dump>
 
 State: Transient
 
@@ -1459,6 +1470,9 @@ the location of the filter. For instance, C<pre_filter_dump =E<gt> 2;> will
 dump the output from the second filter and likewise, C<1> will dump after the
 first.
 
+For C<cache_dump>, if it is set to one, it'll dump cache but the application
+will continue. Set this parameter to an integer larger than one to have the
+application C<exit> immediately after dumping the cache to STDOUT.
 
 
 =item C<pre_proc_return>, C<pre_filter_return>, C<engine_return>

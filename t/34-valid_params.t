@@ -15,7 +15,7 @@ BEGIN {#1
 
     my %vp = $des->valid_params();
 
-    is( keys %vp, 28, "valid_params() returns proper number of valid params");
+    is( keys %vp, 29, "valid_params() returns proper number of valid params");
     my @persistent;
     my @transient;
 
@@ -25,7 +25,7 @@ BEGIN {#1
     }
 
     is (@persistent, 10, "valid_params() returns the correct num of persistent params");
-    is (@transient, 18, "valid_params() returns the correct num of transient params");
+    is (@transient, 19, "valid_params() returns the correct num of transient params");
 
     my @valid = qw(
           no_indent

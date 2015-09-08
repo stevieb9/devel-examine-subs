@@ -230,17 +230,23 @@ sub search_replace {
         my $copy = $p->{copy} if $p->{copy};
 
         if (! $file){
-            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
-                  "can't use search_replace engine without specifying a file\n\n";
+            croak "\nDevel::Examine::Subs::Engine::search_replace " .
+                  "speaking:\n" .
+                  "can't use search_replace engine without specifying a " .
+                  "file\n\n";
         }
 
         if (! $search){
-            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
-                  "can't use search_replace engine without specifying a search term\n\n";
+            croak "\nDevel::Examine::Subs::Engine::search_replace " .
+                  " speaking:\n" .
+                  "can't use search_replace engine without specifying a " .
+                  "search term\n\n";
         }
         if (! $replace){
-            croak "\nDevel::Examine::Subs::Engine::search_replace speaking:\n" .
-                  "can't use search_replace engine without specifying a replace term\n\n";
+            croak "\nDevel::Examine::Subs::Engine::search_replace " .
+                  "speaking:\n" .
+                  "can't use search_replace engine without specifying a " .
+                  "replace term\n\n";
         }
         
  
@@ -304,11 +310,12 @@ sub inject_after {
 
         if (! $search){
             croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
-                    "can't use inject_after engine without specifying a search term\n\n";
+                    "can't use inject_after engine without specifying a " .
+                    "search term\n\n";
         }
         if (! $code){
             croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
-                    "can't use inject_after engine without code to inject\n\n";
+                  "can't use inject_after engine without code to inject\n\n";
 
         }
         
@@ -411,7 +418,8 @@ __END__
 
 =head1 NAME
 
-Devel::Examine::Subs::Engine - Provides core engine callbacks for Devel::Examine::Subs
+Devel::Examine::Subs::Engine - Provides core engine callbacks for
+Devel::Examine::Subs
 
 =head1 SYNOPSIS
 
@@ -430,11 +438,13 @@ Devel::Examine::Subs::Engine - Provides core engine callbacks for Devel::Examine
 
 =head1 METHODS
 
-All methods other than C<exists()> takes an href of configuration data as it's first parameter.
+All methods other than C<exists()> takes an href of configuration data as its
+first parameter.
 
 =head2 C<exists('engine')>
 
-Verifies whether the engine name specified as the string parameter exists and is valid.
+Verifies whether the engine name specified as the string parameter exists and
+is valid.
 
 =head2 C<all>
 
@@ -456,7 +466,8 @@ Returns an aref.
 
 =head2 C<lines>
 
-The module that passes data in is dependant on whether 'search' is set. Otherwise, it comes directly from the Processor.
+The module that passes data in is dependant on whether 'search' is set.
+Otherwise, it comes directly from the Processor.
 
 Returns an href.
 
@@ -490,8 +501,9 @@ You can find documentation for this module with the perldoc command.
 
 Copyright 2015 Steve Bertrand.
 
-This program is free software; you can redistribute it and/or modify it under the terms of either: the GNU General Public License as 
-published by the Free Software Foundation; or the Artistic License.
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
 
 See http://dev.perl.org/licenses/ for more information.
 

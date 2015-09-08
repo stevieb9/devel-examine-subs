@@ -40,7 +40,8 @@ $des->has({extensions => [qw(pl pw)]});
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
 $des->all();
-is ($des->_cache_safe, 1, "cache_safe() works with no params and extensions set earlier");
+is ($des->_cache_safe, 1, "cache_safe() works with no params and " .
+    "extensions set earlier");
 
 $des->all();
 is ($des->_cache_safe, 1, "cache_safe() is correct");

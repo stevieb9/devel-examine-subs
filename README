@@ -461,7 +461,7 @@ PARAMETERS
       Default is 1. Set to a higher value to achieve more injects. Set to a
       negative integer to inject after all.
 
-    pre_proc_dump, pre_filter_dump, engine_dump, core_dump
+    pre_proc_dump, pre_filter_dump, engine_dump, cache_dump, core_dump
 
       State: Transient
 
@@ -484,6 +484,11 @@ PARAMETERS
       that coincides with the location of the filter. For instance,
       pre_filter_dump => 2; will dump the output from the second filter and
       likewise, 1 will dump after the first.
+
+      For cache_dump, if it is set to one, it'll dump cache but the
+      application will continue. Set this parameter to an integer larger
+      than one to have the application exit immediately after dumping the
+      cache to STDOUT.
 
     pre_proc_return, pre_filter_return, engine_return
 

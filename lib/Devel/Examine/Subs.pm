@@ -27,7 +27,7 @@ sub new {
 
     $self->{namespace} = 'Devel::Examine::Subs';
     $self->{params}{regex} = 1;
-#    $self->{cache_enabled} = 1;
+
     $self->_config($p);
 
     return $self;
@@ -101,10 +101,6 @@ sub _cache {
     my $file = shift if @_;
     my $struct = shift if @_;
 
-#    if (! $file || ref $file eq 'ARRAY'){
-#        # forgot file, sent in only $struct
-#        return 0;
-#    }
     if (! $struct && $file){
         return $self->{cache}{$file};
     }
@@ -143,6 +139,7 @@ sub _config {
         copy => 1,
         diff => 1,
         no_indent => 1,
+        cache_enabled => 1,
 
         # persistent - core phases
 
@@ -203,7 +200,7 @@ sub _config {
     my $previous = $self->{previous_run_config};
 
     for (@unsafe_cache_params){
-        my $safe = Compare($current->{$_}, $previous->{$_});
+        my $safe = Compare($current->{$_}, $previous->{$_}) || 0;
         
         $self->_cache_safe($safe);
 
@@ -234,7 +231,7 @@ sub _clean_config {
 
     for my $param (keys %$p){
         if (! exists $config_vars->{$param}){
-            # warn "\n\nDES::_clean_config() deleting invalid param: $param\n\n";
+            #warn "\n\nDES::_clean_config() deleting invalid param: $param\n";
             delete $p->{$param};
         }
     }
@@ -341,7 +338,10 @@ sub _core {
 
     # bypass the proc if cache
 
-    if ($self->_cache_enabled && $self->_cache($p->{file})){
+    my $cache_enabled = $self->_cache_enabled;
+    my $cache_safe = $self->_cache_safe;
+
+    if ($cache_enabled && $cache_safe && $self->_cache($p->{file})){
         $subs = $self->_cache($p->{file});
     }
     else {
@@ -1048,7 +1048,7 @@ so be careful.
 
 Only specific params are guaranteed to stay persistent throughout a run on the
 same object, and are best set in C<new()>. These parameters are C<file>,
-C<extensions>, C<regex>, C<copy>, C<no_indent> and C<diff>.
+C<extensions>, C<cache_enabled>, C<regex>, C<copy>, C<no_indent> and C<diff>.
 
 
 
@@ -1325,6 +1325,18 @@ C<new()>.
 
 Values: Array reference where each element is the name of the extension
 (less the dot). For example, C<[qw(pm pl)]> is the default.
+
+=item C<cache_enabled>
+
+State: Persistent
+
+Default: Undefined
+
+If multiple calls on the same object are made, caching will save the
+file/directory/sub information, saving tremendous work for subsequent calls.
+This is dependant on certain parameters not changing between calls.
+
+Set to a true value (1) to enable. Best to call in the C<new> method.
 
 
 =item C<copy>

@@ -10,7 +10,7 @@ my $file = 't/sample.data';
 my %p = (
     file => $file, 
     #engine => 'objects',
-    pre_filter => 'subs && objects',
+    pre_filter => ['subs', 'objects'],
     pre_filter_dump => 2,
 );
 

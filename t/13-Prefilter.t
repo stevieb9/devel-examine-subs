@@ -1,8 +1,8 @@
 #!perl
-#use warnings;
-#use strict;
+use warnings;
+use strict;
 
-use Test::More tests => 25;
+use Test::More tests => 26;
 use Data::Dumper;
 
 BEGIN {#1-2
@@ -84,10 +84,11 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     my $des = Devel::Examine::Subs->new();
 
     eval {
-        $des->run({pre_filter => '_test && asdfasdf'});
+        $des->run({pre_filter => ['_test', 'asdfasdf']});
     };
 
-    like ( $@, qr/'asdfasdf'/, "pre_filter module croaks if the 2nd entry in a 'one && two' string is not implemented" );
+    like ( $@, qr/'asdfasdf'/, "pre_filter module croaks if the 2nd entry " .
+            "in an aref is not implemented" );
 }
 {#8
     my $des = Devel::Examine::Subs->new();
@@ -95,10 +96,11 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     my $cref = sub { print "hello, world!"; };
 
     eval {
-        $des->run({pre_filter => '$cref && asdfasdf'});
+        $des->run({pre_filter => [$cref, 'asdfasdf']});
     };
 
-    like ( $@, qr/'\$cref'/, "pre_filter module croaks with invalid if a \$cref is passed within the string format" );
+    ok ( $@, "pre_filter module croaks with invalid if a \$cref is passed " .
+             "in with a string pre_filter that is invalid" );
 }
 {#9
     my $des = Devel::Examine::Subs->new();
@@ -109,20 +111,16 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
 
     like ( $@, qr/dispatch table/, "pre_filter module croaks if the dt key is ok, but the value doesn't point to a callback" );
 }
-__END__
 {#10
     my $des = Devel::Examine::Subs->new();
 
-    my $cref = sub {
-                my $p = shift;
-                my $s = shift; 
-                $s = {a=>1, b=>2};
-                return $s; 
-            };
+    my $cref = sub { "hello, world!"; };
 
     eval {
-        my $ret = $des->run({pre_filter => "$cref && _test", pre_filter_dump => 1});
+        $des->run({pre_filter => [$cref, '_test']});
     };
-    print "***$ret\n";
-    like ( $@, qr/dispatch table/, "pre_filter module croaks if the dt key is ok, but the value doesn't point to a callback" );
+
+    ok ( ! $@, "pre_filter works when sent an array ref with a cref and a " .
+             "string" );
 }
+

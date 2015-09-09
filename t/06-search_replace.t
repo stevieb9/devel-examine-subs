@@ -12,7 +12,7 @@ BEGIN {#1
 my %params = (
                 file => 't/sample.data',
                 copy => 't/search_replace.data',
-                pre_filter => 'file_lines_contain && subs && objects',
+                pre_filter => ['file_lines_contain', 'subs', 'objects'],
                 engine => 'search_replace',
 #                engine_dump => 1,
                 search => 'this',

@@ -469,7 +469,7 @@ PARAMETERS
       can be daisy-chained. Due to this reason, the value of
       pre_filter_dump works a little differently. For example:
 
-          pre_filter => 'one && two';
+          pre_filter => ['one', 'two'];
 
       ...will execute filter 'one' first, then filter 'two' with the data
       that came out of filter 'one'. Simply set the value to the number
@@ -503,6 +503,24 @@ PARAMETERS
 
       Prints to STDOUT with Data::Dumper the current state of all loaded
       configuration parameters.
+
+    pre_proc, pre_filter, engine
+
+      State: Transient
+
+      Default: undef
+
+      These are mainly used to set up the public methods with the proper
+      callbacks used by the run() command.
+
+      engine and pre_proc take either a single string that contains a valid
+      built-in callback, or a single code reference of a custom callback.
+
+      pre_filter works a lot differently. These modules can be
+      daisy-chained. Like engine and pre_proc, you can send in a string or
+      cref, or to chain, send in an aref where each element is either a
+      string or cref. The filters will be executed based on their order in
+      the array reference.
 
 SEE ALSO
 

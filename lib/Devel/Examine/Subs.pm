@@ -554,35 +554,28 @@ sub _pre_filter {
     my $struct = shift;
 
     my $pre_filter = $self->{params}{pre_filter};
+
     my $pre_filter_dump = $self->{params}{pre_filter_dump};
 
     my @pre_filters;
 
     if ($pre_filter){
 
-        # prefilter contains an array ref of crefs
-
-        if (ref($pre_filter) eq 'ARRAY'){
-            push @pre_filters, $_ for @$pre_filter;
-            return @pre_filters;
-        }
- 
-        $self->{params}{pre_filter} =~ s/\s+//g;
-
         my @pre_filter_list;
 
-        if ($self->{params}{pre_filter} =~ /&&/){
-            @pre_filter_list = split /&&/, $self->{params}{pre_filter};
-        }
-        else {
+        if (ref $pre_filter ne 'ARRAY'){
             push @pre_filter_list, $pre_filter;
         }
-                
+        else {
+            @pre_filter_list = @{$pre_filter};
+        }
+
         for my $pf (@pre_filter_list){
 
             my $cref;
 
-            if (not ref($pf) eq 'CODE'){
+            if (ref $pf ne 'CODE'){
+
                 my $pre_filter_module = $self->{namespace} . "::Prefilter";
                 my $compiler = $pre_filter_module->new;
 
@@ -795,7 +788,7 @@ sub search_replace {
     my $p = $self->_params(@_);
 
     $self->{params}{pre_filter}
-      = 'file_lines_contain && subs && objects';
+      = ['file_lines_contain', 'subs', 'objects'];
 
     $self->{params}{engine} = 'search_replace';
 
@@ -811,7 +804,7 @@ sub inject_after {
     }
 
     $self->{params}{pre_filter}
-      = 'file_lines_contain && subs && objects';
+      = ['file_lines_contain', 'subs', 'objects'];
 
     $self->{params}{engine} = 'inject_after';
 
@@ -1446,7 +1439,7 @@ NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be
 daisy-chained. Due to this reason, the value of C<pre_filter_dump> works a
 little differently. For example:
 
-    pre_filter => 'one && two';
+    pre_filter => ['one', 'two'];
 
 ...will execute filter 'one' first, then filter 'two' with the data that came
 out of filter 'one'. Simply set the value to the number that coincides with
@@ -1485,6 +1478,23 @@ Prints to C<STDOUT> with C<Data::Dumper> the current state of all loaded
 configuration parameters.
 
 
+
+=item C<pre_proc, pre_filter, engine>
+
+State: Transient
+
+Default: undef
+
+These are mainly used to set up the public methods with the proper callbacks
+used by the C<run()> command.
+
+C<engine> and C<pre_proc> take either a single string that contains a valid
+built-in callback, or a single code reference of a custom callback.
+
+C<pre_filter> works a lot differently. These modules can be daisy-chained.
+Like C<engine> and C<pre_proc>, you can send in a string or cref, or to chain,
+send in an aref where each element is either a string or cref. The filters
+will be executed based on their order in the array reference.
 
 
 =back

@@ -10,7 +10,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.28';
+our $VERSION = '1.29';
 
 sub new {
 
@@ -427,8 +427,10 @@ Devel::Examine::Subs
 
     my $compiler = Devel::Examine::Subs::Engine->new;
 
+    my $engine = 'has';
+
     if (! $compiler->exists($engine)){
-        croak "engine '$engine' is not implemented.\n";
+        croak "engine $engine is not implemented.\n";
     }
 
     eval {

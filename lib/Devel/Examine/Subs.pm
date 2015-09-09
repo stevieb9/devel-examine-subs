@@ -15,7 +15,6 @@ use PPI;
 use Symbol;
 use Tie::File;
 
-
 sub new {
 
     my $self = {};
@@ -95,6 +94,14 @@ sub _run_directory {
     }
 
     return \%struct;
+}
+sub _run_end {
+    my $self = shift;
+    my $value = shift;
+
+    $self->{run_end} = $value if defined $value;
+
+    return $self->{run_end};
 }
 sub _cache {
     my $self = shift;
@@ -668,14 +675,6 @@ sub _engine {
     }
 
     return $cref;
-}
-sub _run_end {
-    my $self = shift;
-    my $value = shift;
-
-    $self->{run_end} = $value if defined $value;
-
-    return $self->{run_end};
 }
 sub pre_procs {
 

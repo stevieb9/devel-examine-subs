@@ -10,7 +10,7 @@ SYNOPSIS
         my $file = 'perl.pl'; # or directory, or Module::Name
         my $search = 'string';
     
-        my $des = Devel::Examine::Subs->new({file => $file);
+        my $des = Devel::Examine::Subs->new( file => $file );
 
     Get all the subs as objects
 
@@ -28,7 +28,7 @@ SYNOPSIS
 
     Get the sub objects within a hash
 
-        my $subs = $des->objects({objects_in_hash => 1});
+        my $subs = $des->objects( objects_in_hash => 1 );
     
         for my $sub_name (keys %$subs) {
     
@@ -47,24 +47,24 @@ SYNOPSIS
 
     Get all subs containing "string" in the body
 
-        my $aref = $des->has({search => $search});
+        my $aref = $des->has( search => $search );
 
     Search and replace code in subs
 
-        $des->search_replace({
+        $des->search_replace(
                         search => q/\$template = 'one\.tmpl'",
                         replace => '$template = \'two.tmpl\'',
-                      });
+                      );
 
     Inject code into sub after a search term (preserves previous line's
     indenting)
 
         my @code = <DATA>;
     
-        $des->inject_after({
+        $des->inject_after(
                         search => 'this',
                         code => \@code,
-                      });
+                      );
     
         __DATA__
     
@@ -102,7 +102,7 @@ SYNOPSIS
 
     Print all subs within each Perl file under a directory
 
-        my $files = $des->all({ file => 'lib/Devel/Examine' });
+        my $files = $des->all( file => 'lib/Devel/Examine' );
     
         for my $file (keys %$files){
             print "$file\n";
@@ -111,9 +111,9 @@ SYNOPSIS
 
     All methods can include or exclude specific subs
 
-        my $has = $des->has({ include => [qw(dump private)] });
+        my $has = $des->has( include => [qw(dump private)] );
     
-        my $missing = $des->missing({ exclude => ['this', 'that'] });
+        my $missing = $des->missing( exclude => ['this', 'that'] );
     
         # note that 'exclude' param renders 'include' invalid
 
@@ -124,45 +124,19 @@ DESCRIPTION
     line counts, get start and end line numbers, access the sub's code and
     a myriad of other options.
 
-FEATURES
-
-    - uses PPI for Perl file parsing
-
-    - search and replace code within subs, with the ability to include or
-    exclude subs, something a global search/replace can't do (easily)
-
-    - inject new code into subs following a found search pattern
-
-    - retrieve all sub names where the sub does or doesn't contain a search
-    term
-
-    - retrieve a list of sub objects for subs that match a search term,
-    where each object contains a variety of information about itself,
-    acessible via access methods
-
-    - include or exclude subs to be processed
-
-    - differentiates a directory from a file, and acts accordingly by
-    recursing and processing specified files
-
-    - extremely modular and extensible; the core of the system uses
-    plugin-type callbacks for everything
-
-    - pre-defined callbacks are used by default, but user-supplied ones are
-    loaded dynamically
-
 METHODS
 
-    All parameters are passed in via a single hash reference in all public
-    methods. See the PARAMETERS for the full list of params, and which ones
-    are persistent across runs using the same object.
+    All public methods take their parameters as a hash (key => value).
+
+    See the PARAMETERS for the full list of params, and which ones are
+    persistent across runs using the same object.
 
  new
 
-    Mandatory parameters: { file => $filename }
+    Mandatory parameters: file => $filename
 
     Instantiates a new object. If $filename is a directory, we'll iterate
-    through it finding all Perl files. If filename is a module name (eg:
+    through it finding all Perl files. If $filename is a module name (eg:
     Data::Dumper), we'll attempt to load the module, extract the file for
     the module, and load the file. CAUTION: this will be a production %INC
     file so be careful.
@@ -180,14 +154,14 @@ METHODS
 
  has
 
-    Mandatory parameters: { search => 'term' }
+    Mandatory parameters: search => 'term'
 
     Returns an array reference containing the names of the subs where the
     subroutine contains the search text.
 
  missing
 
-    Mandatory parameters: { search => 'term' }
+    Mandatory parameters: search => 'term'
 
     The exact opposite of has.
 
@@ -195,7 +169,7 @@ METHODS
 
     Mandatory parameters: None
 
-    Optional parameters: {objects_in_hash => 1}
+    Optional parameters: objects_in_hash => 1
 
     Returns an array reference of subroutine objects. If the optional
     objects_in_hash is sent in with a true value, the objects will be
@@ -206,14 +180,14 @@ METHODS
 
  module
 
-    Mandatory parameters: { module => 'Module::Name' }
+    Mandatory parameters: module => 'Module::Name'
 
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
 
  lines
 
-    Mandatory parameters: { search => 'text' }
+    Mandatory parameters: search => 'text'
 
     Gathers together all line text and line number of all subs where the
     subroutine contains lines matching the search term.
@@ -224,7 +198,7 @@ METHODS
 
  search_replace
 
-    Mandatory parameters: { search => 'this', replace => 'that' }
+    Mandatory parameters: search => 'this', replace => 'that'
 
     Core optional parameter: copy => 'filename.txt'
 
@@ -240,7 +214,7 @@ METHODS
 
  inject_after
 
-    Mandatory parameters: { search => 'this', code => \@code }
+    Mandatory parameters: search => 'this', code => \@code
 
     Injects the code in @code into the sub within the file, where the sub
     contains the search term. The same indentation level of the line that
@@ -290,10 +264,13 @@ METHODS
 
  run
 
-    All public methods call this method internally. The public methods set
-    certain variables (filters, engines etc). You can get the same effect
-    programatically by using run(). Here's an example that performs the
-    same operation as the has() public method:
+    Parameter format: Hash reference
+
+    All public methods call this method internally. This is the only public
+    method that takes its parameters as a single hash reference. The public
+    methods set certain variables (filters, engines etc). You can get the
+    same effect programatically by using run(). Here's an example that
+    performs the same operation as the has() public method:
 
         my $params = {
                 search => 'text',

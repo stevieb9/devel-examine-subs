@@ -64,21 +64,22 @@ sub _run_directory {
     my $dir = $self->{params}{file};
 
     find({wanted => sub {
-                        return if ! -f;
+            return if ! -f;
 
-                        my @extensions = @{$self->{params}{extensions}};
-                        my $exts = join('|', @extensions);
+            my @extensions = @{$self->{params}{extensions}};
+            my $exts = join('|', @extensions);
 
-                        if ($_ !~ /\.(?:$exts)$/i){
-                            return;
-                        }
+            if ($_ !~ /\.(?:$exts)$/i){
+                return;
+            }
 
-                        my $file = "$File::Find::name";
+            my $file = "$File::Find::name";
 
-                        push @files, $file;
-                      },
-                        no_chdir => 1
-                    }, $dir );
+            push @files, $file;
+          },
+            no_chdir => 1
+        }, $dir
+    );
 
     my %struct;
 

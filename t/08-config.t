@@ -9,7 +9,7 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-    my $global_des = Devel::Examine::Subs->new({file => 't/sample.data', search => 'this', engine => '_test'});
+    my $global_des = Devel::Examine::Subs->new(file => 't/sample.data', search => 'this', engine => '_test');
 
 {#2
     $global_des->_config({engine => '_test_print'});
@@ -28,6 +28,6 @@ BEGIN {#1
     is ( keys %{$global_des->{params}}, 5, "_config() sets \$self->{params}, and properly" );
 }
 {
-    my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
+    my $des = Devel::Examine::Subs->new(file => 't/sample.data');
     $des->run({clean_config => 1});
 }

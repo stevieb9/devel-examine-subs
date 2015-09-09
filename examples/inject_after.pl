@@ -9,7 +9,7 @@ use File::Copy;
 my $file = 't/sample.data';
 my $orig = 't/sample.data.orig';
 
-my $params = {
+my %params = (
                 file => 't/sample.data',
                 copy => 't/inject_after.data',
                 #pre_filter => 'subs && objects',
@@ -17,10 +17,10 @@ my $params = {
                 engine => 'inject_after',
                 search => 'this',
                 code => ['# comment line one', '# comment line 2' ],
-              };
+              );
 
-my $des = Devel::Examine::Subs->new($params);
+my $des = Devel::Examine::Subs->new(%params);
 
-my $struct = $des->run($params);
+my $struct = $des->run(\%params);
 
 print Dumper $struct;

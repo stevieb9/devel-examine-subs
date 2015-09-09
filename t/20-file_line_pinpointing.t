@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
@@ -18,8 +18,6 @@ eval {
 unlike ( $@, qr/open the write/, "Test sample.data file copied successfully" );
 
 # core work
-
-
 
 unlink 't/write_sample.data';
 

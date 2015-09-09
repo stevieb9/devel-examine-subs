@@ -9,9 +9,9 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $des = Devel::Examine::Subs->new({
+my $des = Devel::Examine::Subs->new(
                             file => 'Data::Dumper',
-                          });
+                          );
 
 my $all = $des->all();
 

@@ -11,24 +11,27 @@ BEGIN {#1
 }
 
 
-my $des = Devel::Examine::Subs->new({file => 't/sample.data'});
+my $des = Devel::Examine::Subs->new(
+                    file => 't/sample.data',
+                    cache => 1,
+                );
 
-$des->has({include => [qw(one)]});
+$des->has(include => [qw(one)]);
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
-$des->has({include => [qw(one)]});
+$des->has(include => [qw(one)]);
 is ($des->_cache_safe, 1, "cache_safe() is correct");
 
-$des->has({include => [qw(one two)]});
+$des->has(include => [qw(one two)]);
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
-$des->has({include => [qw(two)]});
+$des->has(include => [qw(two)]);
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
-$des->has({search => 'this'});
+$des->has(search => 'this');
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
-$des->has({search => 'this'});
+$des->has(search => 'this');
 is ($des->_cache_safe, 1, "cache_safe() is correct");
 
 $des->has();
@@ -36,7 +39,7 @@ $des->has();
 $des->has();
 is ($des->_cache_safe, 1, "cache_safe() is correct");
 
-$des->has({extensions => [qw(pl pw)]});
+$des->has(extensions => [qw(pl pw)]);
 is ($des->_cache_safe, 0, "cache_safe() is correct");
 
 $des->all();

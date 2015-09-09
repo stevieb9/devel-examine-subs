@@ -11,11 +11,11 @@ use File::Copy;
 my $file = 't/sample.data';
 my $orig = 't/sample.data.orig';
 
-my $params = {
+my %params = (
                 file => 'lib',
-              };
+              );
 
-my $des = Devel::Examine::Subs->new($params);
+my $des = Devel::Examine::Subs->new(%params);
 
 timethese(100, {
             'enabled' => 'cache_enabled',
@@ -23,10 +23,10 @@ timethese(100, {
         });
 
 sub cache_disabled {
-    $des->all({cache => 0,}) for (1..50);
+    $des->all(cache => 0,) for (1..50);
 }
 sub cache_enabled {
-    $des->all({cache => 1,}) for (1..50);
+    $des->all(cache => 1,) for (1..50);
 }
 
 #Benchmark: timing 100 iterations of disabled, enabled...

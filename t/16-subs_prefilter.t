@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
@@ -8,7 +8,6 @@ use Data::Dumper;
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
-
 
 {
     my $p = {

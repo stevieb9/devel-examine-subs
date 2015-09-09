@@ -9,20 +9,20 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $p = {
+my %p = (
         file => 't/sample.data',
         engine => 'lines',
-};
+);
 {
-    $p->{search} = 'this';
+    $p{search} = 'this';
 
-    my $des = Devel::Examine::Subs->new($p);
+    my $des = Devel::Examine::Subs->new(%p);
 
-    my $ret = $des->lines($p);
+    my $ret = $des->lines(%p);
     my %subs = %$ret;
 
-    my $search = $p->{search};
-    delete $p->{search};
+    my $search = $p{search};
+    delete $p{search};
 
     for my $sub (keys %subs){    
 
@@ -33,10 +33,10 @@ my $p = {
         }
     }
 }
-delete $p->{search};
+delete $p{search};
 
 {
-    my $des = Devel::Examine::Subs->new($p);
+    my $des = Devel::Examine::Subs->new(%p);
 
     my $ret = $des->run();
     my %subs = %$ret;
@@ -77,10 +77,10 @@ delete $p->{search};
 }
 {
 
-    delete $p->{engine};
-    my $des = Devel::Examine::Subs->new($p);
+    delete $p{engine};
+    my $des = Devel::Examine::Subs->new(%p);
 
-    my $subs = $des->lines($p);
+    my $subs = $des->lines(%p);
     my %subs = %$subs;
 
     for my $sub (keys %$subs){    

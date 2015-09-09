@@ -11,13 +11,13 @@ BEGIN {#1
 
 my $file = 't/sample.data';
 
-my $p = {
+my %p = (
     file => $file, 
     pre_filter => 'subs',
     engine => 'objects',
-};
+);
 
-my $des = Devel::Examine::Subs->new($p);
+my $des = Devel::Examine::Subs->new(%p);
 
 my $objects = $des->run();
 
@@ -51,8 +51,8 @@ for my $o (@$objects){
 }
 
 {
-    my $params = {file => 't/test'};
-    my $des = Devel::Examine::Subs->new($params);
+    my %params = (file => 't/test');
+    my $des = Devel::Examine::Subs->new(%params);
     my $struct = $des->objects();
     for my $file (keys %$struct){
         for my $o (@$objects){
@@ -77,10 +77,10 @@ for my $o (@$objects){
 }
 
 {
-    my $params = {file => 't/sample.data'};
-    my $des = Devel::Examine::Subs->new($params);
+    my %params = (file => 't/sample.data');
+    my $des = Devel::Examine::Subs->new(%params);
 
-    my $subs = $des->objects({objects_in_hash => 1});
+    my $subs = $des->objects(objects_in_hash => 1);
 
     is (keys %$subs, 11, "objects_in_hash has proper number of keys");
 

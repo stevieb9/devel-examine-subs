@@ -60,6 +60,6 @@ sub _engine {
 
 sub _des {  
     my $p = shift; 
-    my $des =  Devel::Examine::Subs->new({engine => $p->{engine}}); 
+    my $des =  Devel::Examine::Subs->new(engine => $p->{engine}); 
     return $des;
 };

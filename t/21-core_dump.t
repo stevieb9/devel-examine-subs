@@ -9,10 +9,10 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $des = Devel::Examine::Subs->new({
+my $des = Devel::Examine::Subs->new(
                             file => 't/sample.data',
                             engine => 'all',
-                          });
+                          );
 {#2 - core dump
 
     my $file = 't/core_dump.debug';
@@ -35,7 +35,7 @@ my $des = Devel::Examine::Subs->new({
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 261, "Based on test data, core dump dumps the correct info" );
+    is (@lines, 260, "Based on test data, core dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "core dump output file closed successfully" );

@@ -7,14 +7,14 @@ use Devel::Examine::Subs;
 
 my $file = 't/sample.data';
 
-my $p = {
+my %p = (
     file => $file, 
     #engine => 'objects',
     pre_filter => 'subs && objects',
     pre_filter_dump => 2,
-};
+);
 
-my $des = Devel::Examine::Subs->new($p);
+my $des = Devel::Examine::Subs->new(%p);
 
 my $objects = $des->run();
 

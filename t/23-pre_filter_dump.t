@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
@@ -9,11 +9,11 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $des = Devel::Examine::Subs->new({
+my $des = Devel::Examine::Subs->new(
                             file => 't/sample.data',
                             engine => 'all',
                             pre_filter => 'subs',
-                          });
+                          );
 {#2 - pre_filter dump
 
     my $file = 't/pre_filter_dump.debug';

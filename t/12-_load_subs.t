@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use warnings;
 use strict;
 
@@ -10,7 +10,7 @@ BEGIN {#1
 }
 
 my $file = 't/sample.data';
-my $des = Devel::Examine::Subs->new({file => $file});
+my $des = Devel::Examine::Subs->new(file => $file);
 my $struct = $des->_subs();
 
 {#2

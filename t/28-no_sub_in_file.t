@@ -12,7 +12,7 @@ BEGIN {#1
 {# bug 49 - if a file has no subs
 
     my $des = Devel::Examine::Subs->new();
-    my $has = $des->has({file => 't/test/no_subs.pm'});
+    my $has = $des->has(file => 't/test/no_subs.pm');
     is (@$has, 0, "has() doesn't crash if no subs are found in file" );
 }
 

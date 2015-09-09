@@ -41,9 +41,9 @@ BEGIN {#1
     );
 
     for (@valid){
-        ok (grep(/$_/, @persistent), "$_ is correctly validated");
+        ok (grep(/^$_$/, @persistent), "$_ is correctly validated");
     }
     for (@persistent){
-        ok (grep(/$_/, @valid), "$_ matches valid");
+        ok (grep(/^$_$/, @valid), "$_ matches valid");
     }
 }

@@ -5,9 +5,9 @@ use strict;
 use Devel::Examine::Subs;
 use Data::Dumper;
 
-my $p = {file => 't/sample.data', engine => 'all'};
+my %p = (file => 't/sample.data', engine => 'all');
 
-my $des = Devel::Examine::Subs->new($p);
+my $des = Devel::Examine::Subs->new(%p);
 
 $des->run({engine_dump => 1});
 

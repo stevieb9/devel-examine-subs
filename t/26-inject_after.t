@@ -13,16 +13,16 @@ BEGIN {#1
 {#1
     my $base_file = 't/orig/inject_after.data';
 
-    my $params = {
+    my %params = (
                     file => 't/sample.data',
                     copy => 't/inject_after.data',
                     pre_filter => 'file_lines_contain && subs && objects',
                     engine => 'inject_after',
                     search => 'this',
                     code => ['# comment line one', '# comment line 2' ],
-                  };
+                  );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
     my $struct = $des->run();
 
@@ -35,8 +35,8 @@ BEGIN {#1
     eval { tie @base_file, 'Tie::File', $base_file or die $!; };
     ok (! $@, "tied $base_file ok for inject_after" );
 
-    eval { tie @test_file, 'Tie::File', $params->{copy} or die $!; };
-    ok (! $@, "tied $params->{copy} ok for inject_after" );
+    eval { tie @test_file, 'Tie::File', $params{copy} or die $!; };
+    ok (! $@, "tied $params{copy} ok for inject_after" );
 
     my $i = 0;
     for (@base_file){
@@ -47,14 +47,14 @@ BEGIN {#1
 {#2
     my $base_file = 't/orig/inject_after.data';
 
-    my $params = {
+    my %params = (
                     file => 't/sample.data',
                     copy => 't/inject_after.data',
                     search => 'this',
                     code => ['# comment line one', '# comment line 2' ],
-                  };
+                  );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
     my $struct = $des->inject_after();
 
@@ -67,8 +67,8 @@ BEGIN {#1
     eval { tie @base_file, 'Tie::File', $base_file or die $!; };
     ok (! $@, "tied $base_file ok for inject_after()" );
 
-    eval { tie @test_file, 'Tie::File', $params->{copy} or die $!; };
-    ok (! $@, "tied $params->{copy} ok for inject_after()" );
+    eval { tie @test_file, 'Tie::File', $params{copy} or die $!; };
+    ok (! $@, "tied $params{copy} ok for inject_after()" );
 
     my $i = 0;
     for (@base_file){
@@ -79,21 +79,21 @@ BEGIN {#1
 {#3
     my $file = 't/test/inject_after/inject_after.pm';
 
-    my $params = {
+    my %params = (
                     file => $file,
                     copy => 't/test/inject_after/inject_after.copy',
                     search => 'this',
                     code => ['# inject_after_test'],
                     injects => 1,
-                  };
+                  );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
-    my $struct = $des->inject_after($params);
+    my $struct = $des->inject_after(%params);
 
-    eval { open my $fh, '<', $params->{copy} or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; };
     ok (! $@, "can open the inject_after copy file" );
-    open my $fh, '<', $params->{copy} or die $!;
+    open my $fh, '<', $params{copy} or die $!;
     
     my @fh = <$fh>;
     close $fh;
@@ -105,21 +105,21 @@ BEGIN {#1
 {#4
     my $file = 't/test/inject_after/inject_after.pm';
 
-    my $params = {
+    my %params = (
                     file => $file,
                     copy => 't/test/inject_after/inject_after.copy',
                     search => 'this',
                     code => ['# inject_after_test'],
                     injects => 2,
-                  };
+                  );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
-    my $struct = $des->inject_after($params);
+    my $struct = $des->inject_after(%params);
 
-    eval { open my $fh, '<', $params->{copy} or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; };
     ok (! $@, "can open the inject_after copy file" );
-    open my $fh, '<', $params->{copy} or die $!;
+    open my $fh, '<', $params{copy} or die $!;
     
     my @fh = <$fh>;
     close $fh;
@@ -131,23 +131,23 @@ BEGIN {#1
 {#5
     my $file = 't/test/inject_after/inject_after.pm';
 
-    my $params = {
+    my %params = (
                     file => $file,
                     copy => 't/test/inject_after/inject_after.copy',
                     search => 'this',
                     code => ['# inject_after_test'],
-                  };
+                  );
 
-    delete $params->{inject};
-    is ($params->{inject}, undef, "successfully deleted 'inject' param" );
+    delete $params{inject};
+    is ($params{inject}, undef, "successfully deleted 'inject' param" );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
-    my $struct = $des->inject_after($params);
+    my $struct = $des->inject_after(%params);
 
-    eval { open my $fh, '<', $params->{copy} or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; };
     ok (! $@, "can open the inject_after copy file" );
-    open my $fh, '<', $params->{copy} or die $!;
+    open my $fh, '<', $params{copy} or die $!;
     
     my @fh = <$fh>;
     close $fh;
@@ -159,21 +159,21 @@ BEGIN {#1
 {#6
     my $file = 't/test/inject_after/inject_after.pm';
 
-    my $params = {
+    my %params = (
                     file => $file,
                     copy => 't/test/inject_after/inject_after.copy',
                     search => 'this',
                     code => ['# inject_after_test'],
                     injects => -1,
-                  };
+                  );
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
-    my $struct = $des->inject_after($params);
+    my $struct = $des->inject_after(%params);
 
-    eval { open my $fh, '<', $params->{copy} or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; };
     ok (! $@, "can open the inject_after copy file" );
-    open my $fh, '<', $params->{copy} or die $!;
+    open my $fh, '<', $params{copy} or die $!;
     
     my @fh = <$fh>;
     close $fh;
@@ -185,23 +185,23 @@ BEGIN {#1
 {#7
     my $file = 't/test/inject_after/inject_after.pm';
 
-    my $params = {
+    my %params = (
                     file => $file,
                     copy => 't/test/inject_after/inject_after.copy',
                     search => 'this',
                     code => ['# inject_after_test'],
-                  };
+                  );
 
-    delete $params->{inject};
-    is ($params->{inject}, undef, "successfully deleted 'inject' param" );
+    delete $params{inject};
+    is ($params{inject}, undef, "successfully deleted 'inject' param" );
 
-    my $des = Devel::Examine::Subs->new({injects => 2});
+    my $des = Devel::Examine::Subs->new(injects => 2);
 
-    my $struct = $des->inject_after($params);
+    my $struct = $des->inject_after(%params);
 
-    eval { open my $fh, '<', $params->{copy} or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; };
     ok (! $@, "can open the inject_after copy file" );
-    open my $fh, '<', $params->{copy} or die $!;
+    open my $fh, '<', $params{copy} or die $!;
     
     my @fh = <$fh>;
     close $fh;

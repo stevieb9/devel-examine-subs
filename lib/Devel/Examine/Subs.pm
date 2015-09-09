@@ -20,7 +20,7 @@ sub new {
     my $self = {};
     bless $self, shift;
 
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     # default configs
 
@@ -136,6 +136,11 @@ sub _cache_safe {
 
     return $self->{cache_safe};
 }
+sub _params {
+    my $self = shift;
+    my %params = @_;
+    return \%params;
+}
 sub _config {
 
     my $self = shift;
@@ -206,18 +211,21 @@ sub _config {
 
     # check if we can cache
 
-    my @unsafe_cache_params
-      = qw(file extensions include exclude search);
+    if ($self->_cache_enabled) {
 
-    my $current = $self->{params};
-    my $previous = $self->{previous_run_config};
+        my @unsafe_cache_params
+            = qw(file extensions include exclude search);
 
-    for (@unsafe_cache_params){
-        my $safe = Compare($current->{$_}, $previous->{$_}) || 0;
+        my $current = $self->{params};
+        my $previous = $self->{previous_run_config};
 
-        $self->_cache_safe($safe);
+        for (@unsafe_cache_params) {
+            my $safe = Compare($current->{$_}, $previous->{$_}) || 0;
 
-        last if ! $self->_cache_safe;
+            $self->_cache_safe($safe);
+
+            last if !$self->_cache_safe;
+        }
     }
 
     if ($self->{params}{config_dump}){
@@ -298,8 +306,8 @@ sub _file {
         # set the file param
 
         $self->{params}{file} = $INC{$file};
-       
-        if (! $module_is_loaded){ 
+
+        if (! $module_is_loaded){
             delete_package $module;
             delete $INC{$file};
         }
@@ -451,7 +459,7 @@ sub _subs {
 
         $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
         $subs{$file}{subs}{$name}{start}--;
-        
+
         my $lines = $PPI_sub =~ y/\n//;
 
         $subs{$file}{subs}{$name}{end}
@@ -718,7 +726,7 @@ sub engines {
 sub has {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->{params}{pre_filter} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
@@ -728,7 +736,7 @@ sub has {
 sub missing {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->{params}{engine} = 'missing';
     
@@ -737,7 +745,7 @@ sub missing {
 sub all {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->{params}{engine} = 'all';
     
@@ -746,8 +754,8 @@ sub all {
 sub lines {
 
     my $self = shift;
-    my $p = shift;
-    
+    my $p = $self->_params(@_);
+
     $self->{params}{engine} = 'lines';
     
     if ($self->{params}{search} || $p->{search}){
@@ -759,7 +767,7 @@ sub lines {
 sub module {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     # set the preprocessor up, and have it return before
     # the building/compiling of file data happens
@@ -774,7 +782,7 @@ sub module {
 sub objects {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->{params}{pre_filter} = 'subs';
     $self->{params}{engine} = 'objects';
@@ -784,7 +792,7 @@ sub objects {
 sub search_replace {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->{params}{pre_filter}
       = 'file_lines_contain && subs && objects';
@@ -796,7 +804,7 @@ sub search_replace {
 sub inject_after {
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     if (! $p->{injects} && ! $self->{params}{injects}){
         $p->{injects} = 1;
@@ -812,7 +820,7 @@ sub inject_after {
 sub add_functionality {
     
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
     $self->_config($p);
     
@@ -892,7 +900,7 @@ Perl file subs.
     my $file = 'perl.pl'; # or directory, or Module::Name
     my $search = 'string';
 
-    my $des = Devel::Examine::Subs->new({file => $file);
+    my $des = Devel::Examine::Subs->new( file => $file );
 
 
 Get all the subs as objects
@@ -909,6 +917,20 @@ Get all the subs as objects
 
     }
 
+Get the sub objects within a hash
+
+    my $subs = $des->objects( objects_in_hash => 1 );
+
+    for my $sub_name (keys %$subs) {
+
+        print "$sub_name\n";
+
+        my $sub = $subs->{$sub_name};
+
+        print $sub->start . "\n" .
+              $sub->end . "\n";
+              ...
+    }
 
 Get all sub names in a file
 
@@ -917,23 +939,23 @@ Get all sub names in a file
 
 Get all subs containing "string" in the body
 
-    my $aref = $des->has({search => $search});
+    my $aref = $des->has( search => $search );
 
 Search and replace code in subs
 
-    $des->search_replace({
+    $des->search_replace(
                     search => q/\$template = 'one\.tmpl'",
                     replace => '$template = \'two.tmpl\'',
-                  });
+                  );
 
 Inject code into sub after a search term (preserves previous line's indenting)
 
     my @code = <DATA>;
 
-    $des->inject_after({
+    $des->inject_after(
                     search => 'this',
                     code => \@code,
-                  });
+                  );
 
     __DATA__
 
@@ -971,7 +993,7 @@ You need to add one more layer of extraction.
 
 Print all subs within each Perl file under a directory
 
-    my $files = $des->all({ file => 'lib/Devel/Examine' });
+    my $files = $des->all( file => 'lib/Devel/Examine' );
 
     for my $file (keys %$files){
         print "$file\n";
@@ -980,9 +1002,9 @@ Print all subs within each Perl file under a directory
 
 All methods can include or exclude specific subs
 
-    my $has = $des->has({ include => [qw(dump private)] });
+    my $has = $des->has( include => [qw(dump private)] );
 
-    my $missing = $des->missing({ exclude => ['this', 'that'] });
+    my $missing = $des->missing( exclude => ['this', 'that'] );
 
     # note that 'exclude' param renders 'include' invalid
 
@@ -996,57 +1018,21 @@ options.
 
 
 
-
-=head1 FEATURES
-
-=over 4
-
-=item - uses PPI for Perl file parsing
-
-=item - search and replace code within subs, with the ability to include or
-exclude subs, something a global search/replace can't do (easily)
-
-=item - inject new code into subs following a found search pattern
-
-=item - retrieve all sub names where the sub does or doesn't contain a search
-term
-
-=item - retrieve a list of sub objects for subs that match a search term,
-where each object contains a variety of information about itself,
-acessible via access methods
-
-=item - include or exclude subs to be processed
-
-=item - differentiates a directory from a file, and acts accordingly by
-recursing and processing specified files
-
-=item - extremely modular and extensible; the core of the system uses
-plugin-type callbacks for everything
-
-=item - pre-defined callbacks are used by default, but user-supplied ones are
-loaded dynamically
-
-=back
-
-
-
-
-
-
 =head1 METHODS
 
-All parameters are passed in via a single hash reference in all public
-methods. See the L<PARAMETERS> for the full list of params, and which ones
+All public methods take their parameters as a hash (C<key =E<gt> value>).
+
+See the L<PARAMETERS> for the full list of params, and which ones 
 are persistent across runs using the same object.
 
 
 
 =head2 C<new>
 
-Mandatory parameters: C<{ file =E<gt> $filename }>
+Mandatory parameters: C<file =E<gt> $filename>
 
 Instantiates a new object. If C<$filename> is a directory, we'll iterate
-through it finding all Perl files. If filename is a module name
+through it finding all Perl files. If C<$filename> is a module name
 (eg: C<Data::Dumper>), we'll attempt to load the module, extract the file for
 the module, and load the file. CAUTION: this will be a production C<%INC> file
 so be careful.
@@ -1073,7 +1059,7 @@ the file.
 
 =head2 C<has>
 
-Mandatory parameters: C<{ search =E<gt> 'term' }>
+Mandatory parameters: C<search =E<gt> 'term'>
 
 Returns an array reference containing the names of the subs where the
 subroutine contains the search text.
@@ -1083,7 +1069,7 @@ subroutine contains the search text.
 
 =head2 C<missing>
 
-Mandatory parameters: C<{ search =E<gt> 'term' }>
+Mandatory parameters: C<search =E<gt> 'term'>
 
 The exact opposite of has.
 
@@ -1094,7 +1080,7 @@ The exact opposite of has.
 
 Mandatory parameters: None
 
-Optional parameters: C<{objects_in_hash =E<gt> 1}>
+Optional parameters: C<objects_in_hash =E<gt> 1>
 
 Returns an array reference of subroutine objects. If the optional
 C<objects_in_hash> is sent in with a true value, the objects will be returned
@@ -1108,7 +1094,7 @@ See L<SYNOPSIS> for the structure of each object.
 
 =head2 C<module>
 
-Mandatory parameters: { module =E<gt> 'Module::Name' }
+Mandatory parameters: C<module =E<gt> 'Module::Name'>
 
 Returns an array reference containing the names of all subs found in the
 module's namespace symbol table.
@@ -1118,7 +1104,7 @@ module's namespace symbol table.
 
 =head2 C<lines>
 
-Mandatory parameters: { search =E<gt> 'text' }
+Mandatory parameters: C<search =E<gt> 'text'>
 
 Gathers together all line text and line number of all subs where the
 subroutine contains lines matching the search term.
@@ -1132,7 +1118,7 @@ an array reference which contains a hash reference in the format line_number
 
 =head2 C<search_replace>
 
-Mandatory parameters: { search =E<gt> 'this', replace =E<gt> 'that' }
+Mandatory parameters: C<search =E<gt> 'this', replace =E<gt> 'that'>
 
 Core optional parameter: C<copy =E<gt> 'filename.txt'>
 
@@ -1152,7 +1138,7 @@ with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 =head2 C<inject_after>
 
-Mandatory parameters: { search =E<gt> 'this', code =E<gt> \@code }
+Mandatory parameters: C<search =E<gt> 'this', code =E<gt> \@code>
 
 Injects the code in C<@code> into the sub within the file, where the sub
 contains the search term. The same indentation level of the line that contains
@@ -1217,7 +1203,10 @@ after each method call finishes.
 
 =head2 C<run>
 
-All public methods call this method internally. The public methods set certain
+Parameter format: Hash reference
+
+All public methods call this method internally. This is the only public method
+that takes its parameters as a single hash reference. The public methods set certain
 variables (filters, engines etc). You can get the same effect programatically
 by using C<run()>. Here's an example that performs the same operation as the
 C<has()> public method:

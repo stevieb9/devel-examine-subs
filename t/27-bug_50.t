@@ -13,7 +13,7 @@ BEGIN {#1
  # found numerous times
 
     my $des = Devel::Examine::Subs->new();
-    my $has = $des->has({file => 't/test/bug-50.data', search => 'this' });
+    my $has = $des->has(file => 't/test/bug-50.data', search => 'this' );
     is (@$has, 6, "has() returns sub name only once if multiple lines contain search" );
 }
 

@@ -26,6 +26,21 @@ SYNOPSIS
     
         }
 
+    Get the sub objects within a hash
+
+        my $subs = $des->objects({objects_in_hash => 1});
+    
+        for my $sub_name (keys %$subs) {
+    
+            print "$sub_name\n";
+    
+            my $sub = $subs->{$sub_name};
+    
+            print $sub->start . "\n" .
+                  $sub->end . "\n";
+                  ...
+        }
+
     Get all sub names in a file
 
         my $aref = $des->all;

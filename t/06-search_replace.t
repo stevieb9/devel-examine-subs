@@ -9,7 +9,7 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $params = {
+my %params = (
                 file => 't/sample.data',
                 copy => 't/search_replace.data',
                 pre_filter => 'file_lines_contain && subs && objects',
@@ -17,9 +17,9 @@ my $params = {
 #                engine_dump => 1,
                 search => 'this',
                 replace => 'that',
-              };
+              );
 
-my $des = Devel::Examine::Subs->new($params);
+my $des = Devel::Examine::Subs->new(%params);
 
 my $struct = $des->run();
 
@@ -33,10 +33,10 @@ for (0..4){
     ok ($struct->[$_][1] =~ /that/, "first elem of each elem in s_r contains replace" );
 }
 
-delete $params->{engine};
-delete $params->{pre_filter};
+delete $params{engine};
+delete $params{pre_filter};
 
-my $m_struct = $des->search_replace($params);
+my $m_struct = $des->search_replace(%params);
 
 ok ( ref($m_struct) eq 'ARRAY', "search_replace() returns an aref" );
 ok ( ref($m_struct->[0]) eq 'ARRAY', "elems of search_replace() return are arefs" );
@@ -50,28 +50,28 @@ for (0..4){
 
 {
 
-    $params = undef;
+    undef %params;
 
-    my $des = Devel::Examine::Subs->new($params);
+    my $des = Devel::Examine::Subs->new(%params);
 
     eval {
-        $des->search_replace($params);
+        $des->search_replace(%params);
     };
 
     like ($@, qr/without specifying a file/, "search_replace() croaks if no file is sent in" );
 
     eval {
-        $params->{file} = 't/sample.data';
-        $des->search_replace($params);
+        $params{file} = 't/sample.data';
+        $des->search_replace(%params);
     };
 
     like ($@, qr/without specifying a search term/, "search_replace() croaks if no search term is sent in" );
 
     eval {
-        $params->{file} = 't/sample.data';
-        $params->{search} = 'this';
+        $params{file} = 't/sample.data';
+        $params{search} = 'this';
 
-        $des->search_replace($params);
+        $des->search_replace(%params);
     };
 
     like ($@, qr/without specifying a replace term/, "search_replace() croaks if no replace term is sent in" );

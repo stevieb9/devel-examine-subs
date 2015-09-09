@@ -9,7 +9,7 @@ use File::Copy;
 my $file = 't/sample.data';
 my $orig = 't/sample.data.orig';
 
-my $params = {
+my %params = (
                 file => $file,
                 search => 'this',
 #                pre_proc => ,
@@ -24,7 +24,7 @@ my $params = {
 #                core_dump => 1,
 #                copy => 't/inject_after.data',
 #                code => ['# comment line one', '# comment line 2' ],
-              };
+              );
 
 #<des>
 sub new_has {
@@ -43,13 +43,13 @@ sub new_has {
 }
 #</des>
 
-my $des = Devel::Examine::Subs->new($params);
-my $struct = $des->run($params);
+my $des = Devel::Examine::Subs->new(%params);
+my $struct = $des->run(\%params);
 
 print Dumper $struct;
 
 # uncomment below line to inject the code
 # after you're certain the return is correct
 
-#$des->add_functionality({add_functionality => 'engine'});
+#$des->add_functionality(add_functionality => 'engine');
 

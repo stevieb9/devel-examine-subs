@@ -20,7 +20,7 @@ my $compiler = $prefilter_module->new();
 my $pre_filter = $compiler->{pre_filters}{subs}->();
 
 {#3
-    my $des = Devel::Examine::Subs->new({pre_filter => '', file => $file,});
+    my $des = Devel::Examine::Subs->new(pre_filter => '', file => $file,);
     my $res = $des->run();
     
     ok ( ref($res) eq 'HASH', "no prefilter, data is sent through untouched" );
@@ -32,7 +32,7 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     }
 }
 {#4
-    my $des = Devel::Examine::Subs->new({file => $file});
+    my $des = Devel::Examine::Subs->new(file => $file);
 
     my $cref = sub {
                 my $p = shift;
@@ -46,7 +46,7 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
 
 }
 {#5
-    my $des = Devel::Examine::Subs->new({file => $file});
+    my $des = Devel::Examine::Subs->new(file => $file);
 
     my $cref = sub {
                 my $p = shift;

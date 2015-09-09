@@ -9,9 +9,9 @@ use File::Copy;
 my $file = 't/sample.data';
 my $orig = 't/sample.data.orig';
 
-my $params = {
+my %params = (
             add_functionality => 'engine',      
-        };
+        );
 
 #<des>
 sub testing {
@@ -30,5 +30,5 @@ sub testing {
 }
 #</des>
 
-my $des = Devel::Examine::Subs->new($params);
-$des->add_functionality($params);
+my $des = Devel::Examine::Subs->new(%params);
+$des->add_functionality(%params);

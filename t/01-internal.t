@@ -12,7 +12,7 @@ BEGIN {#1
 }
 {#2
     my $des = Devel::Examine::Subs->new();
-    eval { $des->has({ file => 'badfile.none', search => 'text', }) };
+    eval { $des->has( file => 'badfile.none', search => 'text', ) };
     like ( $@, qr/Invalid file supplied/, "has() dies with error if file not found" );
 }
 {#2
@@ -20,7 +20,7 @@ BEGIN {#1
     is ( ref $des, 'Devel::Examine::Subs', "new() instantiates a new blessed object" );
 }
 {#3-4
-    my $des = _des({engine => '_test'});
+    my $des = _des(engine => '_test');
 
     my $cref = $des->_engine();
 
@@ -32,8 +32,7 @@ BEGIN {#1
 }
 
 sub _des {  
-    my $p = shift; 
-    my $des =  Devel::Examine::Subs->new($p); 
+    my $des =  Devel::Examine::Subs->new(@_); 
     return $des;
 }
 

@@ -154,7 +154,7 @@ METHODS
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
-    file, extensions, cache_enabled, regex, copy, no_indent and diff.
+    file, extensions, cache, regex, copy, no_indent and diff.
 
  all
 
@@ -364,7 +364,7 @@ PARAMETERS
       Values: Array reference where each element is the name of the
       extension (less the dot). For example, [qw(pm pl)] is the default.
 
-    cache_enabled
+    cache
 
       State: Persistent
 

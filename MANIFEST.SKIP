@@ -17,3 +17,5 @@ des.pl$
 ^MYMETA\.json$
 ^README.bak$
 ^Makefile$
+.metadata/
+.idea/

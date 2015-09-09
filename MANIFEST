@@ -35,7 +35,7 @@ t/08-config.t
 t/09-Sub_module.t
 t/10-regex_in_search-bug-15.t
 t/11-Engine.t
-t/12-_load_subs
+t/12-_load_subs.t
 t/13-Prefilter.t
 t/14-lines.t
 t/15-callback_names.t
@@ -60,6 +60,8 @@ t/33-Preprocessor.t
 t/34-valid_params.t
 t/35-config_clean.t
 t/36-module_name_to_file.t
+t/37-regex.t
+t/38-cache_safe.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data

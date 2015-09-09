@@ -5,6 +5,10 @@ Revision history for Devel-Examine::Subs
         - cache is now working again
         - added cache (default off) persistent param
         - added cache_dump transient param
+        - all public methods (less run()) now take a hash as params
+          (as opposed to hash ref).
+        - pre_filters are now accepted in an aref if there are more than one:
+          ['string', $cref, 'string'] etc.
 
 1.27    20150813
         - 'regex' param now enabled by default

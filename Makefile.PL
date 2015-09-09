@@ -9,13 +9,15 @@ WriteMakefile
   'INSTALLDIRS' => 'site',
   'VERSION_FROM' => 'lib/Devel/Examine/Subs.pm',
   'PREREQ_PM' => {
-                   'File::Find' => 0,
-                   'Data::Dumper' => 0,
-                   'Tie::File' => 0,
                    'Carp' => 0,
+                   'Data::Compare' => 0,
+                   'Data::Dumper' => 0,
+                   'File::Find' => 0,
+                   'PPI' => 0,
+                   'Symbol' => 0,
                    'Test::Trap' => 0,
                    'Test::More' => 0,
-                   'PPI' => 0
+                   'Tie::File' => 0,
                  }
 )
 ;

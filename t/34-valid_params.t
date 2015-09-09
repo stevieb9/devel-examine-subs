@@ -24,8 +24,10 @@ BEGIN {#1
         push @transient, $_;
     }
 
-    is (@persistent, 10, "valid_params() returns the correct num of persistent params");
-    is (@transient, 19, "valid_params() returns the correct num of transient params");
+    is (@persistent, 10, "valid_params() returns the correct num of " .
+                         "persistent params");
+    is (@transient, 19, "valid_params() returns the correct num of " .
+                        "transient params");
 
     my @valid = qw(
           no_indent

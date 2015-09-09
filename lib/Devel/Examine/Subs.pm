@@ -1,26 +1,26 @@
-package Devel::Examine::Subs; 
-use warnings; 
+package Devel::Examine::Subs;
+use warnings;
 use strict;
 
 our $VERSION = '1.28';
 
 use Carp;
 use Data::Compare;
-use Data::Dumper; 
-use Devel::Examine::Subs::Engine; 
-use Devel::Examine::Subs::Preprocessor; 
-use Devel::Examine::Subs::Prefilter; 
-use File::Find; 
-use PPI; 
+use Data::Dumper;
+use Devel::Examine::Subs::Engine;
+use Devel::Examine::Subs::Preprocessor;
+use Devel::Examine::Subs::Prefilter;
+use File::Find;
+use PPI;
 use Symbol;
 use Tie::File;
 
 
 sub new {
-    
+
     my $self = {};
     bless $self, shift;
-    
+
     my $p = shift;
 
     # default configs
@@ -38,7 +38,7 @@ sub run {
     my $p = shift;
 
     $self->_config($p);
-    
+
     $self->_run_end(0);
 
     my $struct;
@@ -63,30 +63,30 @@ sub _run_directory {
     my @files;
 
     my $dir = $self->{params}{file};
-    
+
     find({wanted => sub {
                         return if ! -f;
-                       
+
                         my @extensions = @{$self->{params}{extensions}};
                         my $exts = join('|', @extensions);
 
                         if ($_ !~ /\.(?:$exts)$/i){
                             return;
                         }
-                        
+
                         my $file = "$File::Find::name";
 
                         push @files, $file;
                       },
-                        no_chdir => 1 
+                        no_chdir => 1
                     }, $dir );
 
     my %struct;
-    
+
     for my $file (@files){
         $self->{params}{file} = $file;
         my $data = $self->_core($p);
-        
+
         my $exists = 0;
         $exists = %$data if ref($data) eq 'HASH';
         $exists = @$data if ref($data) eq 'ARRAY';
@@ -116,18 +116,14 @@ sub _cache {
     if ($file && $struct){
         $self->{cache}{$file} = $struct;
     }
-} 
+}
 sub _cache_enabled {
     my $self = shift;
-    my $value = shift if @_;
-
-    $self->{cache_enabled} = $value if defined $value;
-
-    return $self->{cache_enabled};
+    return $self->{params}{cache};
 }
 sub _cache_safe {
     my $self = shift;
-    my $value = shift if @_;
+    my $value = shift;
 
     $self->{cache_safe} = $value if defined $value;
 
@@ -148,7 +144,7 @@ sub _config {
         copy => 1,
         diff => 1,
         no_indent => 1,
-        cache_enabled => 1,
+        cache => 1,
 
         # persistent - core phases
 
@@ -203,7 +199,7 @@ sub _config {
 
     # check if we can cache
 
-    my @unsafe_cache_params 
+    my @unsafe_cache_params
       = qw(file extensions include exclude search);
 
     my $current = $self->{params};
@@ -211,7 +207,7 @@ sub _config {
 
     for (@unsafe_cache_params){
         my $safe = Compare($current->{$_}, $previous->{$_}) || 0;
-        
+
         $self->_cache_safe($safe);
 
         last if ! $self->_cache_safe;
@@ -1058,7 +1054,7 @@ so be careful.
 
 Only specific params are guaranteed to stay persistent throughout a run on the
 same object, and are best set in C<new()>. These parameters are C<file>,
-C<extensions>, C<cache_enabled>, C<regex>, C<copy>, C<no_indent> and C<diff>.
+C<extensions>, C<cache>, C<regex>, C<copy>, C<no_indent> and C<diff>.
 
 
 
@@ -1336,7 +1332,7 @@ C<new()>.
 Values: Array reference where each element is the name of the extension
 (less the dot). For example, C<[qw(pm pl)]> is the default.
 
-=item C<cache_enabled>
+=item C<cache>
 
 State: Persistent
 

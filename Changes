@@ -2,8 +2,8 @@ Revision history for Devel-Examine::Subs
 
 1.28    
         - Data::Compare to compare for caching
-        - finished cache work
-        - added cache_enabled (default off) persistent param
+        - cache is now working again
+        - added cache (default off) persistent param
         - added cache_dump transient param
 
 1.27    20150813

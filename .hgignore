@@ -14,4 +14,8 @@ Makefile$
 ^META.yml$
 .old$
 .orig$
-^pm_to_blib/
+^pm_to_blib$
+.metadata/
+.idea/
+.hgignore
+^.*\.pl$

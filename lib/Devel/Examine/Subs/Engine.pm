@@ -343,7 +343,7 @@ sub inject_after {
 
             my $params = {
                         file => $file,
-                        pre_filter => 'subs && objects',
+                        pre_filter => ['subs', 'objects'],
                         pre_filter_return => 2,
                         search => $search,
             };

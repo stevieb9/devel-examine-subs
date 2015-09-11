@@ -4,10 +4,13 @@ use warnings;
 
 use Carp;
 use Data::Dumper;
+use Devel::Trace::Flow qw(trace);
 
 our $VERSION = '1.29';
 
 sub new {
+	trace();
+
 
     my $self = {};
     bless $self, shift;
@@ -19,6 +22,8 @@ sub new {
     return $self;
 }
 sub _dt {
+	trace();
+
 
     my $self = shift;
 
@@ -35,6 +40,8 @@ sub _dt {
     return $dt;
 }
 sub exists {
+	trace();
+
     my $self = shift;
     my $string = shift;
 
@@ -46,6 +53,8 @@ sub exists {
     }
 }
 sub subs {
+	trace();
+
     
     return sub {
 
@@ -79,6 +88,8 @@ sub subs {
     };
 }
 sub file_lines_contain {
+	trace();
+
 
     return sub {
 
@@ -118,6 +129,8 @@ sub file_lines_contain {
     };
 }
 sub end_of_last_sub {
+	trace();
+
     
     return sub {
         
@@ -137,6 +150,8 @@ sub end_of_last_sub {
     };
 }
 sub _test {
+	trace();
+
 
     return sub {
         my $p = shift;
@@ -145,6 +160,8 @@ sub _test {
     };
 }
 sub objects {
+	trace();
+
 
     # uses 'subs' pre_filter
 
@@ -192,6 +209,8 @@ sub objects {
 }
 1;
 sub _vim_placeholder {}
+	trace();
+
 
 __END__
 

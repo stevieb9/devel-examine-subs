@@ -4,10 +4,13 @@ use strict; use warnings;
 
 use Carp;
 use Data::Dumper;
+use Devel::Trace::Flow qw(trace);
 
 our $VERSION = '1.29';
 
 sub new {
+	trace();
+
 
     my $self = {};
     bless $self, shift;
@@ -20,6 +23,8 @@ sub new {
 }
 
 sub _dt {
+	trace();
+
 
     my $self = shift;
 
@@ -32,6 +37,8 @@ sub _dt {
 }
 
 sub exists {
+	trace();
+
     my $self = shift;
     my $string = shift;
 
@@ -44,6 +51,8 @@ sub exists {
 }
 
 sub module {
+	trace();
+
 
     return sub {
 
@@ -75,6 +84,8 @@ sub module {
 }
 1;
 sub _vim_placeholder {}
+	trace();
+
 __END__
 
 =head1 NAME

@@ -7,12 +7,15 @@ use Carp;
 use Data::Dumper;
 use Devel::Examine::Subs;
 use Devel::Examine::Subs::Sub;
+use Devel::Trace::Flow qw(trace);
 use File::Copy;
 use Tie::File;
 
 our $VERSION = '1.29';
 
 sub new {
+	trace();
+
 
     my $self = {};
     bless $self, shift;
@@ -22,6 +25,8 @@ sub new {
     return $self;
 }
 sub _dt {
+	trace();
+
 
     my $self = shift;
 
@@ -43,6 +48,8 @@ sub _dt {
     return $dt;
 }
 sub exists {
+	trace();
+
     my $self = shift;
     my $string = shift;
 
@@ -54,18 +61,24 @@ sub exists {
     }
 }
 sub _test {
+	trace();
+
 
     return sub {
         return {a => 1};
     };
 }
 sub _test_print {
+	trace();
+
 
     return sub {
         print "Hello, world!\n";
     };
 }
 sub all {
+	trace();
+
 
     return sub {
 
@@ -80,6 +93,8 @@ sub all {
     };
 }
 sub has {
+	trace();
+
 
     return sub {
         
@@ -96,6 +111,8 @@ sub has {
     };
 }
 sub missing {
+	trace();
+
 
     return sub {
 
@@ -132,6 +149,8 @@ sub missing {
     };
 }
 sub lines {
+	trace();
+
 
     return sub {
         
@@ -154,6 +173,8 @@ sub lines {
     };
 }
 sub objects {
+	trace();
+
 
     # uses 'subs' pre_filter
 
@@ -212,6 +233,8 @@ sub objects {
     };
 }
 sub search_replace {
+	trace();
+
 
     return sub {
 
@@ -292,6 +315,8 @@ sub search_replace {
     };                        
 }
 sub inject_after {
+	trace();
+
 
     return sub {
 
@@ -413,6 +438,8 @@ sub inject_after {
 }
 1;
 sub _vim_placeholder {}
+	trace();
+
 
 __END__
 

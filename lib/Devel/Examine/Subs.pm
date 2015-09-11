@@ -19,7 +19,6 @@ sub new {
 
     my $self = {};
     bless $self, shift;
-
     my $p = $self->_params(@_);
 
     # default configs
@@ -186,6 +185,7 @@ sub _config {
         engine_return => 0,
         config_dump => 0,
         cache_dump => 0,
+        inject_use => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -428,6 +428,33 @@ sub _subs {
     my $file = $self->{params}{file};
 
     return {} if ! $file;
+
+    if ($self->{params}{inject_use}) {
+
+        tie my @file, 'Tie::File', $file or die $!;
+
+        my $use = qr/use\s+\w+/;
+
+        my $index = grep {
+            $file[$_] =~ $use
+        } 0..$#file;
+
+        if (!$index) {
+            $index = grep {
+                $file[$_] =~ /^package\s+\w+/
+            } 0..$#file;
+        }
+
+        if ($index) {
+            for (@{$self->{params}{inject_use}}) {
+                splice @file, $index + 1, 0, $_;
+            }
+        }
+
+        untie @file;
+
+        return;
+    }
     
     my $PPI_doc = PPI::Document->new($file);
     my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
@@ -792,6 +819,12 @@ sub search_replace {
       = ['file_lines_contain', 'subs', 'objects'];
 
     $self->{params}{engine} = 'search_replace';
+
+    $self->run($p);
+}
+sub inject {
+    my $self = shift;
+    my $p = $self->_params(@_);
 
     $self->run($p);
 }

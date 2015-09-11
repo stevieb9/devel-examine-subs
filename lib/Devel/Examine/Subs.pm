@@ -10,12 +10,15 @@ use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
+use Devel::Trace::Flow qw(trace);
 use File::Find;
 use PPI;
 use Symbol;
 use Tie::File;
 
 sub new {
+	trace();
+
 
     my $self = {};
     bless $self, shift;
@@ -31,6 +34,8 @@ sub new {
     return $self;
 }
 sub run {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -54,6 +59,8 @@ sub run {
     return $struct;
 }
 sub _run_directory {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -96,6 +103,8 @@ sub _run_directory {
     return \%struct;
 }
 sub _run_end {
+	trace();
+
     my $self = shift;
     my $value = shift;
 
@@ -104,6 +113,8 @@ sub _run_end {
     return $self->{run_end};
 }
 sub _cache {
+	trace();
+
     my $self = shift;
     my $file = shift if @_;
     my $struct = shift if @_;
@@ -125,10 +136,14 @@ sub _cache {
     }
 }
 sub _cache_enabled {
+	trace();
+
     my $self = shift;
     return $self->{params}{cache};
 }
 sub _cache_safe {
+	trace();
+
     my $self = shift;
     my $value = shift;
 
@@ -137,11 +152,15 @@ sub _cache_safe {
     return $self->{cache_safe};
 }
 sub _params {
+	trace();
+
     my $self = shift;
     my %params = @_;
     return \%params;
 }
 sub _config {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -234,6 +253,8 @@ sub _config {
     }
 }
 sub _clean_config {
+	trace();
+
     my $self = shift;
     my $config_vars = shift; # href of valid params
     my $p = shift; # href of params passed in
@@ -259,6 +280,8 @@ sub _clean_config {
     }
 }
 sub _clean_core_config {
+	trace();
+
     # deletes core phase info after each run
 
     my $self = shift;
@@ -274,6 +297,8 @@ sub _clean_core_config {
     }
 }
 sub _file {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -329,6 +354,8 @@ sub _file {
    return $self->{params}{file};
 }
 sub _core {
+	trace();
+
     
     my $self = shift;
 
@@ -422,7 +449,8 @@ sub _core {
     return $subs;
 }
 sub _subs {
-
+	trace();
+    
     my $self = shift;
     
     my $file = $self->{params}{file};
@@ -520,6 +548,8 @@ sub _subs {
     return \%subs;
 }
 sub _pre_proc {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -576,6 +606,8 @@ sub _pre_proc {
     return $cref;
 }
 sub _pre_filter {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -652,6 +684,8 @@ sub _pre_filter {
     return @pre_filters;
 }
 sub _engine {
+	trace();
+
 
     my $self = shift;
     my $p = shift;
@@ -706,6 +740,8 @@ sub _engine {
     return $cref;
 }
 sub pre_procs {
+	trace();
+
 
     my $self = shift;
     my $module = $self->{namespace} . "::Preprocessor";
@@ -719,6 +755,8 @@ sub pre_procs {
     return @pre_procs;
 }
 sub pre_filters {
+	trace();
+
 
     my $self = shift;
     my $module = $self->{namespace} . "::Prefilter";
@@ -732,6 +770,8 @@ sub pre_filters {
     return @pre_filters;
 }
 sub engines {
+	trace();
+
 
     my $self = shift;
     my $module = $self->{namespace} . "::Engine";
@@ -745,6 +785,8 @@ sub engines {
     return @engines;
 }
 sub has {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -755,6 +797,8 @@ sub has {
     $self->run($p);
 }
 sub missing {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -764,6 +808,8 @@ sub missing {
     $self->run($p);
 }
 sub all {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -773,6 +819,8 @@ sub all {
     $self->run($p);
 }
 sub lines {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -786,6 +834,8 @@ sub lines {
     $self->run($p);
 }
 sub module {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -801,6 +851,8 @@ sub module {
     $self->run($p);
 }
 sub objects {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -811,6 +863,8 @@ sub objects {
     $self->run($p);
 }
 sub search_replace {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -823,12 +877,16 @@ sub search_replace {
     $self->run($p);
 }
 sub inject {
+	trace();
+
     my $self = shift;
     my $p = $self->_params(@_);
 
     $self->run($p);
 }
 sub inject_after {
+	trace();
+
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -845,6 +903,8 @@ sub inject_after {
     $self->run($p);
 }
 sub add_functionality {
+	trace();
+
     
     my $self = shift;
     my $p = $self->_params(@_);
@@ -909,6 +969,8 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 sub valid_params {
+	trace();
+
     my $self = shift;
     return %{$self->{valid_params}};
 }

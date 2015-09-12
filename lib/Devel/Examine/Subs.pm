@@ -496,7 +496,7 @@ sub _subs {
         tie my @file, 'Tie::File', $file or die $!; 
     
         for my $find (@$delete){
-            while (my $index = grep {$file[$_] =~ /$find/ } 0..$#file){
+            while (my ($index) = grep { $file[$_] =~ /$find/ } 0..$#file){
                 splice @file, $index, 1;
             }
         }

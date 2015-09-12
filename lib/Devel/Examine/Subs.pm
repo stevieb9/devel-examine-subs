@@ -205,6 +205,7 @@ sub _config {
         config_dump => 0,
         cache_dump => 0,
         inject_use => 0,
+        delete => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -457,6 +458,8 @@ sub _subs {
 
     return {} if ! $file;
 
+    # insert into file
+
     if ($self->{params}{inject_use}) {
 
         tie my @file, 'Tie::File', $file or die $!;
@@ -483,11 +486,29 @@ sub _subs {
 
         return;
     }
-    
-    my $PPI_doc = PPI::Document->new($file);
-    my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
 
-    return if ! $PPI_subs;
+    # delete from file 
+    
+    if ($self->{params}{delete}){
+       
+        my $delete = $self->{params}{delete};
+
+        tie my @file, 'Tie::File', $file or die $!; 
+    
+        for my $find (@$delete){
+            while (my $index = grep {$file[$_] =~ /$find/ } 0..$#file){
+                splice @file, $index, 1;
+            }
+        }
+        untie @file;
+
+        return;
+    }
+
+    my $PPI_doc = PPI::Document->new($file);
+    my $PPIsubs = $PPI_doc->find("PPI::Statement::Sub");
+
+    return if ! $PPIsubs;
 
     tie my @TIE_file, 'Tie::File', $file;
 
@@ -496,7 +517,7 @@ sub _subs {
     
     @{$subs{$file}{TIE_file}} = @TIE_file;
 
-    for my $PPI_sub (@{$PPI_subs}){
+    for my $PPI_sub (@{$PPIsubs}){
 
         my $include = $self->{params}{include} // [];
         my $exclude = $self->{params}{exclude} // [];
@@ -878,6 +899,13 @@ sub search_replace {
 }
 sub inject {
 	trace();
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->run($p);
+}
+sub delete {
 
     my $self = shift;
     my $p = $self->_params(@_);

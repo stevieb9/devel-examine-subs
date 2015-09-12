@@ -4,13 +4,10 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Devel::Trace::Flow qw(trace);
 
 our $VERSION = '1.29';
 
 sub new {
-	trace();
-
 
     my $class = shift;
     my $data = shift;
@@ -24,32 +21,22 @@ sub new {
     return $self;
 }
 sub name {
-	trace();
-
     my $self = shift;
     return $self->{data}{name};
 }
 sub start {
-	trace();
-
     my $self = shift;
     return $self->{data}{start};
 }
 sub end {
-	trace();
-
     my $self = shift;
     return $self->{data}{end};
 }
 sub line_count {
-	trace();
-
     my $self = shift;
     return $self->{data}{num_lines};
 }
 sub lines {
-	trace();
-
 
     my $self = shift;
 
@@ -68,8 +55,6 @@ sub lines {
     return \@line_linenum;
 }
 sub code {
-	trace();
-
 
     my $self = shift;
 

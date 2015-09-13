@@ -818,10 +818,13 @@ sub inject {
 
     $self->run($p);
 }
-sub delete {
+sub remove {
 
     my $self = shift;
     my $p = $self->_params(@_);
+
+    $self->{params}{pre_proc} = 'remove';
+    $self->{params}{pre_proc_return} = 1;
 
     $self->run($p);
 }

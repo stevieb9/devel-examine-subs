@@ -27,6 +27,7 @@ sub _dt {
     my $dt = {
         module => \&module,
         inject => \&inject,
+        remove => \&remove,
         _test_bad => \&test_bad,
     };
 
@@ -108,8 +109,29 @@ sub inject {
     }
 }
 
+sub remove {
+
+    return sub {
+        
+        my $p = shift;
+        my $file = $p->{file};        
+        my $delete = $p->{delete};
+
+        tie my @file, 'Tie::File', $file or die $!; 
+    
+        for my $find (@$delete){
+            while (my ($index) = grep { $file[$_] =~ $find } 0..$#file){
+                splice @file, $index, 1;
+            }
+        }
+        untie @file;
+
+        return;
+    }
+}
 
 1;
+
 
 sub _vim_placeholder {}
 

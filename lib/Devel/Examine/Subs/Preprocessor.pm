@@ -25,6 +25,7 @@ sub _dt {
 
     my $dt = {
         module => \&module,
+        inject => \&inject,
         _test_bad => \&test_bad,
     };
 
@@ -73,6 +74,44 @@ sub module {
         return \@subs;
     };
 }
+
+sub inject {
+
+    return sub {
+
+        my $p = shift;
+        my $file = $p->{file};
+
+        if ($p->{inject_use}) {
+
+            tie my @file, 'Tie::File', $file or die $!;
+
+            my $use = qr/use\s+\w+/;
+
+            my ($index) = grep {
+                $file[$_] =~ $use
+            } 0..$#file;
+
+            if (!$index) {
+                $index = grep {
+                    $file[$_] =~ /^package\s+\w+/
+                } 0..$#file;
+            }
+
+            if ($index) {
+                for (@{$p->{inject_use}}) {
+                    splice @file, $index + 1, 0, $_;
+                }
+            }
+
+            untie @file;
+
+            return;
+        }
+    }
+}
+
+
 1;
 sub _vim_placeholder {}
 

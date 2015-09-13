@@ -324,9 +324,10 @@ sub inject_after {
  
         copy $file, "$file.bak";
 
-        unlink $copy if -f $copy;
-        
         if ($copy){
+            if (-f $copy){
+                unlink $copy;
+            }
             copy $file, $copy;
             $file = $copy;
         }
@@ -380,7 +381,7 @@ sub inject_after {
                        
                         my $location = $line_num;
 
-                        my $indent;
+                        my $indent = '';
 
                         if (! $p->{no_indent}){
                             if ($line =~ /^(\s+)/ && $1){
@@ -413,6 +414,7 @@ sub inject_after {
     };                        
 }
 1;
+
 sub _vim_placeholder {}
 
 __END__

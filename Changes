@@ -1,5 +1,9 @@
 Revision history for Devel-Examine::Subs
 
+1.29    - added inject(), with 'inject_use' parameter
+        - added remove(), which operates at the file level
+        - fixed a couple of undef warnings in inject_after()
+
 1.28    
         - Data::Compare to compare for caching
         - cache is now working again

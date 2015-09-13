@@ -439,53 +439,6 @@ sub _subs {
 
     return {} if ! $file;
 
-    # insert into file
-
-    if ($self->{params}{inject_use}) {
-
-        tie my @file, 'Tie::File', $file or die $!;
-
-        my $use = qr/use\s+\w+/;
-
-        my $index = grep {
-            $file[$_] =~ $use
-        } 0..$#file;
-
-        if (!$index) {
-            $index = grep {
-                $file[$_] =~ /^package\s+\w+/
-            } 0..$#file;
-        }
-
-        if ($index) {
-            for (@{$self->{params}{inject_use}}) {
-                splice @file, $index + 1, 0, $_;
-            }
-        }
-
-        untie @file;
-
-        return;
-    }
-
-    # delete from file 
-    
-    if ($self->{params}{delete}){
-       
-        my $delete = $self->{params}{delete};
-
-        tie my @file, 'Tie::File', $file or die $!; 
-    
-        for my $find (@$delete){
-            while (my ($index) = grep { $file[$_] =~ /$find/ } 0..$#file){
-                splice @file, $index, 1;
-            }
-        }
-        untie @file;
-
-        return;
-    }
-
     my $PPI_doc = PPI::Document->new($file);
     my $PPIsubs = $PPI_doc->find("PPI::Statement::Sub");
 
@@ -855,6 +808,13 @@ sub search_replace {
 sub inject {
     my $self = shift;
     my $p = $self->_params(@_);
+
+    # inject_use is a preproc
+
+    if ($p->{inject_use}){
+        $self->{params}{pre_proc} = 'module';
+        $self->{params}{pre_proc_return} = 1;
+    }
 
     $self->run($p);
 }

@@ -812,7 +812,7 @@ sub inject {
     # inject_use is a preproc
 
     if ($p->{inject_use}){
-        $self->{params}{pre_proc} = 'module';
+        $self->{params}{pre_proc} = 'inject';
         $self->{params}{pre_proc_return} = 1;
     }
 

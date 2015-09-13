@@ -1,6 +1,7 @@
 package Devel::Examine::Subs::Preprocessor;
 
-use strict; use warnings;
+use strict; 
+use warnings;
 
 use Carp;
 use Data::Dumper;
@@ -83,24 +84,20 @@ sub inject {
         my $file = $p->{file};
 
         if ($p->{inject_use}) {
-
+            
             tie my @file, 'Tie::File', $file or die $!;
 
             my $use = qr/use\s+\w+/;
 
-            my ($index) = grep {
-                $file[$_] =~ $use
-            } 0..$#file;
+            my ($index) = grep { $file[$_] =~ $use } 0..$#file;
 
-            if (!$index) {
-                $index = grep {
-                    $file[$_] =~ /^package\s+\w+/
-                } 0..$#file;
+            if (! $index) {
+                ($index) = grep { $file[$_] =~ /^package\s+\w+/ } 0..$#file;
             }
 
             if ($index) {
                 for (@{$p->{inject_use}}) {
-                    splice @file, $index + 1, 0, $_;
+                    splice @file, $index, 0, $_;
                 }
             }
 
@@ -113,6 +110,7 @@ sub inject {
 
 
 1;
+
 sub _vim_placeholder {}
 
 __END__

@@ -212,6 +212,28 @@ METHODS
     appended with '.bak', but don't confuse this feature with the 'copy'
     parameter.
 
+ inject
+
+    Parameters: inject_use => ['use Module::Name', 'use Module2::Name']
+
+    The only current option is this parameter. It will inject the
+    statements prior to all existing use statements that already exist in
+    the file(s). If none are found, will inject the statements right after
+    a Package statement if found.
+
+    Technically, you don't have to inject a use statement, but I'd advise
+    it.
+
+ remove
+
+    Parameters: delete => ['string1', 'string2']
+
+    Deletes from the file(s) the entire lines that contain the search
+    terms.
+
+    This method is file based... the work happens prior to digging up subs,
+    hence exclude, include and other sub-based parameters have no effect.
+
  inject_after
 
     Mandatory parameters: search => 'this', code => \@code

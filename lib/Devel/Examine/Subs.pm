@@ -1162,6 +1162,28 @@ with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 
 
+=head2 C<inject>
+
+Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']>
+
+The only current option is this parameter. It will inject the statements prior
+to all existing C<use> statements that already exist in the file(s). If none
+are found, will inject the statements right after a C<Package> statement if
+found.
+
+Technically, you don't have to inject a C<use> statement, but I'd advise it.
+
+
+
+=head2 C<remove>
+
+Parameters: C<delete =E<gt> ['string1', 'string2']>
+
+Deletes from the file(s) the entire lines that contain the search terms.
+
+This method is file based... the work happens prior to digging up subs, hence
+C<exclude>, C<include> and other sub-based parameters have no effect.
+
 
 
 =head2 C<inject_after>

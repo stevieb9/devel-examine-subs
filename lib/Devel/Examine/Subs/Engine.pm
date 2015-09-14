@@ -393,7 +393,6 @@ sub inject_after {
                             $new_lines++;
                             $end_line++;
                         }
-                        splice @tie_file, $location++, 0, '';
 
                         # stop injecting after N search finds
 

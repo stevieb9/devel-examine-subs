@@ -230,4 +230,5 @@ for (@tempfiles){
     ok (! $@, "unlinked $_ temp file" );
     eval { open my $fh, '<', $_ or die $!; };
     ok ($@, "temp file really is deleted" );
-} 
+}
+

@@ -84,16 +84,20 @@ sub inject {
         my $p = shift;
         my $file = $p->{file};
 
+        tie my @file, 'Tie::File', $file or die $!;
+
         if ($p->{inject_use}) {
-            
-            tie my @file, 'Tie::File', $file or die $!;
 
             my $use = qr/use\s+\w+/;
 
-            my ($index) = grep { $file[$_] =~ $use } 0..$#file;
+            my ($index) = grep {
+                $file[$_] =~ $use
+            } 0..$#file;
 
-            if (! $index) {
-                ($index) = grep { $file[$_] =~ /^package\s+\w+/ } 0..$#file;
+            if (!$index) {
+                ($index) = grep {
+                    $file[$_] =~ /^package\s+\w+/
+                } 0..$#file;
             }
 
             if ($index) {
@@ -105,6 +109,58 @@ sub inject {
             untie @file;
 
             return;
+        }
+
+        if ($p->{inject_after_sub_def}) {
+
+            my $code = $p->{inject_after_sub_def};
+
+            my @new_file;
+
+            my $single_line = qr/
+                sub\s+\w+\s*(?:\(.*?\)\s+)?\{\s*(?!\s*[\S])
+                |
+                sub\s+\{\s*(?!\s*[\S])
+                /x;
+
+            my $multi_line = qr/sub\s+\w+\s*(?![\S])/;
+
+            my $is_multi = 0;
+
+            while (my ($i, $e) = each @file){
+
+                my $indent = '';
+
+                my $count = $i;
+                $count++;
+
+                if ($file[$count] && $file[$count] =~ /^(\s+)/){
+                    $indent = $1;
+                }
+
+                push @new_file, $e;
+
+                if ($e =~ $single_line) {
+                    for (@$code){
+                        push @new_file, $indent . $_;
+                    }
+                }
+                elsif ($e =~ $multi_line) {
+                    if ($file[$count] =~ /\s*\{\s*(?!\s*[\S])/) {
+                        $is_multi = 1;
+                        next;
+                    }
+                }
+
+                if ($is_multi) {
+                    for (@$code) {
+                        push @new_file, $indent . $_;
+                    }
+                    $is_multi = 0;
+                }
+            }
+
+            @file = @new_file;
         }
     }
 }

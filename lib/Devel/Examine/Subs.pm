@@ -192,6 +192,7 @@ sub _config {
         config_dump => 0,
         cache_dump => 0,
         inject_use => 0,
+        inject_after_sub_def => 0,
         delete => 0,
     );
 
@@ -809,9 +810,9 @@ sub inject {
     my $self = shift;
     my $p = $self->_params(@_);
 
-    # inject_use is a preproc
+    # inject_use/inject_after_sub_def are preprocs
 
-    if ($p->{inject_use}){
+    if ($p->{inject_use} || $p->{inject_after_sub_def}){
         $self->{params}{pre_proc} = 'inject';
         $self->{params}{pre_proc_return} = 1;
     }

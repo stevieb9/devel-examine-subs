@@ -308,8 +308,9 @@ sub inject_after {
         my $num_injects = $p->{injects} // 1;
         my $code = $p->{code};
         my $copy = $p->{copy};
+        my $sub_def = $p->{sub_def};
 
-        if (! $search){
+        if (! $sub_def && ! $search){
             croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                     "can't use inject_after engine without specifying a " .
                     "search term\n\n";
@@ -362,7 +363,6 @@ sub inject_after {
                 my $end_line = $sub->end;
             
                 tie my @tie_file, 'Tie::File', $file;
-
 
                 my $line_num = 0;
                 my $new_lines = 0; # don't search added lines

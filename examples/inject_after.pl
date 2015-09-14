@@ -7,7 +7,7 @@ use Devel::Examine::Subs;
 use File::Copy;
 
 my $file = 't/sample.data';
-my $copy = 't/test.data';
+my $copy = 't/orig/inject_after.data';
 
 my %params = (
                 file => $file,

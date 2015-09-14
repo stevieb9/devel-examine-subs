@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings;
 use strict;
 
-our $VERSION = '1.30';
+our $VERSION = '1.31';
 
 use Carp;
 use Data::Compare;

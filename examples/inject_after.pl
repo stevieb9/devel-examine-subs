@@ -7,20 +7,16 @@ use Devel::Examine::Subs;
 use File::Copy;
 
 my $file = 't/sample.data';
-my $orig = 't/sample.data.orig';
+my $copy = 't/test.data';
 
 my %params = (
-                file => 't/sample.data',
-                copy => 't/inject_after.data',
-                #pre_filter => ['subs', 'objects'],
-                pre_filter => ['file_lines_contain', 'subs', 'objects'],
-                engine => 'inject_after',
+                file => $file,
+                copy => $copy,
                 search => 'this',
                 code => ['# comment line one', '# comment line 2' ],
               );
 
 my $des = Devel::Examine::Subs->new(%params);
 
-my $struct = $des->run(\%params);
+my $struct = $des->inject_after(%params);
 
-print Dumper $struct;

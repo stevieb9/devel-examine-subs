@@ -10,10 +10,13 @@ examples/engine.pl
 examples/engine_creation.pl
 examples/full_object_access.pl
 examples/has.pl
+examples/inject.pl
 examples/inject_after.pl
 examples/objects.pl
+examples/ppi.pl
 examples/tie.pl
 examples/write_new_engine.pl
+indent.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
 lib/Devel/Examine/Subs/Prefilter.pm
@@ -67,6 +70,7 @@ t/__clean.t
 t/manifest.t
 t/orig/inject_after.data
 t/orig/sample.data
+t/orig/sub_def.data
 t/pod.t
 t/sample.data
 t/test/bug-50.data

@@ -238,12 +238,27 @@ is valid.
 
 =head2 C<module>
 
-Mandatory parameters: C<{ module => 'Module::Name' }>
+Mandatory parameters: C<{ module =E<gt> 'Module::Name' }>
 
 This pre-processor returns an array reference of all subroutines within the
 namespace of the module listed in the C<module> parameter.
 
 The data is returned early as mentioned in the L<DESCRIPTION>.
+
+=head2 C<inject>
+
+Parameters: C<{ inject_use =E<gt> ['use statement1;', 'use statement2;'] }>
+or C<{ inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;'] }>
+
+Injects each element of the array ref as either a use statement, or in the
+latter case, lines of code after a sub definition.
+
+=head2 C<remove>
+
+Parameters: C<delete =E<gt> 'string'>
+
+Deletes the entire line of code, if it contains 'string'.
+
 
 =head1 AUTHOR
 

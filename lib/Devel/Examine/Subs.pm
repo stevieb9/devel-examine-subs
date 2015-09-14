@@ -1165,14 +1165,19 @@ with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 =head2 C<inject>
 
-Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']>
+Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']> or
+C<inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;']>
 
-The only current option is this parameter. It will inject the statements prior
-to all existing C<use> statements that already exist in the file(s). If none
-are found, will inject the statements right after a C<Package> statement if
-found.
+C<inject_use> will inject the statements prior to all existing C<use>
+statements that already exist in the file(s). If none are found, will inject
+the statements right after a C<Package> statement if found.
 
 Technically, you don't have to inject a C<use> statement, but I'd advise it.
+
+C<inject_after_sub_def> will inject the lines of code within the array
+reference value immediately following all sub definitions in a file.
+Next line indenting is used, and sub definitions with their opening brace
+on a separate line than the definition itself is caught.
 
 
 

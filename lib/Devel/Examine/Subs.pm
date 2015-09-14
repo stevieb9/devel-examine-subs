@@ -148,7 +148,6 @@ sub _params {
 }
 sub _config {
 
-
     my $self = shift;
     my $p = shift;
 
@@ -302,7 +301,8 @@ sub _file {
         my $module_is_loaded;
         
         if (! $INC{$file}){
-            eval { require $module; };
+            
+            eval { use Data::Dump; };
 
             if ($@){
                 $@ = "Devel::Examine::Subs::_file() speaking ... " .

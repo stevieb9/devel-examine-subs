@@ -62,6 +62,7 @@ t/35-config_clean.t
 t/36-module_name_to_file.t
 t/37-regex.t
 t/38-cache_safe.t
+t/39-inject_after_sub_def.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data

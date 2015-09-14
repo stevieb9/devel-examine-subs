@@ -1,6 +1,11 @@
 Revision history for Devel-Examine::Subs
 
-1.29    - added inject(), with 'inject_use' parameter
+1.30    20150914
+        - inject_after() no longer adds a new empty line after code is
+          inserted
+
+1.29    20150913
+        - added inject(), with 'inject_use' parameter
         - added remove(), which operates at the file level
         - fixed a couple of undef warnings in inject_after()
 

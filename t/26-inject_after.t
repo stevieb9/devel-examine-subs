@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 161;
+use Test::More tests => 151;
 use Tie::File;
 
 BEGIN {#1

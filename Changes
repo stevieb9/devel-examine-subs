@@ -3,6 +3,9 @@ Revision history for Devel-Examine::Subs
 1.30    20150914
         - inject_after() no longer adds a new empty line after code is
           inserted
+        - fixed bug where Module::Name wasn't being required properly
+        - added 'inject_after_sub_def' param to inject() preproc
+
 
 1.29    20150913
         - added inject(), with 'inject_use' parameter

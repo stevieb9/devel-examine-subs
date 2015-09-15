@@ -12,6 +12,7 @@ WriteMakefile
                    'Carp' => 0,
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
+                   'Devel::Trace::Subs' => '0.08',
                    'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,

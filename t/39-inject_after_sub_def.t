@@ -46,6 +46,6 @@ while (my ($i, $e) = each @work){
 }
 
 
-#eval { unlink $work_file; };
+eval { unlink $work_file; };
 
 ok (! $@, "files unlinked properly");

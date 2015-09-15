@@ -1,5 +1,6 @@
 package Devel::Examine::Subs::Sub;
 
+use Devel::Trace::Subs qw(trace trace_dump); # injected by Devel::Trace::Subs
 use strict;
 use warnings;
 
@@ -8,6 +9,7 @@ use Data::Dumper;
 our $VERSION = '1.31';
 
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $class = shift;
     my $data = shift;
@@ -21,22 +23,27 @@ sub new {
     return $self;
 }
 sub name {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     return $self->{data}{name};
 }
 sub start {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     return $self->{data}{start};
 }
 sub end {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     return $self->{data}{end};
 }
 sub line_count {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     return $self->{data}{num_lines};
 }
 sub lines {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 
@@ -55,6 +62,7 @@ sub lines {
     return \@line_linenum;
 }
 sub code {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 

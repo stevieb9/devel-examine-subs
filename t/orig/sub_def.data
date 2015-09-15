@@ -23,7 +23,7 @@ sub two {
     my $result = function( $x, $y );
 }
 sub three {
-trace();
+    trace();
 
     # four
     # five

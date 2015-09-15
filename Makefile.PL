@@ -3,12 +3,30 @@ require 5.010;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-  'PL_FILES' => {},
-  'EXE_FILES' => [],
-  'NAME' => 'Devel::Examine::Subs',
-  'INSTALLDIRS' => 'site',
-  'VERSION_FROM' => 'lib/Devel/Examine/Subs.pm',
-  'PREREQ_PM' => {
+  PL_FILES => {},
+  EXE_FILES => [],
+  NAME => 'Devel::Examine::Subs',
+  INSTALLDIRS => 'site',
+  VERSION_FROM => 'lib/Devel/Examine/Subs.pm',
+  META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources   => {
+            repository => {
+                type => 'git',
+                url => 'https://github.com/stevieb9/devel-examine-subs.git',
+                web => 'https://github.com/stevieb9/devel-examine-subs',
+            },
+        },
+    },
+    CONFIGURE_REQUIRES => {
+        'ExtUtils::MakeMaker' => 0,
+    },
+    BUILD_REQUIRES => {
+        'Test::More' => 0,
+        'Test::Trap' => 0,
+    },
+
+  PREREQ_PM => {
                    'Carp' => 0,
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
@@ -16,8 +34,6 @@ WriteMakefile
                    'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,
-                   'Test::Trap' => 0,
-                   'Test::More' => 0,
                    'Tie::File' => 0,
                  }
 )

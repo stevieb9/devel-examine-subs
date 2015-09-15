@@ -6,7 +6,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 sub new {
     trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};

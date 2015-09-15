@@ -11,7 +11,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 sub new {
     trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};

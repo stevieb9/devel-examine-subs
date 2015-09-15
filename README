@@ -549,6 +549,13 @@ PARAMETERS
       string or cref. The filters will be executed based on their order in
       the array reference.
 
+DEBUGGING
+
+    This module is equipped with the Devel::Trace::Subs module.
+
+    To enable trace debugging, set $ENV{DTS_ENABLE} and $ENV{DES_TRACE}
+    environment variables to true values in the calling script.
+
 SEE ALSO
 
     perldoc Devel::Examine::Subs::Preprocessor

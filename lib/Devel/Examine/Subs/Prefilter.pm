@@ -1,4 +1,5 @@
 package Devel::Examine::Subs::Prefilter;
+use Devel::Trace::Subs qw(trace trace_dump); # injected by Devel::Trace::Subs
 use strict;
 use warnings;
 
@@ -8,6 +9,7 @@ use Data::Dumper;
 our $VERSION = '1.31';
 
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -19,6 +21,7 @@ sub new {
     return $self;
 }
 sub _dt {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 
@@ -35,6 +38,7 @@ sub _dt {
     return $dt;
 }
 sub exists {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $string = shift;
@@ -47,8 +51,10 @@ sub exists {
     }
 }
 sub subs {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -80,8 +86,10 @@ sub subs {
     };
 }
 sub file_lines_contain {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -119,8 +127,10 @@ sub file_lines_contain {
     };
 }
 sub end_of_last_sub {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         
         my $p = shift;
         my $struct = shift;
@@ -138,18 +148,22 @@ sub end_of_last_sub {
     };
 }
 sub _test {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         my $p = shift;
         my $struct = shift;
         return $struct;
     };
 }
 sub objects {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     # uses 'subs' pre_filter
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;

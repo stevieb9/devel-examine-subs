@@ -1,5 +1,6 @@
 package Devel::Examine::Subs::Engine;
 
+use Devel::Trace::Subs qw(trace trace_dump); # injected by Devel::Trace::Subs
 use strict;
 use warnings;
 
@@ -13,6 +14,7 @@ use Tie::File;
 our $VERSION = '1.31';
 
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -22,6 +24,7 @@ sub new {
     return $self;
 }
 sub _dt {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 
@@ -43,6 +46,7 @@ sub _dt {
     return $dt;
 }
 sub exists {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $string = shift;
@@ -55,20 +59,26 @@ sub exists {
     }
 }
 sub _test {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         return {a => 1};
     };
 }
 sub _test_print {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         print "Hello, world!\n";
     };
 }
 sub all {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -81,8 +91,10 @@ sub all {
     };
 }
 sub has {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         
         my $p = shift;
         my $struct = shift;
@@ -97,8 +109,10 @@ sub has {
     };
 }
 sub missing {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -133,8 +147,10 @@ sub missing {
     };
 }
 sub lines {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         
         my $p = shift;
         my $struct = shift;
@@ -155,10 +171,12 @@ sub lines {
     };
 }
 sub objects {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     # uses 'subs' pre_filter
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -213,8 +231,10 @@ sub objects {
     };
 }
 sub search_replace {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -293,8 +313,10 @@ sub search_replace {
     };                        
 }
 sub inject_after {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;

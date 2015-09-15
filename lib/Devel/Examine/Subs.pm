@@ -3,7 +3,7 @@ use Devel::Trace::Subs qw(trace trace_dump); # injected by Devel::Trace::Subs
 use warnings;
 use strict;
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 use Carp;
 use Data::Compare;

@@ -129,13 +129,23 @@ sub inject {
 
             while (my ($i, $e) = each @file){
 
+                if ($e =~ /^\n/){
+                    push @new_file, "\n";
+                }
+
                 my $indent = '';
 
                 my $count = $i;
                 $count++;
 
-                if ($file[$count] && $file[$count] =~ /^(\s+)/){
-                    $indent = $1;
+                while ($count < @file){
+                    if ($file[$count] =~ /^(s*)\S/){
+                        $indent = $1;
+                        last;
+                    }
+                    else {
+                        $count++;
+                    }
                 }
 
                 push @new_file, $e;

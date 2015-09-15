@@ -139,7 +139,7 @@ sub inject {
                 $count++;
 
                 while ($count < @file){
-                    if ($file[$count] =~ /^(s*)\S/){
+                    if ($file[$count] =~ /^(\s*)\S/){
                         $indent = $1;
                         last;
                     }

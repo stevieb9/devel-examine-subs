@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.32    20150915
+        - moved repo from bitbucket to https://github.com/stevieb9/devel-examine-subs
+
 1.31    20150915
         - Devel::Trace::Subs has been introduced. See DEBUGGING in
           'perldoc Devel::Examine::Subs'

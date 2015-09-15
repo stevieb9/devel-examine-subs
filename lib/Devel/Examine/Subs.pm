@@ -1606,6 +1606,10 @@ environment variables to true values in the calling script.
 
 
 
+=head1 REPOSITORY
+
+L<https://github.com/stevieb9/devel-examine-subs>
+
 
 
 

@@ -556,6 +556,10 @@ DEBUGGING
     To enable trace debugging, set $ENV{DTS_ENABLE} and $ENV{DES_TRACE}
     environment variables to true values in the calling script.
 
+REPOSITORY
+
+    https://github.com/stevieb9/devel-examine-subs
+
 SEE ALSO
 
     perldoc Devel::Examine::Subs::Preprocessor

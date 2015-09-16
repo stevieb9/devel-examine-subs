@@ -2,11 +2,12 @@ package Devel::Examine::Subs;
 use warnings;
 use strict;
 
-our $VERSION = '1.33';
+our $VERSION = '1.34';
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to a circular install
+    # we need to do some trickery for DTS due to circular referencing,
+    # which broke CPAN installs.
 
     eval {
         require Devel::Trace::Subs;

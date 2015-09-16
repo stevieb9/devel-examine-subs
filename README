@@ -545,6 +545,16 @@ REPOSITORY
 
     https://github.com/stevieb9/devel-examine-subs
 
+DEBUGGING
+
+    If Devel::Trace::Subs is installed, you can configure stack tracing.
+
+    In your calling script, set $ENV{DTS_ENABLE} = 1 and $ENV{DES_TRACE} =
+    1.
+
+    See perldoc Devel::Trace::Subs for information on how to access the
+    traces.
+
 SEE ALSO
 
     perldoc Devel::Examine::Subs::Preprocessor

@@ -1,6 +1,6 @@
 package Devel::Examine::Subs::Preprocessor;
 
-use strict; 
+use strict;
 use warnings;
 
 use Carp;
@@ -8,7 +8,22 @@ use Data::Dumper;
 
 our $VERSION = '1.33';
 
+BEGIN {
+
+    # we need to do some trickery for DTS due to a circular install
+
+    eval {
+        require Devel::Trace::Subs;
+        import Devel::Trace::Subs qw(trace);
+    };
+
+    if ($@){
+        *trace = sub {};
+    }
+};
+
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -21,6 +36,7 @@ sub new {
 }
 
 sub _dt {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 
@@ -35,6 +51,7 @@ sub _dt {
 }
 
 sub exists {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     my $string = shift;
 
@@ -47,8 +64,10 @@ sub exists {
 }
 
 sub module {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         no strict 'refs';
 
@@ -78,8 +97,10 @@ sub module {
 }
 
 sub inject {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $file = $p->{file};
@@ -176,8 +197,10 @@ sub inject {
 }
 
 sub remove {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         
         my $p = shift;
         my $file = $p->{file};        

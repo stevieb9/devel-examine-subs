@@ -7,7 +7,22 @@ use Data::Dumper;
 
 our $VERSION = '1.33';
 
+BEGIN {
+
+    # we need to do some trickery for DTS due to a circular install
+
+    eval {
+        require Devel::Trace::Subs;
+        import Devel::Trace::Subs qw(trace);
+    };
+
+    if ($@){
+        *trace = sub {};
+    }
+};
+
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -19,6 +34,7 @@ sub new {
     return $self;
 }
 sub _dt {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
 
@@ -35,6 +51,7 @@ sub _dt {
     return $dt;
 }
 sub exists {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $string = shift;
@@ -47,8 +64,10 @@ sub exists {
     }
 }
 sub subs {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -80,8 +99,10 @@ sub subs {
     };
 }
 sub file_lines_contain {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;
@@ -119,8 +140,10 @@ sub file_lines_contain {
     };
 }
 sub end_of_last_sub {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         
         my $p = shift;
         my $struct = shift;
@@ -138,18 +161,22 @@ sub end_of_last_sub {
     };
 }
 sub _test {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
         my $p = shift;
         my $struct = shift;
         return $struct;
     };
 }
 sub objects {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     # uses 'subs' pre_filter
 
     return sub {
+        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
         my $p = shift;
         my $struct = shift;

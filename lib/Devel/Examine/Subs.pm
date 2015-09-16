@@ -4,6 +4,20 @@ use strict;
 
 our $VERSION = '1.33';
 
+BEGIN {
+
+    # we need to do some trickery for DTS due to a circular install
+
+    eval {
+        require Devel::Trace::Subs;
+        import Devel::Trace::Subs qw(trace);
+    };
+
+    if ($@){
+        *trace = sub {};
+    }
+};
+
 use Carp;
 use Data::Compare;
 use Data::Dumper;
@@ -16,6 +30,7 @@ use Symbol;
 use Tie::File;
 
 sub new {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -31,6 +46,7 @@ sub new {
     return $self;
 }
 sub run {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -54,6 +70,7 @@ sub run {
     return $struct;
 }
 sub _run_directory {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -63,6 +80,7 @@ sub _run_directory {
     my $dir = $self->{params}{file};
 
     find({wanted => sub {
+            trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
             return if ! -f;
 
             my @extensions = @{$self->{params}{extensions}};
@@ -96,6 +114,7 @@ sub _run_directory {
     return \%struct;
 }
 sub _run_end {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $value = shift;
@@ -105,6 +124,7 @@ sub _run_end {
     return $self->{run_end};
 }
 sub _cache {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $file = shift if @_;
@@ -127,11 +147,13 @@ sub _cache {
     }
 }
 sub _cache_enabled {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     return $self->{params}{cache};
 }
 sub _cache_safe {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $value = shift;
@@ -141,12 +163,14 @@ sub _cache_safe {
     return $self->{cache_safe};
 }
 sub _params {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my %params = @_;
     return \%params;
 }
 sub _config {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -241,6 +265,7 @@ sub _config {
     }
 }
 sub _clean_config {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $config_vars = shift; # href of valid params
@@ -267,6 +292,7 @@ sub _clean_config {
     }
 }
 sub _clean_core_config {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     # deletes core phase info after each run
 
@@ -283,6 +309,7 @@ sub _clean_core_config {
     }
 }
 sub _file {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
 
     my $self = shift;
@@ -340,6 +367,7 @@ sub _file {
    return $self->{params}{file};
 }
 sub _core {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     my $self = shift;
 
@@ -433,6 +461,7 @@ sub _core {
     return $subs;
 }
 sub _subs {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     my $self = shift;
     
@@ -504,6 +533,7 @@ sub _subs {
     return \%subs;
 }
 sub _pre_proc {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -560,6 +590,7 @@ sub _pre_proc {
     return $cref;
 }
 sub _pre_filter {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -636,6 +667,7 @@ sub _pre_filter {
     return @pre_filters;
 }
 sub _engine {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = shift;
@@ -690,6 +722,7 @@ sub _engine {
     return $cref;
 }
 sub pre_procs {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $module = $self->{namespace} . "::Preprocessor";
@@ -703,6 +736,7 @@ sub pre_procs {
     return @pre_procs;
 }
 sub pre_filters {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $module = $self->{namespace} . "::Prefilter";
@@ -716,6 +750,7 @@ sub pre_filters {
     return @pre_filters;
 }
 sub engines {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $module = $self->{namespace} . "::Engine";
@@ -729,6 +764,7 @@ sub engines {
     return @engines;
 }
 sub has {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -739,6 +775,7 @@ sub has {
     $self->run($p);
 }
 sub missing {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -748,6 +785,7 @@ sub missing {
     $self->run($p);
 }
 sub all {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -757,6 +795,7 @@ sub all {
     $self->run($p);
 }
 sub lines {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -770,6 +809,7 @@ sub lines {
     $self->run($p);
 }
 sub module {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -785,6 +825,7 @@ sub module {
     $self->run($p);
 }
 sub objects {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -795,6 +836,7 @@ sub objects {
     $self->run($p);
 }
 sub search_replace {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -807,6 +849,7 @@ sub search_replace {
     $self->run($p);
 }
 sub inject {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     my $self = shift;
     my $p = $self->_params(@_);
 
@@ -820,6 +863,7 @@ sub inject {
     $self->run($p);
 }
 sub remove {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -830,6 +874,7 @@ sub remove {
     $self->run($p);
 }
 sub inject_after {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $p = $self->_params(@_);
@@ -846,6 +891,7 @@ sub inject_after {
     $self->run($p);
 }
 sub add_functionality {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
     
     my $self = shift;
     my $p = $self->_params(@_);
@@ -869,6 +915,7 @@ sub add_functionality {
 
     my %dt = (
             engine => sub {
+                        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
                         return $in_prod
                         ? $INC{'Devel/Examine/Subs/Engine.pm'}
                         : 'lib/Devel/Examine/Subs/Engine.pm';
@@ -910,6 +957,7 @@ sub add_functionality {
     push @TIE_file, @code;
 }
 sub valid_params {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     return %{$self->{valid_params}};
@@ -1559,7 +1607,14 @@ will be executed based on their order in the array reference.
 L<https://github.com/stevieb9/devel-examine-subs>
 
 
+=head1 DEBUGGING
 
+If C<Devel::Trace::Subs> is installed, you can configure stack tracing.
+
+In your calling script, set C<$ENV{DTS_ENABLE} = 1> and 
+C<$ENV{DES_TRACE} = 1>.
+
+See C<perldoc Devel::Trace::Subs> for information on how to access the traces.
 
 
 =head1 SEE ALSO

@@ -2,6 +2,8 @@ Revision history for Devel-Examine::Subs
 
 1.32    20150915
         - moved repo from bitbucket to https://github.com/stevieb9/devel-examine-subs
+        - removed Devel::Trace::Subs integration... breaks CPAN install because of
+          the circular dependency
 
 1.31    20150915
         - Devel::Trace::Subs has been introduced. See DEBUGGING in

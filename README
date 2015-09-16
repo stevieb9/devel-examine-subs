@@ -270,18 +270,6 @@ METHODS
       How many injections do you want to do per sub? See PARAMETERS for
       more details.
 
- pre_procs
-
-    Returns a list of all available pre processor modules.
-
- pre_filters
-
-    Returns a list of all available built-in pre engine filter modules.
-
- engines
-
-    Returns a list of all available built-in 'engine' modules.
-
  valid_params
 
     Returns a hash where the keys are valid parameter names, and the value
@@ -343,6 +331,10 @@ METHODS
       Set it to a new file name which will be a copy of the specified file,
       and only change the copy. Useful for verifying the changes took
       properly.
+
+ pre_procs, pre_filters, engines
+
+    For development. Returns the list of the respective built-in callbacks.
 
 PARAMETERS
 
@@ -548,13 +540,6 @@ PARAMETERS
       cref, or to chain, send in an aref where each element is either a
       string or cref. The filters will be executed based on their order in
       the array reference.
-
-DEBUGGING
-
-    This module is equipped with the Devel::Trace::Subs module.
-
-    To enable trace debugging, set $ENV{DTS_ENABLE} and $ENV{DES_TRACE}
-    environment variables to true values in the calling script.
 
 REPOSITORY
 

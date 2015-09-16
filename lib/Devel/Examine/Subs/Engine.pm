@@ -10,7 +10,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.32';
+our $VERSION = '1.33';
 
 sub new {
 

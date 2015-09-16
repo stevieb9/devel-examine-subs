@@ -17,7 +17,6 @@ examples/objects.pl
 examples/ppi.pl
 examples/tie.pl
 examples/write_new_engine.pl
-indent.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
 lib/Devel/Examine/Subs/Prefilter.pm

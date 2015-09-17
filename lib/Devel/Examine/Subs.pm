@@ -114,6 +114,24 @@ sub _run_directory {
 
     return \%struct;
 }
+sub _eol {
+    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+
+    my $self = shift;
+    my $file = shift;
+
+    $ENV{DES_EOL} = "\n"
+
+    return if $^O ne 'MSWin32';
+
+    tie my @file, 'Tie::File', $file or die $!;
+
+    if ($file[0] =~ /\r\n/){
+        $ENV{DES_EOL} = "\r\n";
+    }
+
+    untie @file;
+}
 sub _run_end {
     trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 

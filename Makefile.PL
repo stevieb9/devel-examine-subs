@@ -46,7 +46,6 @@ WriteMakefile
                  }
 );
 
-__END__
 if ($^O eq 'MSWin32'){
 
     print "\nPreparing unit tests for MSWin32 platform...\n\n";

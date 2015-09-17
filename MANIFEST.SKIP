@@ -21,3 +21,4 @@ des.pl$
 .idea/
 pm_to_blib$
 .git/
+.debug$

@@ -62,6 +62,7 @@ sub run {
         $struct = $self->_run_directory;
     }
     else {
+        $self->_end_of_line($p->{file});
         $struct = $self->_core($p);
     }
 
@@ -102,6 +103,9 @@ sub _run_directory {
     my %struct;
 
     for my $file (@files){
+        
+        $self->_end_of_line($file);
+
         $self->{params}{file} = $file;
         my $data = $self->_core($p);
 
@@ -114,17 +118,17 @@ sub _run_directory {
 
     return \%struct;
 }
-sub _eol {
+sub _end_of_line {
     trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
 
     my $self = shift;
     my $file = shift;
 
-    $ENV{DES_EOL} = "\n"
+    $ENV{DES_EOL} = "\n";
 
     return if $^O ne 'MSWin32';
 
-    tie my @file, 'Tie::File', $file or die $!;
+    tie my @file, 'Tie::File', $file, recsep => $ENV{DES_EOL} or die $!;
 
     if ($file[0] =~ /\r\n/){
         $ENV{DES_EOL} = "\r\n";
@@ -493,7 +497,8 @@ sub _subs {
 
     return if ! $PPIsubs;
 
-    tie my @TIE_file, 'Tie::File', $file;
+    tie my @TIE_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
+      or die $!;
 
     my %subs;
     $subs{$file} = {};
@@ -968,7 +973,7 @@ sub add_functionality {
                                 });
 
     
-    tie my @TIE_file, 'Tie::File', $file
+    tie my @TIE_file, 'Tie::File', $file, recsep => $ENV{DES_EOL} 
       or croak "can't Tie::File the file $file: $!";
 
     my $end_line = $des->run;

@@ -105,7 +105,8 @@ sub inject {
         my $p = shift;
         my $file = $p->{file};
 
-        tie my @file, 'Tie::File', $file or die $!;
+        tie my @file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
+          or die $!;
 
         if ($p->{inject_use}) {
 
@@ -206,7 +207,8 @@ sub remove {
         my $file = $p->{file};        
         my $delete = $p->{delete};
 
-        tie my @file, 'Tie::File', $file or die $!; 
+        tie my @file, 'Tie::File', $file ,recsep => $ENV{DES_EOL} 
+          or die $!; 
     
         for my $find (@$delete){
             while (my ($index) = grep { $file[$_] =~ $find } 0..$#file){

@@ -302,7 +302,8 @@ sub search_replace {
             my $start_line = $sub->start;
             my $end_line = $sub->end;
 
-            tie my @tie_file, 'Tie::File', $file;
+            tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
+              or die $!;
 
             my $line_num = 0;
 
@@ -398,7 +399,8 @@ sub inject_after {
                 my $start_line = $sub->start;
                 my $end_line = $sub->end;
             
-                tie my @tie_file, 'Tie::File', $file;
+                tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
+                  or die $!;
 
                 my $line_num = 0;
                 my $new_lines = 0; # don't search added lines

@@ -2,7 +2,7 @@ package Devel::Examine::Subs;
 use warnings;
 use strict;
 
-our $VERSION = '1.35';
+our $VERSION = '1.36';
 
 BEGIN {
 

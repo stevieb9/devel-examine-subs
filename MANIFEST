@@ -62,7 +62,6 @@ t/32-end_of_last_sub_prefilter.t
 t/33-Preprocessor.t
 t/34-valid_params.t
 t/35-config_clean.t
-t/36-module_name_to_file.t
 t/36-module_name_to_file.t--norun
 t/37-regex.t
 t/38-cache_safe.t

@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.34    20150917
+        - reworked Makefile.PL, allows tests on MSWin32 to pass
+
 1.33    20150916
         - re-added Devel::Trace::Subs integration in a way that the module
           won't break install if DTS isn't installed

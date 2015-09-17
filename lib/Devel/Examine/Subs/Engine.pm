@@ -9,7 +9,7 @@ use Devel::Examine::Subs::Sub;
 use File::Copy;
 use Tie::File;
 
-our $VERSION = '1.36';
+our $VERSION = '1.37';
 
 BEGIN {
 

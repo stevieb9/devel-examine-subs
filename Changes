@@ -2,6 +2,9 @@ Revision history for Devel-Examine::Subs
 
 1.35    20150917
         - reworked Makefile.PL, allows tests on MSWin32 to pass
+        - we now look in all files to determine and set line-ending
+          characters program-wide
+        - added a '\r\n' file and added a test
 
 1.33    20150916
         - re-added Devel::Trace::Subs integration in a way that the module

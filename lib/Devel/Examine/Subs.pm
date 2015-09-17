@@ -62,7 +62,7 @@ sub run {
         $struct = $self->_run_directory;
     }
     else {
-        $self->_end_of_line($p->{file});
+        $self->_end_of_line($self->{params}{file}) if $self->{params}{file};
         $struct = $self->_core($p);
     }
 
@@ -128,13 +128,13 @@ sub _end_of_line {
 
     return if $^O ne 'MSWin32';
 
-    tie my @file, 'Tie::File', $file, recsep => $ENV{DES_EOL} or die $!;
+    tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL} or die $!;
 
-    if ($file[0] =~ /\r\n/){
+    if (@tie_file && $tie_file[0] =~ /\r\n/){
         $ENV{DES_EOL} = "\r\n";
     }
 
-    untie @file;
+    untie @tie_file;
 }
 sub _run_end {
     trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};

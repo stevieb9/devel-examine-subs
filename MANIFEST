@@ -63,9 +63,12 @@ t/33-Preprocessor.t
 t/34-valid_params.t
 t/35-config_clean.t
 t/36-module_name_to_file.t
+t/36-module_name_to_file.t--norun
 t/37-regex.t
 t/38-cache_safe.t
 t/39-inject_after_sub_def.t
+t/40-dts_trace_checks.t
+t/41-win32_line_endings.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data
@@ -83,3 +86,4 @@ t/test/inject_after/inject_after.pm
 t/test/no_subs.pm
 t/test/other.pm
 t/test/sample.pm
+t/win_sample.data

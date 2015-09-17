@@ -10,7 +10,7 @@ BEGIN {#1
 }
 
 my $des = Devel::Examine::Subs->new(
-                            file => 'Data::Dumper',
+                            file => 'Data::Dump',
                           );
 
 my $all = $des->all();

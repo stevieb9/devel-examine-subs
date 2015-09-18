@@ -4,6 +4,7 @@ use strict;
 
 use Carp;
 use Test::More tests => 40;
+use Data::Dumper;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -11,7 +12,7 @@ BEGIN {#1
 
 my %params = (
                 file => 't/sample.data',
-                copy => 't/search_replace.data',
+#                copy => 't/search_replace.data',
                 pre_filter => ['file_lines_contain', 'subs', 'objects'],
                 engine => 'search_replace',
 #                engine_dump => 1,
@@ -21,7 +22,7 @@ my %params = (
 
 my $des = Devel::Examine::Subs->new(%params);
 
-my $struct = $des->run();
+my $struct = $des->run(\%params);
 
 ok ( ref($struct) eq 'ARRAY', "search_replace engine returns an aref" );
 ok ( ref($struct->[0]) eq 'ARRAY', "elems of search_replace return are arefs" );

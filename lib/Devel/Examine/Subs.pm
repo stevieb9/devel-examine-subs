@@ -286,7 +286,7 @@ sub _clean_config {
     # params that get set after the call to _config() need
     # to be deleted manually here
 
-    delete $p->{file_content};
+#    delete $p->{file_contents};
 
     for my $var (keys %$config_vars){
        
@@ -550,7 +550,7 @@ sub _subs {
 
     return if ! $PPIsubs;
 
-    my @file_contents = @{ $self->{file_contents} };
+    my @file_contents = @{ $self->{params}{file_contents} };
 
     my %subs;
     $subs{$file} = {};

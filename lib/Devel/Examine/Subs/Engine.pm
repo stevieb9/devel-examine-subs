@@ -8,7 +8,6 @@ use Data::Dumper;
 use Devel::Examine::Subs;
 use Devel::Examine::Subs::Sub;
 use File::Copy;
-use Tie::File;
 
 our $VERSION = '1.38';
 
@@ -246,16 +245,18 @@ sub objects {
     };
 }
 sub search_replace {
+
     trace() if $ENV{TRACE};
 
     return sub {
+
         trace() if $ENV{TRACE};
 
         my $p = shift;
         my $struct = shift;
-        my $des = shift;
 
         my $file = $p->{file};
+        my @file_contents = @{ $p->{file_contents} } if $p->{file_contents};
         my $search = $p->{search};
         
         if ($search && ! $p->{regex}){
@@ -300,31 +301,33 @@ sub search_replace {
         my @changed_lines;
         
         for my $sub (@$struct){
+
             my $start_line = $sub->start;
             my $end_line = $sub->end;
 
-            tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
-              or die $!;
-
             my $line_num = 0;
 
-            for my $line (@tie_file){
+            for my $line (@file_contents){
+
                 $line_num++;
+
                 if ($line_num < $start_line){
                     next;
                 }
                 if ($line_num > $end_line){
                     last;
                 }
-                
+
                 if ($line =~ /$search/){
                     my $orig = $line;
                     $line =~ s/$search/$replace/g;
                     push @changed_lines, [$orig, $line];
                 }
             }
-            untie @tie_file;
         }
+
+        $p->{write_file_contents} = \@file_contents;
+
         return \@changed_lines;
     };                        
 }

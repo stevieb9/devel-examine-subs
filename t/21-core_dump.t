@@ -41,6 +41,6 @@ my $des = Devel::Examine::Subs->new(
     eval { close $fh; };
     ok (! $@, "core dump output file closed successfully" );
 
-#    eval { unlink $file; };
+    eval { unlink $file; };
     ok (! $@, "core dump temp file deleted successfully" );
 }

@@ -115,6 +115,8 @@ sub _run_directory {
         $self->{params}{file} = $file;
         my $data = $self->_core($p);
 
+        $self->_write_file if $self->{write_file_contents};
+
         my $exists = 0;
         $exists = %$data if ref($data) eq 'HASH';
         $exists = @$data if ref($data) eq 'ARRAY';

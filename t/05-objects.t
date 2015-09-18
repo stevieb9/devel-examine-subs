@@ -33,7 +33,6 @@ for my $o (@$objects){
         is ($o->line_count(), 5, "sub two has 5 lines, including def and }");
     } 
 }
-
 eval { $objects = $des->objects(); };
 ok (! $@, "objects() is callable and works" );
 

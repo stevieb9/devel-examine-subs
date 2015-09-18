@@ -70,7 +70,6 @@ sub run {
         $struct = $self->_run_directory;
     }
     else {
-        $self->_end_of_line($self->{params}{file}) if $self->{params}{file};
         $struct = $self->_core($p);
     }
 
@@ -112,8 +111,6 @@ sub _run_directory {
 
     for my $file (@files){
         
-        $self->_end_of_line($file);
-
         $self->{params}{file} = $file;
         my $data = $self->_core($p);
 
@@ -125,24 +122,6 @@ sub _run_directory {
     }
 
     return \%struct;
-}
-sub _end_of_line {
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $file = shift;
-
-    $ENV{DES_EOL} = "\n";
-
-    return if $^O ne 'MSWin32';
-
-    tie my @tie_file, 'Tie::File', $file or die $!;
-
-    if (@tie_file && $tie_file[0] =~ /\r\n/){
-        $ENV{DES_EOL} = "\r\n";
-    }
-
-    untie @tie_file;
 }
 sub _run_end {
     trace() if $ENV{TRACE};
@@ -248,6 +227,7 @@ sub _config {
         inject_use => 0,
         inject_after_sub_def => 0,
         delete => 0,
+        file_contents => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -302,6 +282,11 @@ sub _clean_config {
     my $config_vars = shift; # href of valid params
     my $p = shift; # href of params passed in
 
+    # params that get set after the call to _config() need
+    # to be deleted manually here
+
+    delete $p->{file_content};
+
     for my $var (keys %$config_vars){
        
         last if ! $self->_run_end;
@@ -325,9 +310,14 @@ sub _clean_config {
 sub _clean_core_config {
     trace() if $ENV{TRACE};
 
+    my $self = shift;
+
     # deletes core phase info after each run
 
-    my $self = shift;
+    # clean params that we collected after _clean_config()
+
+    delete $self->{params}{file_contents};
+
 
     my @core_phases = qw( 
         pre_proc
@@ -341,7 +331,6 @@ sub _clean_core_config {
 }
 sub _file {
     trace() if $ENV{TRACE};
-
 
     my $self = shift;
     my $p = shift;
@@ -401,7 +390,9 @@ sub _read_file {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $file = shift;
+    my $p = shift;
+
+    my $file = $p->{file};
 
     return if ! $file;
 
@@ -410,32 +401,42 @@ sub _read_file {
 
     my @file_contents = <$fh>;
 
-    chomp @file_contents;
-#    print Dumper \@file_contents;
-    return @file_contents;
+    close $fh or croak $!;
 
     $self->{file_eol} = "\n";
 
-    if ($file_contents[0] =~ /\r\n/){
+    if ($file_contents[0] && $file_contents[0] =~ /\r\n/){
         $self->{file_eol} = "\r\n";
     }
 
-    if ($^O eq 'MSWin32'){
-        if ($self->{file_eol} eq "\n"){
-            for (@file_contents){
-                s/\n/\r\n/;
-            }
-        }
+    for (@file_contents){
+        s/\r//g if $self->{file_eol} eq "\r\n";
+        s/\n//g;
     }
-    else {
-        if ($self->{file_eol} eq "\r\n"){
-            for (@file_contents){
-                s/\r\n/\n/;
-            }
-        }
-    }
-    
+
+    @{ $p->{file_contents} } = @file_contents;
+    @{ $self->{file_contents} } = @file_contents;
+
     return @file_contents;
+}
+sub _write_file {
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = shift;
+
+    my $file = $p->{file};
+    my $contents = $p->{file_contents};
+
+    return if ! $file;
+
+    open my $wfh, '>', $file or croak $!;
+
+    for (@$contents){
+        print $wfh "$_$self->{file_eol}";
+    }
+
+    close $wfh or croak !$;
 }
 sub _core {
     trace() if $ENV{TRACE};
@@ -446,6 +447,8 @@ sub _core {
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
+
+    $self->_read_file($p);
 
     # pre processor
 
@@ -528,7 +531,9 @@ sub _core {
     }
 
     $self->{data} = $subs;
-    
+
+    $self->_write_file($p);
+
     return $subs;
 }
 sub _subs {
@@ -545,7 +550,7 @@ sub _subs {
 
     return if ! $PPIsubs;
 
-    my @file_contents = $self->_read_file($file);
+    my @file_contents = @{ $self->{file_contents} };
 
     my %subs;
     $subs{$file} = {};

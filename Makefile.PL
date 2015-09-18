@@ -60,12 +60,11 @@ if ($^O eq 'MSWin32'){
     );
 
     for (@files){
+
         tie my @file, 'Tie::File', $_ or die $!;
 
         for (@file){
             s/\n/\r\n/g;
         }
-
-        untie @file;
     }
 }

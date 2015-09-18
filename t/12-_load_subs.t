@@ -11,7 +11,7 @@ BEGIN {#1
 
 my $file = 't/sample.data';
 my $des = Devel::Examine::Subs->new(file => $file);
-my $struct = $des->_subs();
+my $struct = $des->run();
 
 {#2
     ok ( ref($struct) eq 'HASH', "complete structure is a hashref" );

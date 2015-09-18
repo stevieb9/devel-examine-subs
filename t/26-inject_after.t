@@ -32,10 +32,10 @@ BEGIN {#1
 
     my (@base_file, @test_file);
 
-    eval { tie @base_file, 'Tie::File', $base_file or die $!; };
+    eval { tie @base_file, 'Tie::File', $base_file, recsep => $ENV{DES_EOL} or die $!; };
     ok (! $@, "tied $base_file ok for inject_after" );
 
-    eval { tie @test_file, 'Tie::File', $params{copy} or die $!; };
+    eval { tie @test_file, 'Tie::File', $params{copy}, recsep => $ENV{DES_EOL} or die $!; };
     ok (! $@, "tied $params{copy} ok for inject_after" );
 
     my $i = 0;
@@ -64,10 +64,10 @@ BEGIN {#1
 
     my (@base_file, @test_file);
 
-    eval { tie @base_file, 'Tie::File', $base_file or die $!; };
+    eval { tie @base_file, 'Tie::File', $base_file, recsep => $ENV{DES_EOL} or die $!; };
     ok (! $@, "tied $base_file ok for inject_after()" );
 
-    eval { tie @test_file, 'Tie::File', $params{copy} or die $!; };
+    eval { tie @test_file, 'Tie::File', $params{copy}, recsep => $ENV{DES_EOL} or die $!; };
     ok (! $@, "tied $params{copy} ok for inject_after()" );
 
     my $i = 0;

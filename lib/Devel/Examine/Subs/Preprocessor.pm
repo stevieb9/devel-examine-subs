@@ -23,6 +23,7 @@ BEGIN {
 };
 
 sub new {
+
     trace() if $ENV{TRACE};
 
     my $self = {};
@@ -36,6 +37,7 @@ sub new {
 }
 
 sub _dt {
+
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -51,6 +53,7 @@ sub _dt {
 }
 
 sub exists {
+
     trace() if $ENV{TRACE};
     my $self = shift;
     my $string = shift;
@@ -64,6 +67,7 @@ sub exists {
 }
 
 sub module {
+
     trace() if $ENV{TRACE};
 
     return sub {
@@ -97,9 +101,11 @@ sub module {
 }
 
 sub inject {
+
     trace() if $ENV{TRACE};
 
     return sub {
+
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -194,9 +200,11 @@ sub inject {
 }
 
 sub remove {
+
     trace() if $ENV{TRACE};
 
     return sub {
+
         trace() if $ENV{TRACE};
         
         my $p = shift;

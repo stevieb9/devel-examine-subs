@@ -6,7 +6,7 @@ use warnings;
 use Carp;
 use Data::Dumper;
 
-our $VERSION = '1.37';
+our $VERSION = '1.38';
 
 BEGIN {
 
@@ -23,7 +23,7 @@ BEGIN {
 };
 
 sub new {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     my $self = {};
     bless $self, shift;
@@ -36,7 +36,7 @@ sub new {
 }
 
 sub _dt {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     my $self = shift;
 
@@ -51,7 +51,7 @@ sub _dt {
 }
 
 sub exists {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
     my $self = shift;
     my $string = shift;
 
@@ -64,10 +64,10 @@ sub exists {
 }
 
 sub module {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     return sub {
-        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+        trace() if $ENV{TRACE};
 
         no strict 'refs';
 
@@ -97,10 +97,10 @@ sub module {
 }
 
 sub inject {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     return sub {
-        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+        trace() if $ENV{TRACE};
 
         my $p = shift;
         my $file = $p->{file};
@@ -198,10 +198,10 @@ sub inject {
 }
 
 sub remove {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     return sub {
-        trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+        trace() if $ENV{TRACE};
         
         my $p = shift;
         my $file = $p->{file};        

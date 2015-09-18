@@ -4,7 +4,7 @@ use warnings;
 
 use Data::Dumper;
 
-our $VERSION = '1.37';
+our $VERSION = '1.38';
 
 BEGIN {
 
@@ -21,7 +21,7 @@ BEGIN {
 };
 
 sub new {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     my $class = shift;
     my $data = shift;
@@ -35,27 +35,27 @@ sub new {
     return $self;
 }
 sub name {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
     my $self = shift;
     return $self->{data}{name};
 }
 sub start {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
     my $self = shift;
     return $self->{data}{start};
 }
 sub end {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
     my $self = shift;
     return $self->{data}{end};
 }
 sub line_count {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
     my $self = shift;
     return $self->{data}{num_lines};
 }
 sub lines {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     my $self = shift;
 
@@ -74,7 +74,7 @@ sub lines {
     return \@line_linenum;
 }
 sub code {
-    trace() if $ENV{DTS_ENABLE} && $ENV{DES_TRACE};
+    trace() if $ENV{TRACE};
 
     my $self = shift;
 

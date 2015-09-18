@@ -4,8 +4,8 @@ use warnings;
 
 use Devel::Examine::Subs;
 
-my $des = Devel::Examine::Subs->new( file => '/home/steve02/devel/repos/test-subs/lib/Devel/Examine');
+my $des = Devel::Examine::Subs->new( file => 't/sample.data');
 
-my $statements = ['use Devel::Trace::Flow qw(trace trace_dump);'];
+my $statements = ['use WHATEVER::MODULE'];
 
 $des->inject(inject_use => $statements);

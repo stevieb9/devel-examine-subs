@@ -70,7 +70,8 @@ sub run {
         $struct = $self->_run_directory;
     }
     else {
-        $struct = $self->_core($p);
+        $struct = $self->_core;
+        $self->_write_file if $self->{write_file_contents};
     }
 
     $self->_run_end(1);
@@ -318,8 +319,7 @@ sub _clean_core_config {
 
     delete $self->{params}{file_contents};
 
-
-    my @core_phases = qw( 
+    my @core_phases = qw(
         pre_proc
         pre_filter
         engine
@@ -415,18 +415,17 @@ sub _read_file {
     }
 
     @{ $p->{file_contents} } = @file_contents;
-    @{ $self->{file_contents} } = @file_contents;
 
     return @file_contents;
 }
 sub _write_file {
+
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $p = shift;
 
-    my $file = $p->{file};
-    my $contents = $p->{file_contents};
+    my $file = $self->{params}{file};
+    my $contents = $self->{write_file_contents};
 
     return if ! $file;
 
@@ -439,6 +438,7 @@ sub _write_file {
     close $wfh or croak !$;
 }
 sub _core {
+
     trace() if $ENV{TRACE};
     
     my $self = shift;
@@ -459,7 +459,9 @@ sub _core {
 
         $data = $pre_proc->($p);
 
-        # for things that don't need to process files 
+        $self->{write_file_contents} = $p->{write_file_contents};
+
+        # for things that don't need to process files
         # (such as 'module'), return early
 
         if ($self->{params}{pre_proc_return}){
@@ -531,8 +533,6 @@ sub _core {
     }
 
     $self->{data} = $subs;
-
-    $self->_write_file($p);
 
     return $subs;
 }

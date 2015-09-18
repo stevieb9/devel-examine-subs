@@ -103,34 +103,31 @@ sub inject {
         trace() if $ENV{TRACE};
 
         my $p = shift;
-        my $file = $p->{file};
 
-        tie my @file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
-          or die $!;
+        my @file_contents = @{ $p->{file_contents} };
 
         if ($p->{inject_use}) {
 
             my $use = qr/use\s+\w+/;
 
             my ($index) = grep {
-                $file[$_] =~ $use
-            } 0..$#file;
+                $file_contents[$_] =~ $use
+            } 0..$#file_contents;
 
             if (!$index) {
                 ($index) = grep {
-                    $file[$_] =~ /^package\s+\w+/
-                } 0..$#file;
+                    $file_contents[$_] =~ /^package\s+\w+/
+                } 0..$#file_contents;
             }
 
             if ($index) {
                 for (@{$p->{inject_use}}) {
-                    splice @file, $index, 0, $_;
+                    splice @file_contents, $index, 0, $_;
                 }
             }
 
-            untie @file;
+            $p->{write_file_contents} = \@file_contents;
 
-            return;
         }
 
         if ($p->{inject_after_sub_def}) {
@@ -149,7 +146,7 @@ sub inject {
 
             my $is_multi = 0;
 
-            while (my ($i, $e) = each @file){
+            while (my ($i, $e) = each @file_contents){
 
                 if ($e =~ /^\n/){
                     push @new_file, "\n";
@@ -160,8 +157,8 @@ sub inject {
                 my $count = $i;
                 $count++;
 
-                while ($count < @file){
-                    if ($file[$count] =~ /^(\s*)\S/){
+                while ($count < @file_contents){
+                    if ($file_contents[$count] =~ /^(\s*)\S/){
                         $indent = $1;
                         last;
                     }
@@ -178,7 +175,7 @@ sub inject {
                     }
                 }
                 elsif ($e =~ $multi_line) {
-                    if ($file[$count] =~ /\s*\{\s*(?!\s*[\S])/) {
+                    if ($file_contents[$count] =~ /\s*\{\s*(?!\s*[\S])/) {
                         $is_multi = 1;
                         next;
                     }
@@ -191,8 +188,7 @@ sub inject {
                     $is_multi = 0;
                 }
             }
-
-            @file = @new_file;
+            $p->{write_file_contents} = \@new_file;
         }
     }
 }

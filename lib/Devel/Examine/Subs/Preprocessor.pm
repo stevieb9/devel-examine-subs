@@ -200,20 +200,16 @@ sub remove {
         trace() if $ENV{TRACE};
         
         my $p = shift;
-        my $file = $p->{file};        
+        my @file = @{ $p->{file_contents}};
+
         my $delete = $p->{delete};
 
-        tie my @file, 'Tie::File', $file ,recsep => $ENV{DES_EOL} 
-          or die $!; 
-    
         for my $find (@$delete){
             while (my ($index) = grep { $file[$_] =~ $find } 0..$#file){
                 splice @file, $index, 1;
             }
         }
-        untie @file;
-
-        return;
+        $p->{write_file_contents} = \@file;
     }
 }
 

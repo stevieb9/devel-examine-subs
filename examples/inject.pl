@@ -6,6 +6,6 @@ use Devel::Examine::Subs;
 
 my $des = Devel::Examine::Subs->new( file => 't/sample.data');
 
-my $statements = ['use WHATEVER::MODULE'];
+my $statements = ['sub'];
 
-$des->inject(inject_use => $statements);
+$des->remove(delete => $statements);

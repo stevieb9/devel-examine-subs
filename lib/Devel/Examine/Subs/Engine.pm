@@ -145,7 +145,7 @@ sub missing {
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
-                my @code = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
+                my @code = @{$struct->{$file}{subs}{$sub}{contents}};
 
                 my @clean;
 
@@ -175,7 +175,7 @@ sub lines {
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
                 my $line_num = $struct->{$file}{subs}{$sub}{start};
-                my @code = @{$struct->{$file}{subs}{$sub}{TIE_file_sub}};
+                my @code = @{$struct->{$file}{subs}{$sub}{contents}};
                 for my $line (@code){
                     $line_num++;
                     push @{$return{$sub}}, {$line_num => $line};

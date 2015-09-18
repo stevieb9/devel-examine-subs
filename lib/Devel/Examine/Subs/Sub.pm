@@ -79,7 +79,7 @@ sub code {
 
     my $self = shift;
 
-    my $code = $self->{data}{TIE_file_sub};
+    my $code = $self->{data}{contents};
 
     return $code;
 }

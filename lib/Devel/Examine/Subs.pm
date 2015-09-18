@@ -397,6 +397,46 @@ sub _file {
 
    return $self->{params}{file};
 }
+sub _read_file {
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $file = shift;
+
+    return if ! $file;
+
+    open my $fh, '<', $file
+      or croak "Can't open the file $file: $!";
+
+    my @file_contents = <$fh>;
+
+    chomp @file_contents;
+#    print Dumper \@file_contents;
+    return @file_contents;
+
+    $self->{file_eol} = "\n";
+
+    if ($file_contents[0] =~ /\r\n/){
+        $self->{file_eol} = "\r\n";
+    }
+
+    if ($^O eq 'MSWin32'){
+        if ($self->{file_eol} eq "\n"){
+            for (@file_contents){
+                s/\n/\r\n/;
+            }
+        }
+    }
+    else {
+        if ($self->{file_eol} eq "\r\n"){
+            for (@file_contents){
+                s/\r\n/\n/;
+            }
+        }
+    }
+    
+    return @file_contents;
+}
 sub _core {
     trace() if $ENV{TRACE};
     
@@ -505,13 +545,12 @@ sub _subs {
 
     return if ! $PPIsubs;
 
-    tie my @TIE_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
-      or die $!;
+    my @file_contents = $self->_read_file($file);
 
     my %subs;
     $subs{$file} = {};
     
-    @{$subs{$file}{TIE_file}} = @TIE_file;
+    @{$subs{$file}{contents}} = @file_contents;
 
     for my $PPI_sub (@{$PPIsubs}){
 
@@ -551,17 +590,15 @@ sub _subs {
         # pull out just the subroutine from the file 
         # array and attach it to the structure
 
-        my @sub_definition = @TIE_file[
+        my @sub_definition = @file_contents[
                                     $subs{$file}{subs}{$name}{start}
                                     ..
                                     $subs{$file}{subs}{$name}{end}
                                    ];
 
-          $subs{$file}{subs}{$name}{TIE_file_sub} = \@sub_definition;
+          $subs{$file}{subs}{$name}{contents} = \@sub_definition;
     }
    
-    untie @TIE_file;
-
     return \%subs;
 }
 sub _pre_proc {

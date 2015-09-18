@@ -92,7 +92,7 @@ sub subs {
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;
                 $s->{$f}{subs}{$sub}{name} = $sub;
-                @{ $s->{$f}{subs}{$sub}{file} } = @{ $s->{$f}{TIE_file} };
+                @{ $s->{$f}{subs}{$sub}{file} } = @{ $s->{$f}{contents} };
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }
@@ -124,7 +124,7 @@ sub file_lines_contain {
             for my $sub (keys %{$s->{$f}{subs}}){
                 my $found = 0;
                 my @has;
-                for (@{$s->{$f}{subs}{$sub}{TIE_file_sub}}){
+                for (@{$s->{$f}{subs}{$sub}{contents}}){
                     if ($_ and /$search/){
                         $found++;
                         push @has, $_;
@@ -134,7 +134,7 @@ sub file_lines_contain {
                     delete $s->{$f}{subs}{$sub};                
                     next;
                 }
-                $s->{$f}{subs}{$sub}{TIE_file_sub} = \@has;
+                $s->{$f}{subs}{$sub}{contents} = \@has;
             }
         }
         return $struct;

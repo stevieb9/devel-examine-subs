@@ -66,8 +66,8 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     is ($res->{end}, 33, "aref of crefs: good data");
     is ($res->{start}, 28, "aref of crefs: good data");
     is ($res->{num_lines}, 6, "aref of crefs: good data");
-    ok (ref $res->{TIE_file_sub} eq 'ARRAY', "aref of crefs: good data");
-    is ($res->{TIE_file_sub}[0], 'sub four {', "aref of crefs: good data");
+    ok (ref $res->{contents} eq 'ARRAY', "aref of crefs: good data");
+    is ($res->{contents}[0], 'sub four {', "aref of crefs: good data");
 }
 
 {#6

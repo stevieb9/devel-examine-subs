@@ -135,7 +135,7 @@ sub _end_of_line {
 
     return if $^O ne 'MSWin32';
 
-    tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL} or die $!;
+    tie my @tie_file, 'Tie::File', $file or die $!;
 
     if (@tie_file && $tie_file[0] =~ /\r\n/){
         $ENV{DES_EOL} = "\r\n";

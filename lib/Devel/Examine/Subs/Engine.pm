@@ -1,4 +1,5 @@
 package Devel::Examine::Subs::Engine;
+use 5.012;
 use strict;
 use warnings;
 

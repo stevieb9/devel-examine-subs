@@ -1,5 +1,5 @@
 package Devel::Examine::Subs::Preprocessor;
-
+use 5.012;
 use strict;
 use warnings;
 

@@ -43,7 +43,7 @@ WriteMakefile
                    'Symbol' => 0,
                  }
 );
-__END__
+
 if ($^O eq 'MSWin32'){
 
     print "\nPreparing unit tests for MSWin32 platform...\n\n";
@@ -59,10 +59,17 @@ if ($^O eq 'MSWin32'){
 
     for (@files){
 
-        tie my @file, 'Tie::File', $_ or die $!;
+        open my $fh, '<', $_ or die $!;
+        my @file = <$fh>;
+        close $fh or die $!;
+
+        open my $wfh, '>', $_ or die $!;
 
         for (@file){
             s/\n/\r\n/g;
+            print $wfh $_;
         }
+    
+        close $wfh or die $!;
     }
 }

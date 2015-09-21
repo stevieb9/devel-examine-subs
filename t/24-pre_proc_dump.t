@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 
+use Data::Dumper;
 use Test::More tests => 8;
 use Test::Trap;
 
@@ -11,7 +12,6 @@ BEGIN {#1
 
 my $des = Devel::Examine::Subs->new(
                             file => 't/sample.data',
-                            engine => 'all',
                           );
 {#2 - pre_proc dump
 
@@ -22,7 +22,7 @@ my $des = Devel::Examine::Subs->new(
         eval { open STDOUT, '>', $file or die $!; };
         ok (! $@, "STDOUT redirected for pre_proc dump");
 
-        my @exit = trap { $des->run({pre_proc_dump => 1}); };
+        my @exit = trap { $des->module(module => 'Data::Dumper', pre_proc_dump => 1); };
 
         eval { print STDOUT $trap->stdout; };
         is (! $trap->stdout, '', "output to stdout" );
@@ -35,7 +35,7 @@ my $des = Devel::Examine::Subs->new(
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 223, "Based on test data, pre_proc dump dumps the correct info" );
+    is (@lines, 45, "Based on test data, pre_proc dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "pre_proc dump output file closed successfully" );

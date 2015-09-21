@@ -2,20 +2,22 @@
 use warnings;
 use strict;
 
+use Data::Dumper;
 use Test::More tests => 3;
 use Test::Trap;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
+my $des;
 
-my $des = Devel::Examine::Subs->new(
-                            file => 'Data::Dump',
+eval {
+    $des = Devel::Examine::Subs->new(
+                            file => 'Data::Dumper',
                           );
+};
 
-my $all = $des->all();
-
-ok (@$all > 30, "using Data::Dumper as an example, file => module translates");
+ok ($des->{params}{file} =~ /Data\/Dumper\.pm/, "Module finds the file" );
 
 eval {
     $des->run({file => 'Bad::XXX'});

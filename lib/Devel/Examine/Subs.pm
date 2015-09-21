@@ -479,6 +479,11 @@ sub _core {
 
         $data = $pre_proc->($p);
 
+        if ($self->{params}{pre_proc_dump}){
+            print Dumper $data;
+            exit;
+        }
+
         $self->{write_file_contents} = $p->{write_file_contents};
 
         # for things that don't need to process files
@@ -679,12 +684,6 @@ sub _pre_proc {
         $cref = $pre_proc;
     }
     
-    if ($self->{params}{pre_proc_dump}){
-        my $data = $cref->($p);
-        print Dumper $data;
-        exit;
-    }
-
     return $cref;
 }
 sub _pre_filter {

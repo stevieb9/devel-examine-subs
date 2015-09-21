@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Engine;
+package Devel::Examine::Subs::Engine 1.38;
 use 5.012;
 use strict;
 use warnings;
@@ -8,8 +8,6 @@ use Data::Dumper;
 use Devel::Examine::Subs;
 use Devel::Examine::Subs::Sub;
 use File::Copy;
-
-our $VERSION = '1.38';
 
 BEGIN {
 

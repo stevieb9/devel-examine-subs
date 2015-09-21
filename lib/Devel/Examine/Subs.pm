@@ -1,4 +1,4 @@
-package Devel::Examine::Subs;
+package Devel::Examine::Subs 1.38;
 use 5.012;
 use warnings;
 use strict;
@@ -13,8 +13,6 @@ use File::Find;
 use PPI;
 use Symbol;
 use Tie::File;
-
-our $VERSION = '1.38';
 
 BEGIN {
 

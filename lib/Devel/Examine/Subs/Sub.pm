@@ -1,11 +1,9 @@
-package Devel::Examine::Subs::Sub;
+package Devel::Examine::Subs::Sub 1.38;
 use 5.012;
 use strict;
 use warnings;
 
 use Data::Dumper;
-
-our $VERSION = '1.38';
 
 BEGIN {
 

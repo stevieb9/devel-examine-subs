@@ -1,12 +1,10 @@
-package Devel::Examine::Subs::Prefilter;
+package Devel::Examine::Subs::Prefilter 1.38;
 use 5.012;
 use strict;
 use warnings;
 
 use Carp;
 use Data::Dumper;
-
-our $VERSION = '1.38';
 
 BEGIN {
 

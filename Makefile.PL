@@ -69,7 +69,6 @@ if ($^O eq 'MSWin32'){
             s/\n/\r\n/g;
             print $wfh $_;
         }
-    
         close $wfh or die $!;
     }
 }

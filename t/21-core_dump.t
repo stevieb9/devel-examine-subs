@@ -2,6 +2,7 @@
 use warnings;
 use strict;
 
+use Data::Dumper;
 use Test::More tests => 8;
 use Test::Trap;
 
@@ -36,7 +37,7 @@ my $des = Devel::Examine::Subs->new(
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 318, "Based on test data, core dump dumps the correct info" );
+    is (@lines, 371, "Based on test data, core dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "core dump output file closed successfully" );

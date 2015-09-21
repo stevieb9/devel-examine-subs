@@ -262,7 +262,6 @@ sub search_replace {
         }
 
         my $replace = $p->{replace};
-        my $copy = $p->{copy} if $p->{copy};
 
         if (! $file){
             croak "\nDevel::Examine::Subs::Engine::search_replace " .
@@ -285,17 +284,6 @@ sub search_replace {
         }
         
  
-        copy $file, "$file.bak";
-
-        if ($copy && -f $copy){
-            unlink $copy;
-        }
-        
-        if ($copy){
-            copy $file, $copy;
-            $file = $copy;
-        }
-       
         my @changed_lines;
         
         for my $sub (@$struct){
@@ -337,118 +325,101 @@ sub inject_after {
 
         my $p = shift;
         my $struct = shift;
-    
+
         my $search = $p->{search};
 
-        if ($search && ! $p->{regex}){
+        if ($search && !$p->{regex}) {
             $search = "\Q$search";
         }
 
-        my $num_injects = $p->{injects} // 1;
         my $code = $p->{code};
-        my $copy = $p->{copy};
-        my $sub_def = $p->{sub_def};
 
-        if (! $sub_def && ! $search){
+        if (!$search) {
             croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
-                    "can't use inject_after engine without specifying a " .
-                    "search term\n\n";
+                "can't use inject_after engine without specifying a " .
+                "search term\n\n";
         }
-        if (! $code){
+        if (!$code) {
             croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
-                  "can't use inject_after engine without code to inject\n\n";
+                "can't use inject_after engine without code to inject\n\n";
 
         }
-        
+
         my $file = $p->{file};
- 
-        copy $file, "$file.bak";
+        my @file_contents = @{$p->{file_contents}};
 
-        if ($copy){
-            if (-f $copy){
-                unlink $copy;
-            }
-            copy $file, $copy;
-            $file = $copy;
-        }
-
-        my @unprocessed;       
         my @processed;
-        
-        for my $sub (@$struct){
-            push @unprocessed, $sub->name;
+
+        my $added_lines = 0;
+
+        my @subs;
+
+        for my $sub (@$struct) {
+            push @subs, $sub->name;
         }
 
-        for my $uname (@unprocessed){
-        
-            my $des = Devel::Examine::Subs->new;
+        my $des = Devel::Examine::Subs->new(file => $p->{file});
+        my $subs_hash = $des->objects(objects_in_hash => 1, include => \@subs);
 
-            my $params = {
-                        file => $file,
-                        pre_filter => ['subs', 'objects'],
-                        pre_filter_return => 2,
-                        search => $search,
-            };
+        my @sorted_subs = sort {
+                $subs_hash->{$a}->start <=> $subs_hash->{$b}->start
+            } keys %$subs_hash;
 
-            my $struct = $des->run($params); 
+        for (@sorted_subs){
 
-            for my $sub (@$struct){
+            my $sub = $subs_hash->{$_};
 
-                next unless $sub->name eq $uname;
+            my $num_injects = $p->{injects} // 1;
 
-                push @processed, $sub->name;
-                
-                my $start_line = $sub->start;
-                my $end_line = $sub->end;
-            
-                tie my @tie_file, 'Tie::File', $file, recsep => $ENV{DES_EOL}
-                  or die $!;
+            push @processed, $sub->name;
 
-                my $line_num = 0;
-                my $new_lines = 0; # don't search added lines
+            my $start_line = $sub->start;
+            my $end_line = $sub->end;
 
-                for my $line (@tie_file){
-                    $line_num++;
+            $start_line += $added_lines;
+            $end_line += $added_lines;
 
-                    if ($line_num < $start_line){
-                        next;
+            my $line_num = 0;
+            my $new_lines = 0; # don't search added lines
+
+            for my $line (@file_contents){
+                $line_num++;
+                if ($line_num < $start_line){
+                    next;
+                }
+                if ($line_num > $end_line){
+                    last;
+                }
+
+                if ($line =~ /$search/ && ! $new_lines){
+
+                    my $location = $line_num;
+
+                    my $indent = '';
+
+                    if (! $p->{no_indent}){
+                        if ($line =~ /^(\s+)/ && $1){
+                            $indent = $1;
+                        }
                     }
-                    if ($line_num > $end_line){
+                    for (@$code){
+                        splice @file_contents, $location++, 0, $indent . $_;
+                        $new_lines++;
+                        $added_lines++;
+                    }
+
+                    # stop injecting after N search finds
+
+                    $num_injects--;
+                    if ($num_injects == 0){
                         last;
                     }
 
-                    if ($line =~ /$search/ && ! $new_lines){
-                       
-                        my $location = $line_num;
-
-                        my $indent = '';
-
-                        if (! $p->{no_indent}){
-                            if ($line =~ /^(\s+)/ && $1){
-                                $indent = $1;
-                            }
-                        }
-                        for my $line (@$code){
-                            splice @tie_file, $location++, 0, $indent . $line; 
-                            $new_lines++;
-                            $end_line++;
-                        }
-
-                        # stop injecting after N search finds
-
-                        $num_injects--;
-                        
-                        if ($num_injects == 0){
-                            untie @tie_file;
-                            last;
-                        }
-                        
-                    }
-                    $new_lines-- if $new_lines != 0;
                 }
-                untie @tie_file;
+                $new_lines-- if $new_lines != 0;
             }
         }
+        $p->{write_file_contents} = \@file_contents;
         return \@processed;
     };                        
 }

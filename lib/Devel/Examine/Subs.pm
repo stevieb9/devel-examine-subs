@@ -9,10 +9,10 @@ use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
+use File::Copy;
 use File::Find;
 use PPI;
 use Symbol;
-use Tie::File;
 
 BEGIN {
 
@@ -393,8 +393,11 @@ sub _read_file {
     my $p = shift;
 
     my $file = $p->{file};
+    my $copy = $self->{params}{copy};
 
     return if ! $file;
+
+    copy $file, "$file.bak" or croak $!;
 
     open my $fh, '<', $file
       or croak "Can't open the file $file: $!";
@@ -415,6 +418,7 @@ sub _read_file {
     }
 
     @{ $p->{file_contents} } = @file_contents;
+    @{ $self->{file_contents} } = @file_contents;
 
     return @file_contents;
 }
@@ -425,9 +429,12 @@ sub _write_file {
     my $self = shift;
 
     my $file = $self->{params}{file};
+    my $copy = $self->{params}{copy};
     my $contents = $self->{write_file_contents};
 
     return if ! $file;
+
+    $file = $copy if $copy;
 
     open my $wfh, '>', $file or croak $!;
 
@@ -502,6 +509,7 @@ sub _core {
     if ($self->{params}{pre_filter}){
         for my $pre_filter ($self->_pre_filter){
             $subs = $pre_filter->($p, $subs);
+            $self->{write_file_contents} = $p->{write_file_contents};
             $self->{data} = $subs;
         }
     }  
@@ -516,6 +524,7 @@ sub _core {
 
     if ($self->{params}{engine}){
         $subs = $engine->($p, $subs);
+        $self->{write_file_contents} = $p->{write_file_contents};
     }
 
     # core dump
@@ -1022,13 +1031,7 @@ sub add_functionality {
                                     pre_filter => 'end_of_last_sub',
                                 });
 
-    
-    tie my @TIE_file, 'Tie::File', $file, recsep => $ENV{DES_EOL} 
-      or croak "can't Tie::File the file $file: $!";
-
-    my $end_line = $des->run;
-
-    push @TIE_file, @code;
+    $p->{write_file_contents} = \@code;
 }
 sub valid_params {
     trace() if $ENV{TRACE};

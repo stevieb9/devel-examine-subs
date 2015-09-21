@@ -6,7 +6,6 @@ require 5.012;
 use Cwd;
 use ExtUtils::MakeMaker;
 use File::Find;
-use Tie::File;
 
 WriteMakefile
 (
@@ -42,7 +41,6 @@ WriteMakefile
                    'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,
-                   'Tie::File' => 0,
                  }
 );
 __END__

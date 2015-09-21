@@ -22,7 +22,6 @@ my $builder = Module::Build->new(
         'perl' => 5.006,
         'PPI' => 0,
         'Symbol' => 0,
-        'Tie::File' => 0,
         'Test::Trap' => 0,
     },
     meta_merge => {

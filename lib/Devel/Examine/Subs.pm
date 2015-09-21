@@ -1,4 +1,4 @@
-package Devel::Examine::Subs 1.38;
+package Devel::Examine::Subs 1.39;
 use 5.012;
 use warnings;
 use strict;
@@ -53,6 +53,7 @@ sub new {
     return $self;
 }
 sub run {
+
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -78,6 +79,7 @@ sub run {
     return $struct;
 }
 sub _run_directory {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -88,7 +90,9 @@ sub _run_directory {
     my $dir = $self->{params}{file};
 
     find({wanted => sub {
+            
             trace() if $ENV{TRACE};
+
             return if ! -f;
 
             my @extensions = @{$self->{params}{extensions}};
@@ -125,6 +129,7 @@ sub _run_directory {
     return \%struct;
 }
 sub _run_end {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -135,6 +140,7 @@ sub _run_end {
     return $self->{run_end};
 }
 sub _cache {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -158,12 +164,14 @@ sub _cache {
     }
 }
 sub _cache_enabled {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
     return $self->{params}{cache};
 }
 sub _cache_safe {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -174,6 +182,7 @@ sub _cache_safe {
     return $self->{cache_safe};
 }
 sub _params {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -181,6 +190,7 @@ sub _params {
     return \%params;
 }
 sub _config {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -277,6 +287,7 @@ sub _config {
     }
 }
 sub _clean_config {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -309,6 +320,7 @@ sub _clean_config {
     }
 }
 sub _clean_core_config {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -330,6 +342,7 @@ sub _clean_core_config {
     }
 }
 sub _file {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -387,6 +400,7 @@ sub _file {
    return $self->{params}{file};
 }
 sub _read_file {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -408,13 +422,12 @@ sub _read_file {
 
     $self->{file_eol} = "\n";
 
-    if ($file_contents[0] && $file_contents[0] =~ /\r\n/){
-        $self->{file_eol} = "\r\n";
+    if ($file_contents[0] && $file_contents[0] =~ /(\R)/){
+        $self->{file_eol} = $1;
     }
 
     for (@file_contents){
-        s/\r//g if $self->{file_eol} eq "\r\n";
-        s/\n//g;
+        s/\R//g;
     }
 
     @{ $p->{file_contents} } = @file_contents;
@@ -546,6 +559,7 @@ sub _core {
     return $subs;
 }
 sub _subs {
+    
     trace() if $ENV{TRACE};
     
     my $self = shift;
@@ -616,6 +630,7 @@ sub _subs {
     return \%subs;
 }
 sub _pre_proc {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -673,6 +688,7 @@ sub _pre_proc {
     return $cref;
 }
 sub _pre_filter {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -750,6 +766,7 @@ sub _pre_filter {
     return @pre_filters;
 }
 sub _engine {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -805,6 +822,7 @@ sub _engine {
     return $cref;
 }
 sub pre_procs {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -819,6 +837,7 @@ sub pre_procs {
     return @pre_procs;
 }
 sub pre_filters {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -833,6 +852,7 @@ sub pre_filters {
     return @pre_filters;
 }
 sub engines {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -847,6 +867,7 @@ sub engines {
     return @engines;
 }
 sub has {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -858,6 +879,7 @@ sub has {
     $self->run($p);
 }
 sub missing {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -868,6 +890,7 @@ sub missing {
     $self->run($p);
 }
 sub all {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -878,6 +901,7 @@ sub all {
     $self->run($p);
 }
 sub lines {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -892,6 +916,7 @@ sub lines {
     $self->run($p);
 }
 sub module {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -908,6 +933,7 @@ sub module {
     $self->run($p);
 }
 sub objects {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -919,6 +945,7 @@ sub objects {
     $self->run($p);
 }
 sub search_replace {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -932,6 +959,7 @@ sub search_replace {
     $self->run($p);
 }
 sub inject {
+    
     trace() if $ENV{TRACE};
     my $self = shift;
     my $p = $self->_params(@_);
@@ -946,6 +974,7 @@ sub inject {
     $self->run($p);
 }
 sub remove {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -957,6 +986,7 @@ sub remove {
     $self->run($p);
 }
 sub inject_after {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -974,6 +1004,7 @@ sub inject_after {
     $self->run($p);
 }
 sub add_functionality {
+   
     trace() if $ENV{TRACE};
     
     my $self = shift;
@@ -1034,6 +1065,7 @@ sub add_functionality {
     $p->{write_file_contents} = \@code;
 }
 sub valid_params {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;

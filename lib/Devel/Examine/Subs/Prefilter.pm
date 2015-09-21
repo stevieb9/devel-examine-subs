@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Prefilter 1.38;
+package Devel::Examine::Subs::Prefilter 1.39;
 use 5.012;
 use strict;
 use warnings;
@@ -21,6 +21,7 @@ BEGIN {
 };
 
 sub new {
+    
     trace() if $ENV{TRACE};
 
     my $self = {};
@@ -33,6 +34,7 @@ sub new {
     return $self;
 }
 sub _dt {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -50,6 +52,7 @@ sub _dt {
     return $dt;
 }
 sub exists {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -63,9 +66,11 @@ sub exists {
     }
 }
 sub subs {
+    
     trace() if $ENV{TRACE};
     
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -98,9 +103,11 @@ sub subs {
     };
 }
 sub file_lines_contain {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -139,9 +146,11 @@ sub file_lines_contain {
     };
 }
 sub end_of_last_sub {
+    
     trace() if $ENV{TRACE};
     
     return sub {
+        
         trace() if $ENV{TRACE};
         
         my $p = shift;
@@ -160,9 +169,11 @@ sub end_of_last_sub {
     };
 }
 sub _test {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
         my $p = shift;
         my $struct = shift;
@@ -170,11 +181,13 @@ sub _test {
     };
 }
 sub objects {
+    
     trace() if $ENV{TRACE};
 
     # uses 'subs' pre_filter
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;

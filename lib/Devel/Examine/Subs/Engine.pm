@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Engine 1.38;
+package Devel::Examine::Subs::Engine 1.39;
 use 5.012;
 use strict;
 use warnings;
@@ -26,6 +26,7 @@ BEGIN {
 };
 
 sub new {
+    
     trace() if $ENV{TRACE};
 
     my $self = {};
@@ -36,6 +37,7 @@ sub new {
     return $self;
 }
 sub _dt {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -58,6 +60,7 @@ sub _dt {
     return $dt;
 }
 sub exists {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -71,6 +74,7 @@ sub exists {
     }
 }
 sub _test {
+    
     trace() if $ENV{TRACE};
 
     return sub {
@@ -79,17 +83,21 @@ sub _test {
     };
 }
 sub _test_print {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
         print "Hello, world!\n";
     };
 }
 sub all {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -103,9 +111,11 @@ sub all {
     };
 }
 sub has {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
         
         my $p = shift;
@@ -121,9 +131,11 @@ sub has {
     };
 }
 sub missing {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -159,9 +171,11 @@ sub missing {
     };
 }
 sub lines {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
         
         my $p = shift;
@@ -183,11 +197,13 @@ sub lines {
     };
 }
 sub objects {
+    
     trace() if $ENV{TRACE};
 
     # uses 'subs' pre_filter
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;
@@ -318,9 +334,11 @@ sub search_replace {
     };                        
 }
 sub inject_after {
+    
     trace() if $ENV{TRACE};
 
     return sub {
+        
         trace() if $ENV{TRACE};
 
         my $p = shift;

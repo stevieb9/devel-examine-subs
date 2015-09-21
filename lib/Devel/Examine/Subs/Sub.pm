@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Sub 1.38;
+package Devel::Examine::Subs::Sub 1.39;
 use 5.012;
 use strict;
 use warnings;
@@ -20,6 +20,7 @@ BEGIN {
 };
 
 sub new {
+    
     trace() if $ENV{TRACE};
 
     my $class = shift;
@@ -34,26 +35,35 @@ sub new {
     return $self;
 }
 sub name {
+    
     trace() if $ENV{TRACE};
+    
     my $self = shift;
     return $self->{data}{name};
 }
 sub start {
+    
     trace() if $ENV{TRACE};
+    
     my $self = shift;
     return $self->{data}{start};
 }
 sub end {
+    
     trace() if $ENV{TRACE};
+    
     my $self = shift;
     return $self->{data}{end};
 }
 sub line_count {
+    
     trace() if $ENV{TRACE};
+    
     my $self = shift;
     return $self->{data}{num_lines};
 }
 sub lines {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -73,6 +83,7 @@ sub lines {
     return \@line_linenum;
 }
 sub code {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;

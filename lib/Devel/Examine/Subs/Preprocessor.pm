@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Preprocessor 1.38;
+package Devel::Examine::Subs::Preprocessor 1.39;
 use 5.012;
 use strict;
 use warnings;
@@ -53,6 +53,7 @@ sub _dt {
 sub exists {
 
     trace() if $ENV{TRACE};
+
     my $self = shift;
     my $string = shift;
 

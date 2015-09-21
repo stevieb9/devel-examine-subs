@@ -4,7 +4,6 @@ use strict;
 
 use Test::More tests => 9;
 use File::Copy qw(copy);
-use Tie::File;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -13,18 +12,24 @@ BEGIN {#1
 my $f = 't/sample.data';
 my $wf = 't/write_sample.data';
 
-copy($f, $wf);
+copy $f, $wf;
 
-tie my @wfh, 'Tie::File', $wf;
+{
+    open my $fh, '<', $f or die $!;
+    my @data = <$fh>;
+    close $fh or die $!;
 
-for (@wfh){
-    if (/sub seven/){
-        $_ =~ s/seven/xxxxx/;
+    open my $wfh, '>', $wf or die $!;
+
+    for (@data){
+        if (/sub seven/){
+            s/seven/xxxxx/;
+        }
+        print $wfh $_;
     }
+
+    close $wfh or die $!;
 }
-
-untie @wfh;
-
 #2
 eval {
     open my $wfh, '<', $wf

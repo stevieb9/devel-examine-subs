@@ -1,5 +1,15 @@
 Revision history for Devel-Examine::Subs
 
+1.39    20150921
+        - Tie::File no longer needed, we have our own built-in read/write methods
+        - upon reading in a file, the line endings are saved, then completely removed
+          prior to the file array being populated. Upon write, the saved line endings
+          are added back in to each line
+        - hundreds of new tests across numerous files
+        - fixed a couple bugs in inject_after() relating to Tie::File removal
+        - modules now have their version applied in the 'package' line
+        - min perl version is 5.012;
+
 1.35    20150917
         - reworked Makefile.PL, allows tests on MSWin32 to pass
         - we now look in all files to determine and set line-ending

@@ -51,7 +51,6 @@ t/21-core_dump.t
 t/22-engine_dump.t
 t/23-pre_filter_dump.t
 t/24-pre_proc_dump.t
-t/24-pre_proc_dump.t-norun
 t/25-_run_end.t
 t/26-inject_after.t
 t/27-bug_50.t
@@ -64,7 +63,6 @@ t/33-Preprocessor.t
 t/34-valid_params.t
 t/35-config_clean.t
 t/36-module_name_to_file.t
-t/36-module_name_to_file.t--norun
 t/37-regex.t
 t/38-cache_safe.t
 t/39-inject_after_sub_def.t

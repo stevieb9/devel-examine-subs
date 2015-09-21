@@ -1,4 +1,5 @@
 #!perl -T
+#$ENV{RELEASE_TESTING} = 1;
 
 use strict;
 use warnings;

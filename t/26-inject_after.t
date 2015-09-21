@@ -4,7 +4,6 @@ use strict;
 
 use Data::Dumper;
 use Test::More tests => 151;
-use Tie::File;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -32,10 +31,10 @@ BEGIN {#1
 
     my (@base_file, @test_file);
 
-    eval { tie @base_file, 'Tie::File', $base_file, or die $!; };
+    eval { open my $fh, '<', $base_file or die $!; @base_file = <$fh>;};
     ok (! $@, "tied $base_file ok for inject_after" );
 
-    eval { tie @test_file, 'Tie::File', $params{copy}, or die $!; };
+    eval { open my $fh, '<', $params{copy} or die $!; @test_file = <$fh>;};
     ok (! $@, "tied $params{copy} ok for inject_after" );
 
     my $i = 0;
@@ -64,11 +63,11 @@ BEGIN {#1
 
     my (@base_file, @test_file);
 
-    eval { tie @base_file, 'Tie::File', $base_file, recsep => $ENV{DES_EOL} or die $!; };
-    ok (! $@, "tied $base_file ok for inject_after()" );
+    eval { open my $fh, '<', $base_file or die $!; @base_file = <$fh>;};
+    ok (! $@, "tied $base_file ok for inject_after" );
 
-    eval { tie @test_file, 'Tie::File', $params{copy}, recsep => $ENV{DES_EOL} or die $!; };
-    ok (! $@, "tied $params{copy} ok for inject_after()" );
+    eval { open my $fh, '<', $params{copy} or die $!; @test_file = <$fh>;};
+    ok (! $@, "tied $params{copy} ok for inject_after" );
 
     my $i = 0;
     for (@base_file){

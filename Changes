@@ -1,5 +1,9 @@
 Revision history for Devel-Examine::Subs
 
+1.41    20150922
+        - fix problems with forcing CPAN Testers to honour perl v5.012
+        - disabled t/24 preproc tests
+
 1.39    20150921
         - Tie::File no longer needed, we have our own built-in read/write methods
         - upon reading in a file, the line endings are saved, then completely removed

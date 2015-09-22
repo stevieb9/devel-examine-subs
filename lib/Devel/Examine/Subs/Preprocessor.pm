@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Preprocessor 1.40;
+package Devel::Examine::Subs::Preprocessor 1.42;
 use 5.012;
 use strict;
 use warnings;

@@ -2,10 +2,11 @@
 use warnings;
 use strict;
 
-use Test::More tests => 469;
+use Test::More tests => 470;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
+    use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
 my $des = Devel::Examine::Subs->new(file => 'lib/Devel/Examine/Subs.pm');

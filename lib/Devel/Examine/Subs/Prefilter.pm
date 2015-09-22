@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Prefilter 1.39;
+package Devel::Examine::Subs::Prefilter 1.40;
 use 5.012;
 use strict;
 use warnings;

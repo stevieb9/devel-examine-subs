@@ -76,14 +76,19 @@ sub module {
 
         my $p = shift;
 
-        if (! $p->{module} or $p->{module} eq ''){
+        if (!$p->{module} or $p->{module} eq '') {
             return [];
         }
 
         (my $module_file = $p->{module}) =~ s|::|/|g;
 
-        require "$module_file.pm"
-          or croak "Module $p->{module} not found: $!";
+        eval {
+            require "$module_file.pm";
+        };
+
+        if ($@){
+            die "Module $p->{module} not found: $!";
+        }
 
         my $namespace = "$p->{module}::";
 

@@ -362,10 +362,10 @@ sub _file {
         
         if (! $INC{$file}){
             
-            eval { use Data::Dump; };
+            eval { require $file; import $module; };
 
             if ($@){
-                $@ = "Devel::Examine::Subs::_file() speaking ... " .
+                $@ = "\nDevel::Examine::Subs::_file() speaking ... " .
                      "Can't transform module to a file name\n\n"
                      . $@;
                 croak $@;

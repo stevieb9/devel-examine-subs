@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use Data::Dumper;
 
@@ -35,4 +35,11 @@ BEGIN {#1
     my $ok = grep /Dumper/, @$res;
 
     ok( $ok, "module() returns an array of sub names" );
+}
+{#7
+    my $des = Devel::Examine::Subs->new(module => 'X:Xxx');
+
+    eval { my $res = $des->module(); };
+
+    ok( $@ =~ qr/Module X:Xxx not found/, "Error returned if module() can't find the module" );
 }

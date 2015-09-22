@@ -23,7 +23,7 @@ eval {
     $des->run({file => 'Bad::XXX'});
 };
 
-isnt ($@, undef, "{file => 'module'} with module not found croaks");
+isnt ($@, undef, "{file => 'module'} with module not found croaks with DES error msg");
 
 
 

@@ -1,4 +1,4 @@
-package Devel::Examine::Subs 1.43;
+package Devel::Examine::Subs 1.44;
 use 5.012;
 use warnings;
 use strict;
@@ -28,6 +28,10 @@ BEGIN {
         *trace = sub {};
     }
 };
+
+#
+# public methods
+#
 
 sub new {
    
@@ -78,6 +82,278 @@ sub run {
 
     return $struct;
 }
+sub has {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_filter} = 'file_lines_contain';
+    $self->{params}{engine} = 'has';
+    
+    $self->run($p);
+}
+sub missing {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{engine} = 'missing';
+    
+    $self->run($p);
+}
+sub all {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{engine} = 'all';
+    
+    $self->run($p);
+}
+sub lines {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{engine} = 'lines';
+    
+    if ($self->{params}{search} || $p->{search}){
+        $self->{params}{pre_filter} = 'file_lines_contain';
+    }
+
+    $self->run($p);
+}
+sub module {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    # set the preprocessor up, and have it return before
+    # the building/compiling of file data happens
+
+    $self->{params}{pre_proc} = 'module';
+    $self->{params}{pre_proc_return} = 1;
+
+    $self->{params}{engine} = 'module';
+
+    $self->run($p);
+}
+sub objects {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_filter} = 'subs';
+    $self->{params}{engine} = 'objects';
+
+    $self->run($p);
+}
+sub search_replace {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_filter}
+      = ['file_lines_contain', 'subs', 'objects'];
+
+    $self->{params}{engine} = 'search_replace';
+
+    $self->run($p);
+}
+sub inject_after {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    if (! $p->{injects} && ! $self->{params}{injects}){
+        $p->{injects} = 1;
+    }
+
+    $self->{params}{pre_filter}
+      = ['file_lines_contain', 'subs', 'objects'];
+
+    $self->{params}{engine} = 'inject_after';
+
+    $self->run($p);
+}
+sub inject {
+    
+    trace() if $ENV{TRACE};
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    # inject_use/inject_after_sub_def are preprocs
+
+    if ($p->{inject_use} || $p->{inject_after_sub_def}){
+        $self->{params}{pre_proc} = 'inject';
+        $self->{params}{pre_proc_return} = 1;
+    }
+
+    $self->run($p);
+}
+sub replace {
+
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_proc} = 'replace';
+    $self->{params}{pre_proc_return} = 1;
+
+    $self->run($p);
+}
+sub remove {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_proc} = 'remove';
+    $self->{params}{pre_proc_return} = 1;
+
+    $self->run($p);
+}
+
+#
+# publicly available private methods
+#
+
+sub add_functionality {
+   
+    trace() if $ENV{TRACE};
+    
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->_config($p);
+    
+    my $to_add = $self->{params}{add_functionality};
+    
+    my $in_prod = $self->{params}{add_functionality_prod};
+
+    my @allowed = qw(
+                    pre_proc
+                    pre_filter
+                    engine
+    );
+
+
+    if (! (grep {$to_add eq $_} @allowed)){
+        croak "Adding a non-allowed piece of functionality...\n";
+    }
+
+    my %dt = (
+            engine => sub {
+                        trace() if $ENV{TRACE};
+                        return $in_prod
+                        ? $INC{'Devel/Examine/Subs/Engine.pm'}
+                        : 'lib/Devel/Examine/Subs/Engine.pm';
+                      },
+    );
+
+    my $caller = (caller)[1];
+
+    open my $fh, '<', $caller
+      or confess "can't open the caller file $caller: $!";
+
+    my $code_found = 0;
+    my @code;
+
+    while (<$fh>){
+        chomp;
+        if (m|^#(.*)<des>|){
+            $code_found = 1;
+            next;
+        }
+        next if ! $code_found;
+        last if m|^#(.*)</des>|;
+        push @code, $_;
+    }
+
+    my $file = $dt{$to_add}->();
+
+    my $des = Devel::Examine::Subs->new({
+                                    file => $file,
+                                    pre_filter => 'end_of_last_sub',
+                                });
+
+    $p->{write_file_contents} = \@code;
+}
+sub pre_procs {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Preprocessor";
+    my $pre_proc = $module->new;
+
+    my @pre_procs;
+
+    for (keys %{$pre_proc->_dt}){
+        push @pre_procs, $_ if $_ !~ /^_/;
+    }
+    return @pre_procs;
+}
+sub pre_filters {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Prefilter";
+    my $pre_filter = $module->new;
+
+    my @pre_filters;
+
+    for (keys %{$pre_filter->_dt}){
+        push @pre_filters, $_ if $_ !~ /^_/;
+    }
+    return @pre_filters;
+}
+sub engines {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Engine";
+    my $engine = $module->new;
+ 
+    my @engines;
+
+    for (keys %{$engine->_dt}){
+        push @engines, $_ if $_ !~ /^_/;
+    }
+    return @engines;
+}
+sub valid_params {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    return %{$self->{valid_params}};
+}
+
+#
+# private methods
+#
+
 sub _run_directory {
     
     trace() if $ENV{TRACE};
@@ -824,276 +1100,19 @@ sub _engine {
 
     return $cref;
 }
-sub pre_procs {
-    
-    trace() if $ENV{TRACE};
 
-    my $self = shift;
-    my $module = $self->{namespace} . "::Preprocessor";
-    my $pre_proc = $module->new;
+#
+# pod
+#
 
-    my @pre_procs;
-
-    for (keys %{$pre_proc->_dt}){
-        push @pre_procs, $_ if $_ !~ /^_/;
-    }
-    return @pre_procs;
-}
-sub pre_filters {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $module = $self->{namespace} . "::Prefilter";
-    my $pre_filter = $module->new;
-
-    my @pre_filters;
-
-    for (keys %{$pre_filter->_dt}){
-        push @pre_filters, $_ if $_ !~ /^_/;
-    }
-    return @pre_filters;
-}
-sub engines {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $module = $self->{namespace} . "::Engine";
-    my $engine = $module->new;
- 
-    my @engines;
-
-    for (keys %{$engine->_dt}){
-        push @engines, $_ if $_ !~ /^_/;
-    }
-    return @engines;
-}
-sub has {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_filter} = 'file_lines_contain';
-    $self->{params}{engine} = 'has';
-    
-    $self->run($p);
-}
-sub missing {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{engine} = 'missing';
-    
-    $self->run($p);
-}
-sub all {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{engine} = 'all';
-    
-    $self->run($p);
-}
-sub lines {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{engine} = 'lines';
-    
-    if ($self->{params}{search} || $p->{search}){
-        $self->{params}{pre_filter} = 'file_lines_contain';
-    }
-
-    $self->run($p);
-}
-sub module {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    # set the preprocessor up, and have it return before
-    # the building/compiling of file data happens
-
-    $self->{params}{pre_proc} = 'module';
-    $self->{params}{pre_proc_return} = 1;
-
-    $self->{params}{engine} = 'module';
-
-    $self->run($p);
-}
-sub objects {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_filter} = 'subs';
-    $self->{params}{engine} = 'objects';
-
-    $self->run($p);
-}
-sub search_replace {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_filter}
-      = ['file_lines_contain', 'subs', 'objects'];
-
-    $self->{params}{engine} = 'search_replace';
-
-    $self->run($p);
-}
-sub inject {
-    
-    trace() if $ENV{TRACE};
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    # inject_use/inject_after_sub_def are preprocs
-
-    if ($p->{inject_use} || $p->{inject_after_sub_def}){
-        $self->{params}{pre_proc} = 'inject';
-        $self->{params}{pre_proc_return} = 1;
-    }
-
-    $self->run($p);
-}
-sub replace {
-
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_proc} = 'replace';
-    $self->{params}{pre_proc_return} = 1;
-
-    $self->run($p);
-}
-sub remove {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_proc} = 'remove';
-    $self->{params}{pre_proc_return} = 1;
-
-    $self->run($p);
-}
-sub inject_after {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    if (! $p->{injects} && ! $self->{params}{injects}){
-        $p->{injects} = 1;
-    }
-
-    $self->{params}{pre_filter}
-      = ['file_lines_contain', 'subs', 'objects'];
-
-    $self->{params}{engine} = 'inject_after';
-
-    $self->run($p);
-}
-sub add_functionality {
-   
-    trace() if $ENV{TRACE};
-    
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->_config($p);
-    
-    my $to_add = $self->{params}{add_functionality};
-    
-    my $in_prod = $self->{params}{add_functionality_prod};
-
-    my @allowed = qw(
-                    pre_proc
-                    pre_filter
-                    engine
-    );
-
-
-    if (! (grep {$to_add eq $_} @allowed)){
-        croak "Adding a non-allowed piece of functionality...\n";
-    }
-
-    my %dt = (
-            engine => sub {
-                        trace() if $ENV{TRACE};
-                        return $in_prod
-                        ? $INC{'Devel/Examine/Subs/Engine.pm'}
-                        : 'lib/Devel/Examine/Subs/Engine.pm';
-                      },
-    );
-
-    my $caller = (caller)[1];
-
-    open my $fh, '<', $caller
-      or confess "can't open the caller file $caller: $!";
-
-    my $code_found = 0;
-    my @code;
-
-    while (<$fh>){
-        chomp;
-        if (m|^#(.*)<des>|){
-            $code_found = 1;
-            next;
-        }
-        next if ! $code_found;
-        last if m|^#(.*)</des>|;
-        push @code, $_;
-    }
-
-    my $file = $dt{$to_add}->();
-
-    my $des = Devel::Examine::Subs->new({
-                                    file => $file,
-                                    pre_filter => 'end_of_last_sub',
-                                });
-
-    $p->{write_file_contents} = \@code;
-}
-sub valid_params {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    return %{$self->{valid_params}};
-}
 sub _pod{} #vim placeholder 
 1; 
 __END__
 
 =head1 NAME
 
-Devel::Examine::Subs - Get info, search/replace and inject code in
-Perl file subs.
+Devel::Examine::Subs - Get info about, search/replace and inject code into
+Perl files and subs.
 
 =head1 SYNOPSIS
 

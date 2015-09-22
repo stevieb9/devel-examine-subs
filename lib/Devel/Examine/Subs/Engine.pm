@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Engine 1.43;
+package Devel::Examine::Subs::Engine 1.44;
 use 5.012;
 use strict;
 use warnings;

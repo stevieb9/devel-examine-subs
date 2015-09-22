@@ -15,6 +15,7 @@ examples/line_endings.pl
 examples/objects.pl
 examples/ppi.pl
 examples/tie.pl
+examples/ver.pl
 examples/write_new_engine.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
@@ -67,6 +68,7 @@ t/38-cache_safe.t
 t/39-inject_after_sub_def.t
 t/40-dts_trace_checks.t
 t/41-win32_line_endings.t
+t/42-replace.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data

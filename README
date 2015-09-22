@@ -1,7 +1,7 @@
 NAME
 
-    Devel::Examine::Subs - Get info, search/replace and inject code in Perl
-    file subs.
+    Devel::Examine::Subs - Get info about, search/replace and inject code
+    into Perl files and subs.
 
 SYNOPSIS
 

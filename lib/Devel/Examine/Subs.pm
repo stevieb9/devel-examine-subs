@@ -1,4 +1,4 @@
-package Devel::Examine::Subs 1.39;
+package Devel::Examine::Subs 1.40;
 use 5.012;
 use warnings;
 use strict;
@@ -484,7 +484,9 @@ sub _core {
             exit;
         }
 
-        $self->{write_file_contents} = $p->{write_file_contents};
+        if ($p->{write_file_contents}){
+            $self->{write_file_contents} = $p->{write_file_contents};
+        }
 
         # for things that don't need to process files
         # (such as 'module'), return early

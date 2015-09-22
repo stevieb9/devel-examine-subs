@@ -22,12 +22,12 @@ ok (ref $aref eq 'ARRAY', "subs prefilter returns aref" );
 ok (ref $aref->[0]{file} eq 'ARRAY', "'file' attr in sub framework is aref" );
 
 for (@$aref){
-    is (@{$_->{file}}, 50, "sub $_->{name}'s complete file array has correct number of lines" );
+    is (@{$_->{file}}, 51, "sub $_->{name}'s complete file array has correct number of lines" );
 }
 
 eval {
     for (@$aref){
-        if (! ( @{$_->{file}} == 50 )){
+        if (! ( @{$_->{file}} == 51 )){
             die "not all subs from 'subs' prefilter have the full perl file";
         }
     }

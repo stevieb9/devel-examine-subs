@@ -1,5 +1,12 @@
 Revision history for Devel-Examine::Subs
 
+1.43    20150923
+        - search_replace() now takes a coderef that encompasses the substitution
+          regex info
+        - new replace() method, similar to search_replace(), but works on entire file. See
+          examples/ver.pl
+        - added/updated tests
+
 1.41    20150922
         - fix problems with forcing CPAN Testers to honour perl v5.012
         - disabled t/24 preproc tests

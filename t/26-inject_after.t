@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 151;
+use Test::More tests => 153;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -39,6 +39,9 @@ BEGIN {#1
 
     my $i = 0;
     for (@base_file){
+        #if ($i == 7){
+        #    print ">$base_file[$i]< :: >$test_file[$i]<\n";
+        #};
         ok ($base_file[$i] eq $test_file[$i], "Line $i in base file matches line $i in test file" );
         $i++;
     }

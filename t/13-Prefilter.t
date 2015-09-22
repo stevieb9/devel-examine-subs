@@ -63,8 +63,8 @@ my $pre_filter = $compiler->{pre_filters}{subs}->();
     my $res = $des->run({pre_filter => [$cref, $cref2]});
 
     ok (ref $res eq 'HASH', "sending in an aref with two crefs to pre_filter returns the expected data" );
-    is ($res->{end}, 33, "aref of crefs: good data");
-    is ($res->{start}, 28, "aref of crefs: good data");
+    is ($res->{end}, 34, "aref of crefs: good data");
+    is ($res->{start}, 29, "aref of crefs: good data");
     is ($res->{num_lines}, 6, "aref of crefs: good data");
     ok (ref $res->{contents} eq 'ARRAY', "aref of crefs: good data");
     is ($res->{contents}[0], 'sub four {', "aref of crefs: good data");

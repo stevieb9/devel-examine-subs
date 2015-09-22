@@ -46,28 +46,28 @@ delete $p{search};
 
         for my $line_info (@{$subs{$sub}}){
             while (my ($k, $v) = each (%$line_info)){ 
-                if ($k == 21){    
+                if ($k == 22){    
                     ok ($v =~ 'sub three', "lines has correct line nums" );
                 }      
-                if ($k == 39){    
+                if ($k == 40){    
                     ok ($v =~ 'sub five', "lines has correct line nums" );
                 }
-                if ($k == 7){    
+                if ($k == 8){    
                      ok ($v =~ 'sub one_inner', "lines has correct line nums" );
                  }
-                if ($k == 24){    
+                if ($k == 25){    
                      ok ($v =~ '# five', "lines has correct line nums" );
                  }
-                if ($k == 45){    
+                if ($k == 46){    
                      ok ($v =~ 'sub seven', "lines has correct line nums" );
                  }
-                if ($k == 8){    
+                if ($k == 9){    
                      ok ($v =~ 'sub one_inner_two', "lines has correct line nums" );
                  }
-                if ($k == 42){    
+                if ($k == 43){    
                      ok ($v =~ 'sub six', "lines has correct line nums" );
                  }
-                if ($k == 16){    
+                if ($k == 17){    
                      ok ($v =~ 'sub two', "lines has correct line nums" );
                  }
 
@@ -87,28 +87,28 @@ delete $p{search};
 
         for my $line_info (@{$subs{$sub}}){
             while (my ($k, $v) = each (%$line_info)){ 
-                if ($k == 21){    
+                if ($k == 22){    
                     ok ($v =~ 'sub three', "lines has correct line nums" );
                 }      
-                if ($k == 39){    
+                if ($k == 40){    
                     ok ($v =~ 'sub five', "lines has correct line nums" );
                 }
-                if ($k == 7){    
+                if ($k == 8){    
                      ok ($v =~ 'sub one_inner', "lines has correct line nums" );
                  }
-                if ($k == 24){    
+                if ($k == 25){    
                      ok ($v =~ '# five', "lines has correct line nums" );
                  }
-                if ($k == 45){    
+                if ($k == 46){    
                      ok ($v =~ 'sub seven', "lines has correct line nums" );
                  }
-                if ($k == 8){    
+                if ($k == 9){    
                      ok ($v =~ 'sub one_inner_two', "lines has correct line nums" );
                  }
-                if ($k == 42){    
+                if ($k == 43){    
                      ok ($v =~ 'sub six', "lines has correct line nums" );
                  }
-                if ($k == 16){    
+                if ($k == 17){    
                      ok ($v =~ 'sub two', "lines has correct line nums" );
                  }
 

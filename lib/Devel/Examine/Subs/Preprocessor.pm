@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Preprocessor 1.42;
+package Devel::Examine::Subs::Preprocessor 1.43;
 use 5.012;
 use strict;
 use warnings;
@@ -44,6 +44,7 @@ sub _dt {
         module => \&module,
         inject => \&inject,
         remove => \&remove,
+        replace => \&replace,
         _test_bad => \&test_bad,
     };
 
@@ -202,7 +203,39 @@ sub inject {
         }
     }
 }
+sub replace {
 
+    trace() if $ENV{TRACE};
+
+    return sub {
+
+        trace() if $ENV{TRACE};
+
+        my $p = shift;
+        my $exec = $p->{exec};
+        my $limit = $p->{limit} // -1;
+
+        my @file = @{ $p->{file_contents} };
+
+        if (! $exec || ref $exec ne 'CODE'){
+            croak "\nDES::replace() requires 'exec => \$cref param\n";
+        }
+
+        my $lines_changed;
+
+        for (@file){
+            my $changed = $exec->($_);
+            if ($changed){
+                $lines_changed++;
+                $limit--;
+                last if $limit == 0;
+            }
+        }
+
+        $p->{write_file_contents} = \@file;
+        return $lines_changed;
+    }
+}
 sub remove {
 
     trace() if $ENV{TRACE};

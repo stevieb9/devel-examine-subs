@@ -23,13 +23,13 @@ my $objects = $des->run();
 
 for my $o (@$objects){
     if ($o->name() eq 'eight'){
-        is ($o->start(), 48, "sub eight starts at the right line");
-        is ($o->end(), 50, "sub eight ends at the right line");
+        is ($o->start(), 49, "sub eight starts at the right line");
+        is ($o->end(), 51, "sub eight ends at the right line");
         is ($o->line_count(), 3, "sub eight has 3 lines, including def and }");
     } 
     if ($o->name() eq 'two'){
-        is ($o->start(), 16, "sub two starts at the right line");
-        is ($o->end(), 20, "sub two starts at the right line");
+        is ($o->start(), 17, "sub two starts at the right line");
+        is ($o->end(), 21, "sub two starts at the right line");
         is ($o->line_count(), 5, "sub two has 5 lines, including def and }");
     } 
 }
@@ -38,13 +38,13 @@ ok (! $@, "objects() is callable and works" );
 
 for my $o (@$objects){
     if ($o->name() eq 'four'){
-        is ($o->start(), 29, "sub four starts at the right line");
-        is ($o->end(), 34, "sub four ends at the right line");
+        is ($o->start(), 30, "sub four starts at the right line");
+        is ($o->end(), 35, "sub four ends at the right line");
         is ($o->line_count(), 6, "sub four has six lines, including the def and closing brace" );
     } 
     if ($o->name() eq 'six'){
-        is ($o->start(), 42, "sub six starts at the right line");
-        is ($o->end(), 44, "sub six starts at the right line");
+        is ($o->start(), 43, "sub six starts at the right line");
+        is ($o->end(), 45, "sub six starts at the right line");
         is ($o->line_count(), 3, "sub six has 4 lines, including the def and closing brace" );
     } 
 }
@@ -56,20 +56,20 @@ for my $o (@$objects){
     for my $file (keys %$struct){
         for my $o (@$objects){
            if ($o->name() eq 'four'){
-               is ($o->start(), 29, "sub four starts at the right line in dir");
-               is ($o->end(), 34, "sub four ends at the right line in dir");
+               is ($o->start(), 30, "sub four starts at the right line in dir");
+               is ($o->end(), 35, "sub four ends at the right line in dir");
            } 
            if ($o->name() eq 'six'){
-               is ($o->start(), 42, "sub six starts at the right line in dir");
-               is ($o->end(), 44, "sub six starts at the right line in dir");
+               is ($o->start(), 43, "sub six starts at the right line in dir");
+               is ($o->end(), 45, "sub six starts at the right line in dir");
            } 
            if ($o->name() eq 'eight'){
-               is ($o->start(), 48, "sub eight starts at the right line in dir");
-               is ($o->end(), 50, "sub eight ends at the right line in dir");
+               is ($o->start(), 49, "sub eight starts at the right line in dir");
+               is ($o->end(), 51, "sub eight ends at the right line in dir");
            } 
            if ($o->name() eq 'two'){
-               is ($o->start(), 16, "sub two starts at the right line in dir");
-               is ($o->end(), 20, "sub two starts at the right line in dir");
+               is ($o->start(), 17, "sub two starts at the right line in dir");
+               is ($o->end(), 21, "sub two starts at the right line in dir");
            } 
        }
     }

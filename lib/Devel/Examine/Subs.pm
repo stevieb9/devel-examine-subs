@@ -1,4 +1,4 @@
-package Devel::Examine::Subs 1.42;
+package Devel::Examine::Subs 1.43;
 use 5.012;
 use warnings;
 use strict;
@@ -240,6 +240,7 @@ sub _config {
         delete => 0,
         file_contents => 0,
         exec => 0,
+        limit => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -975,6 +976,18 @@ sub inject {
 
     $self->run($p);
 }
+sub replace {
+
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_proc} = 'replace';
+    $self->{params}{pre_proc_return} = 1;
+
+    $self->run($p);
+}
 sub remove {
     
     trace() if $ENV{TRACE};
@@ -1103,7 +1116,6 @@ Get all the subs as objects
         $sub->line_count; # number of lines in sub
         $sub->code;       # entire sub code from file
         $sub->lines;      # lines that match search term
-
     }
 
 Get the sub objects within a hash
@@ -1344,6 +1356,20 @@ Deletes from the file(s) the entire lines that contain the search terms.
 
 This method is file based... the work happens prior to digging up subs, hence
 C<exclude>, C<include> and other sub-based parameters have no effect.
+
+
+=head2 C<replace>
+
+Parameters: C<exec =E<gt> $cref, limit =E<gt> 1>
+
+This is the entire file brother to the sub-only C<search_replace()>. The C<limit> parameter
+specifies how many successful replacements to do, starting at the top of the file. Set to a
+negative integer for unlimited (this is the default).
+
+The C<exec> parameter is a code reference, eg: C<my $cref = sub {$_[0] =~ s/this/that/;}>.
+All standard Perl regular expressions apply, along with their modifiers.
+
+Returns the number of lines changed in file mode, and an empty hashref in directory mode.
 
 
 

@@ -23,7 +23,6 @@ SYNOPSIS
             $sub->line_count; # number of lines in sub
             $sub->code;       # entire sub code from file
             $sub->lines;      # lines that match search term
-    
         }
 
     Get the sub objects within a hash
@@ -233,6 +232,22 @@ METHODS
 
     This method is file based... the work happens prior to digging up subs,
     hence exclude, include and other sub-based parameters have no effect.
+
+ replace
+
+    Parameters: exec => $cref, limit => 1
+
+    This is the entire file brother to the sub-only search_replace(). The
+    limit parameter specifies how many successful replacements to do,
+    starting at the top of the file. Set to a negative integer for
+    unlimited (this is the default).
+
+    The exec parameter is a code reference, eg: my $cref = sub {$_[0] =~
+    s/this/that/;}. All standard Perl regular expressions apply, along with
+    their modifiers.
+
+    Returns the number of lines changed in file mode, and an empty hashref
+    in directory mode.
 
  inject_after
 

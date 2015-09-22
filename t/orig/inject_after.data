@@ -1,6 +1,7 @@
 # sample data file
-#
-#
+package This::That 0.01;
+#package This::Those 0.01;
+
 #
 sub one {
     # one

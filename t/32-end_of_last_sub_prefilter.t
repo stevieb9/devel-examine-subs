@@ -13,4 +13,4 @@ my $des = Devel::Examine::Subs->new(file => 't/sample.data');
 
 my $end = $des->run({pre_filter => ['subs', 'end_of_last_sub']});
 
-is ($end, 50, "pre_filter 'end_of_last_sub' properly returns last line num in last sub in file" );
+is ($end, 51, "pre_filter 'end_of_last_sub' properly returns last line num in last sub in file" );

@@ -4,7 +4,7 @@ use strict;
 
 use File::Copy;
 use Data::Dumper;
-use Test::More tests => 64;
+use Test::More tests => 65;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";

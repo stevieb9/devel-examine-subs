@@ -270,14 +270,9 @@ sub search_replace {
         my $struct = shift;
 
         my $file = $p->{file};
-        my @file_contents = @{ $p->{file_contents} } if $p->{file_contents};
-        my $search = $p->{search};
-        
-        if ($search && ! $p->{regex}){
-            $search = "\Q$search";
-        }
+        my $exec = $p->{exec};
 
-        my $replace = $p->{replace};
+        my @file_contents = @{ $p->{file_contents} } if $p->{file_contents};
 
         if (! $file){
             croak "\nDevel::Examine::Subs::Engine::search_replace " .
@@ -286,20 +281,13 @@ sub search_replace {
                   "file\n\n";
         }
 
-        if (! $search){
+        if (! $exec || ref $exec ne 'CODE'){
             croak "\nDevel::Examine::Subs::Engine::search_replace " .
                   " speaking:\n" .
-                  "can't use search_replace engine without specifying a " .
-                  "search term\n\n";
+                  "can't use search_replace engine without specifying" .
+                  "a substitution regex code reference\n\n";
         }
-        if (! $replace){
-            croak "\nDevel::Examine::Subs::Engine::search_replace " .
-                  "speaking:\n" .
-                  "can't use search_replace engine without specifying a " .
-                  "replace term\n\n";
-        }
-        
- 
+
         my @changed_lines;
         
         for my $sub (@$struct){
@@ -320,9 +308,11 @@ sub search_replace {
                     last;
                 }
 
-                if ($line =~ /$search/){
-                    my $orig = $line;
-                    $line =~ s/$search/$replace/g;
+                my $orig = $line;
+
+                my $replaced = $exec->($line);
+
+                if ($replaced) {
                     push @changed_lines, [$orig, $line];
                 }
             }

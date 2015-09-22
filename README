@@ -51,10 +51,7 @@ SYNOPSIS
 
     Search and replace code in subs
 
-        $des->search_replace(
-                        search => q/\$template = 'one\.tmpl'",
-                        replace => '$template = \'two.tmpl\'',
-                      );
+        $des->search_replace( exec => sub { $_[0] =~ s/this/that/g; } );
 
     Inject code into sub after a search term (preserves previous line's
     indenting)
@@ -198,15 +195,13 @@ METHODS
 
  search_replace
 
-    Mandatory parameters: search => 'this', replace => 'that'
+    Mandatory parameters: exec => $cref
 
     Core optional parameter: copy => 'filename.txt'
 
-    Search for lines that contain certain text, and replace the search term
-    with the replace term. If the optional parameter 'copy' is sent in, a
-    copy of the original file will be created in the current directory with
-    the name specified, and that file will be worked on instead. Good for
-    testing to ensure The Right Thing will happen in a production file.
+    Coderef should be created in the form sub { $_[0] =~ s/search/replace/;
+    };. This allows us to avoid string eval, and allows us to use any regex
+    modifiers you choose.
 
     This method will create a backup copy of the file with the same name
     appended with '.bak', but don't confuse this feature with the 'copy'

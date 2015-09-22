@@ -239,6 +239,7 @@ sub _config {
         inject_after_sub_def => 0,
         delete => 0,
         file_contents => 0,
+        exec => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -1131,10 +1132,7 @@ Get all subs containing "string" in the body
 
 Search and replace code in subs
 
-    $des->search_replace(
-                    search => q/\$template = 'one\.tmpl'",
-                    replace => '$template = \'two.tmpl\'',
-                  );
+    $des->search_replace( exec => sub { $_[0] =~ s/this/that/g; } );
 
 Inject code into sub after a search term (preserves previous line's indenting)
 
@@ -1306,15 +1304,13 @@ an array reference which contains a hash reference in the format line_number
 
 =head2 C<search_replace>
 
-Mandatory parameters: C<search =E<gt> 'this', replace =E<gt> 'that'>
+Mandatory parameters: C<exec =E<gt> $cref>
 
 Core optional parameter: C<copy =E<gt> 'filename.txt'>
 
-Search for lines that contain certain text, and replace the search term with
-the replace term. If the optional parameter 'copy' is sent in, a copy of the
-original file will be created in the current directory with the name
-specified, and that file will be worked on instead. Good for testing to ensure
-The Right Thing will happen in a production file.
+Coderef should be created in the form C<sub { $_[0] =~ s/search/replace/; };>.
+This allows us to avoid string C<eval>, and allows us to use any regex
+modifiers you choose.
 
 This method will create a backup copy of the file with the same name appended
 with '.bak', but don't confuse this feature with the 'copy' parameter.

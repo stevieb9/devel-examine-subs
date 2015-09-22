@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Carp;
-use Test::More tests => 40;
+use Test::More tests => 39;
 use Data::Dumper;
 
 BEGIN {#1
@@ -16,13 +16,21 @@ my %params = (
                 pre_filter => ['file_lines_contain', 'subs', 'objects'],
                 engine => 'search_replace',
 #                engine_dump => 1,
-                search => 'this',
-                replace => 'that',
               );
 
 my $des = Devel::Examine::Subs->new(%params);
+my $struct;
 
-my $struct = $des->run(\%params);
+eval {
+    $struct = $des->search_replace();
+};
+
+ok ($@, "search_replace() croaks if a substitution cref isn't sent in" );
+
+undef $@;
+
+my $cref = sub { $_[0] =~ s/this/that/g; };
+$struct = $des->search_replace(exec => $cref);
 
 ok ( ref($struct) eq 'ARRAY', "search_replace engine returns an aref" );
 ok ( ref($struct->[0]) eq 'ARRAY', "elems of search_replace return are arefs" );
@@ -37,7 +45,7 @@ for (0..4){
 delete $params{engine};
 delete $params{pre_filter};
 
-my $m_struct = $des->search_replace(%params);
+my $m_struct = $des->search_replace(exec => $cref);
 
 ok ( ref($m_struct) eq 'ARRAY', "search_replace() returns an aref" );
 ok ( ref($m_struct->[0]) eq 'ARRAY', "elems of search_replace() return are arefs" );
@@ -56,25 +64,10 @@ for (0..4){
     my $des = Devel::Examine::Subs->new(%params);
 
     eval {
-        $des->search_replace(%params);
+        $des->search_replace($cref => sub {});
     };
 
     like ($@, qr/without specifying a file/, "search_replace() croaks if no file is sent in" );
 
-    eval {
-        $params{file} = 't/sample.data';
-        $des->search_replace(%params);
-    };
-
-    like ($@, qr/without specifying a search term/, "search_replace() croaks if no search term is sent in" );
-
-    eval {
-        $params{file} = 't/sample.data';
-        $params{search} = 'this';
-
-        $des->search_replace(%params);
-    };
-
-    like ($@, qr/without specifying a replace term/, "search_replace() croaks if no replace term is sent in" );
 
 }

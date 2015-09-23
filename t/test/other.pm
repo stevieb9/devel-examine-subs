@@ -1,7 +1,6 @@
-# sample data file
-#
-#
-#
+use warnings;
+use strict;
+
 sub one {
     # one
 sub one_inner {

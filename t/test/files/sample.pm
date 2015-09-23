@@ -1,3 +1,6 @@
+use warnings;
+use strict;
+
 # sample data file
 #
 #

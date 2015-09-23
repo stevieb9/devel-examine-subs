@@ -420,8 +420,8 @@ sub _cache {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $file = shift if @_;
-    my $struct = shift if @_;
+    my $file = shift;
+    my $struct = shift;
 
     if ($self->{params}{cache_dump}){
 

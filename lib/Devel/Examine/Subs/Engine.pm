@@ -272,7 +272,11 @@ sub search_replace {
         my $file = $p->{file};
         my $exec = $p->{exec};
 
-        my @file_contents = @{ $p->{file_contents} } if $p->{file_contents};
+        my @file_contents;
+
+        if ($p->{file_contents}) {
+            @file_contents = @{ $p->{file_contents} };
+        }
 
         if (! $file){
             croak "\nDevel::Examine::Subs::Engine::search_replace " .

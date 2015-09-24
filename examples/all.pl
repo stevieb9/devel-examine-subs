@@ -4,7 +4,6 @@ use strict;
 
 use Devel::Examine::Subs;
 
-
 my %params = (
                 file => 't/sample.data', 
               );

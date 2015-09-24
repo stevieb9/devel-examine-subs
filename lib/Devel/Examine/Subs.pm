@@ -447,7 +447,6 @@ sub _cache_enabled {
     return $self->{params}{cache};
 }
 sub _cache_safe {
-    
     trace() if $ENV{TRACE};
 
     my $self = shift;

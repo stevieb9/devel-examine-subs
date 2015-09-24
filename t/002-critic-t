@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 81;
+use Test::More;
 
 {
     ## no critic
@@ -16,7 +16,7 @@ use Test::More tests => 81;
     ";
 };
 
-plan skip_all => "Skipped! Test::Perl::Critic not installed" if $@;
+plan skip_all => "Test::Perl::Critic not installed" if $@;
 
 
 all_critic_ok('.');

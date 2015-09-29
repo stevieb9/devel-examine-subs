@@ -355,7 +355,6 @@ sub run {
     }
 
     $self->_run_end(1);
-    $self->_clean_core_config;
 
     return $struct;
 }
@@ -712,6 +711,7 @@ sub _run_end {
     my $value = shift;
 
     $self->{run_end} = $value if defined $value;
+    $self->_clean_core_config if $value;
 
     return $self->{run_end};
 }

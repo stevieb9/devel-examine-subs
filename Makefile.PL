@@ -39,12 +39,14 @@ WriteMakefile
                    'Carp' => 0,
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
+                   'File::Edit::Portable' => '0.07',
                    'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,
                  }
 );
 
+__END__
 if ($^O eq 'MSWin32'){
 
     print "\nPreparing unit tests for MSWin32 platform...\n\n";

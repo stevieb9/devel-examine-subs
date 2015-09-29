@@ -702,7 +702,14 @@ sub _read_file {
     return if ! $file;
 
     my $basename = basename($file);
-    my $bak = "$basename.bak";
+    my $bak;
+
+    if ($file =~ /perl/i){
+        $bak = "$basename.bak";
+    }
+    else {
+        $bak = "$file.bak";
+    }
 
     copy $file, $bak
       or croak "can't create backup copy of file $file!";
@@ -1155,8 +1162,8 @@ Get all the subs as objects
 
     for my $sub (@$subs){
         $sub->name;       # name of sub
-        $sub->start;      # number of first line in sub
-        $sub->end;        # number of last line in sub
+        $sub->start;      # file line number of start of sub
+        $sub->end;        # file line number of end of sub
         $sub->line_count; # number of lines in sub
         $sub->code;       # entire sub code from file
         $sub->lines;      # lines that match search term
@@ -1236,7 +1243,7 @@ Print all subs within each Perl file under a directory
 
     for my $file (keys %$files){
         print "$file\n";
-        print join('\t', @{$files->{$file}});
+        print join("\t", @{$files->{$file}}) . "\n\n";
     }
 
 All methods can include or exclude specific subs
@@ -1337,6 +1344,9 @@ that takes its parameter in string format (as opposed to hash format).
 Returns an array reference containing the names of all subs found in the
 module's namespace symbol table.
 
+Note that this method short-circuits a lot of processing. If all you need are the
+method names from a module, use this call. Otherwise, specify the module name to
+the 'file' parameter in C<new()> or any other public method..
 
 
 

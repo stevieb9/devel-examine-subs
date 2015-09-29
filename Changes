@@ -1,12 +1,13 @@
 Revision history for Devel-Examine::Subs
 
-1.44    201509--
+1.45    201509--
         - module() now allows just a single string param "$des->module('Data::Dumper')".
           backwards compatibility has remained
         - _read_file() now uses File::Edit::Portable read()
         - _write_file() now uses File::Edit::Portable write()
         - internally, _subs() has been renamed to _proc()
         - reduced ~50 lines of storage within the object
+        - new prereq: File::Basename (fixes bug where module file bak couldn't be saved)
 
 1.43    20150923
         - search_replace() now takes a coderef that encompasses the substitution

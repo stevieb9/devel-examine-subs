@@ -39,6 +39,7 @@ WriteMakefile
                    'Carp' => 0,
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
+                   'File::Basename' => 0,
                    'File::Edit::Portable' => '0.07',
                    'File::Find' => 0,
                    'PPI' => 0,

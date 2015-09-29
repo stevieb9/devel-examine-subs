@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 use Data::Dumper;
 
@@ -42,4 +42,21 @@ BEGIN {#1
     eval { my $res = $des->module(); };
 
     ok( $@ =~ qr/Module X:Xxx not found/, "Error returned if module() can't find the module" );
+}
+{#8
+    # check for string param
+
+    my $des = Devel::Examine::Subs->new;
+
+    my $res;
+    eval { $res = $des->module('Data::Dumper'); };
+
+    ok (! $@, "module() string param works");
+
+    is (ref $res, 'ARRAY', "module() with string param returns aref");
+
+    my $thing = grep /\bDump\b/, @$res;
+
+    is ($thing, 1, "module() with string param has expected data");
+
 }

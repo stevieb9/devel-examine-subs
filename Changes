@@ -1,5 +1,10 @@
 Revision history for Devel-Examine::Subs
 
+1.44    201509--
+        - module() now allows just a single string param "$des->module('Data::Dumper')".
+          backwards compatibility has remained
+
+
 1.43    20150923
         - search_replace() now takes a coderef that encompasses the substitution
           regex info

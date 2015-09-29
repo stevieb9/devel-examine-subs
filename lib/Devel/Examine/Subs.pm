@@ -136,7 +136,19 @@ sub module {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $p = $self->_params(@_);
+
+    my $p;
+
+    # allow for single string value
+
+    if (@_ == 1){
+        my %p;
+        $p{module} = shift;
+        $p = $self->_params(%p);
+    }
+    else {
+        $p = $self->_params(@_);
+    }
 
     # set the preprocessor up, and have it return before
     # the building/compiling of file data happens

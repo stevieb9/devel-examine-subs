@@ -728,14 +728,16 @@ sub _write_file {
 
     $file = $copy if $copy;
 
-    open my $wfh, '>', $file or croak $!;
+    eval {
+        $self->{rw}->write(file => $file, contents => $contents);
+    };
 
-
-    for (@$contents){
-        print $wfh "$_$self->{file_eol}";
+    if ($@){
+        $@ = "\nDevel::Examine::Subs::_write_file() speaking...\n\n" .
+             "File::Edit::Portable::write() returned a failure status.\n\n" .
+             $@;
+        croak $@;
     }
-
-    close $wfh or croak !$;
 }
 sub _core {
 
@@ -1126,6 +1128,11 @@ Perl files and subs.
     my $des = Devel::Examine::Subs->new( file => $file );
 
 
+Get all sub names in a file
+
+    my $aref = $des->all;
+
+
 Get all the subs as objects
 
     $subs = $des->objects;
@@ -1154,9 +1161,6 @@ Get the sub objects within a hash
               ...
     }
 
-Get all sub names in a file
-
-    my $aref = $des->all;
 
 
 Get all subs containing "string" in the body
@@ -1313,7 +1317,7 @@ See L<SYNOPSIS> for the structure of each object.
 
 =head2 C<module>
 
-Mandatory parameters: C<module =E<gt> 'Module::Name'>
+Mandatory parameters: C<'Module::Name'>
 
 Returns an array reference containing the names of all subs found in the
 module's namespace symbol table.

@@ -285,7 +285,7 @@ sub search_replace {
                   "file\n\n";
         }
 
-        if (! $exec || ref $exec ne 'CODE'){
+        if (! $exec || ref($exec) ne 'CODE'){
             croak "\nDevel::Examine::Subs::Engine::search_replace " .
                   " speaking:\n" .
                   "can't use search_replace engine without specifying" .

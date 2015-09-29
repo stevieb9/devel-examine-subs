@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Carp;
-use Test::More tests => 39;
+use Test::More tests => 40;
 use Data::Dumper;
 
 BEGIN {#1
@@ -70,4 +70,13 @@ for (0..4){
     like ($@, qr/without specifying a file/, "search_replace() croaks if no file is sent in" );
 
 
+}
+{
+    my $des = Devel::Examine::Subs->new(file => 't/sample.data');
+
+    eval {
+        $des->search_replace;
+    };
+
+    like ($@, qr/code reference/, "search_replace() dies if it doesn't see exec param");
 }

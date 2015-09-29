@@ -4,6 +4,7 @@ Revision history for Devel-Examine::Subs
         - module() now allows just a single string param "$des->module('Data::Dumper')".
           backwards compatibility has remained
         - _read_file() now uses File::Edit::Portable read()
+        - _write_file() now uses File::Edit::Portable write()
 
 1.43    20150923
         - search_replace() now takes a coderef that encompasses the substitution

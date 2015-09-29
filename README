@@ -12,6 +12,10 @@ SYNOPSIS
     
         my $des = Devel::Examine::Subs->new( file => $file );
 
+    Get all sub names in a file
+
+        my $aref = $des->all;
+
     Get all the subs as objects
 
         $subs = $des->objects;
@@ -39,10 +43,6 @@ SYNOPSIS
                   $sub->end . "\n";
                   ...
         }
-
-    Get all sub names in a file
-
-        my $aref = $des->all;
 
     Get all subs containing "string" in the body
 
@@ -176,7 +176,7 @@ METHODS
 
  module
 
-    Mandatory parameters: module => 'Module::Name'
+    Mandatory parameters: 'Module::Name'
 
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.

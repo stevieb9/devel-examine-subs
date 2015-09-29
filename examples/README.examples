@@ -1,0 +1,3 @@
+Please be aware that some of the example scripts are outdated (written prior to API changes), and are used for guidelines only.
+
+The cache_benchmark, write_new_engine and add_functionality scripts are still valid

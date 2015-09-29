@@ -41,7 +41,8 @@ sub new {
    
     # set up for tracing
 
-    if ($ENV{DTS_ENABLE} && $ENV{DES_TRACE}){
+    if ($ENV{DES_TRACE}){
+        $ENV{DTS_ENABLE} = 1;
         $ENV{TRACE} = 1;
     }
 
@@ -60,31 +61,16 @@ sub new {
 
     return $self;
 }
-sub run {
-
+sub all {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $p = shift;
+    my $p = $self->_params(@_);
 
-    $self->_config($p);
-
-    $self->_run_end(0);
-
-    my $struct;
-
-    if ($self->{params}{directory}){
-        $struct = $self->_run_directory;
-    }
-    else {
-        $struct = $self->_core;
-        $self->_write_file if $self->{write_file_contents};
-    }
-
-    $self->_run_end(1);
-    $self->_clean_core_config;
-
-    return $struct;
+    $self->{params}{engine} = 'all';
+    
+    $self->run($p);
 }
 sub has {
     
@@ -106,17 +92,6 @@ sub missing {
     my $p = $self->_params(@_);
 
     $self->{params}{engine} = 'missing';
-    
-    $self->run($p);
-}
-sub all {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{engine} = 'all';
     
     $self->run($p);
 }
@@ -190,6 +165,18 @@ sub search_replace {
 
     $self->run($p);
 }
+sub replace {
+
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = $self->_params(@_);
+
+    $self->{params}{pre_proc} = 'replace';
+    $self->{params}{pre_proc_return} = 1;
+
+    $self->run($p);
+}
 sub inject_after {
     
     trace() if $ENV{TRACE};
@@ -223,18 +210,6 @@ sub inject {
 
     $self->run($p);
 }
-sub replace {
-
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = $self->_params(@_);
-
-    $self->{params}{pre_proc} = 'replace';
-    $self->{params}{pre_proc_return} = 1;
-
-    $self->run($p);
-}
 sub remove {
     
     trace() if $ENV{TRACE};
@@ -249,7 +224,7 @@ sub remove {
 }
 
 #
-# publicly available semi-private methods
+# publicly available semi-private developer methods
 #
 
 sub add_functionality {
@@ -313,6 +288,21 @@ sub add_functionality {
 
     $p->{write_file_contents} = \@code;
 }
+sub engines {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $module = $self->{namespace} . "::Engine";
+    my $engine = $module->new;
+ 
+    my @engines;
+
+    for (keys %{$engine->_dt}){
+        push @engines, $_ if $_ !~ /^_/;
+    }
+    return @engines;
+}
 sub pre_procs {
     
     trace() if $ENV{TRACE};
@@ -343,20 +333,31 @@ sub pre_filters {
     }
     return @pre_filters;
 }
-sub engines {
-    
+sub run {
+
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $module = $self->{namespace} . "::Engine";
-    my $engine = $module->new;
- 
-    my @engines;
+    my $p = shift;
 
-    for (keys %{$engine->_dt}){
-        push @engines, $_ if $_ !~ /^_/;
+    $self->_config($p);
+
+    $self->_run_end(0);
+
+    my $struct;
+
+    if ($self->{params}{directory}){
+        $struct = $self->_run_directory;
     }
-    return @engines;
+    else {
+        $struct = $self->_core;
+        $self->_write_file if $self->{write_file_contents};
+    }
+
+    $self->_run_end(1);
+    $self->_clean_core_config;
+
+    return $struct;
 }
 sub valid_params {
     
@@ -370,67 +371,6 @@ sub valid_params {
 # private methods
 #
 
-sub _run_directory {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = shift;
-
-    my @files;
-
-    my $dir = $self->{params}{file};
-
-    find({wanted => sub {
-            
-            trace() if $ENV{TRACE};
-
-            return if ! -f;
-
-            my @extensions = @{$self->{params}{extensions}};
-            my $exts = join('|', @extensions);
-
-            if ($_ !~ /\.(?:$exts)$/i){
-                return;
-            }
-
-            my $file = "$File::Find::name";
-
-            push @files, $file;
-          },
-            no_chdir => 1
-        }, $dir
-    );
-
-    my %struct;
-
-    for my $file (@files){
-        
-        $self->{params}{file} = $file;
-        my $data = $self->_core($p);
-
-        $self->_write_file if $self->{write_file_contents};
-
-        my $exists = 0;
-        $exists = %$data if ref($data) eq 'HASH';
-        $exists = @$data if ref($data) eq 'ARRAY';
-
-        $struct{$file} = $data if $exists;
-    }
-
-    return \%struct;
-}
-sub _run_end {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $value = shift;
-
-    $self->{run_end} = $value if defined $value;
-
-    return $self->{run_end};
-}
 sub _cache {
     
     trace() if $ENV{TRACE};
@@ -472,13 +412,58 @@ sub _cache_safe {
 
     return $self->{cache_safe};
 }
-sub _params {
+sub _clean_config {
     
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my %params = @_;
-    return \%params;
+    my $config_vars = shift; # href of valid params
+    my $p = shift; # href of params passed in
+
+    # params that get set after the call to _config() need
+    # to be deleted manually here
+
+    for my $var (keys %$config_vars){
+       
+        last if ! $self->_run_end;
+
+        # skip if it's a persistent var
+
+        next if $config_vars->{$var} == 1;
+
+        delete $self->{params}{$var};
+    }
+
+    # delete non-valid params
+
+    for my $param (keys %$p){
+        if (! exists $config_vars->{$param}){
+            #warn "\n\nDES::_clean_config() deleting invalid param: $param\n";
+            delete $p->{$param};
+        }
+    }
+}
+sub _clean_core_config {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+
+    # deletes core phase info after each run
+
+    # clean params that we collected after _clean_config()
+
+    delete $self->{params}{file_contents};
+
+    my @core_phases = qw(
+        pre_proc
+        pre_filter
+        engine
+    );
+
+    for (@core_phases){
+        delete $self->{params}{$_};
+    }
 }
 sub _config {
     
@@ -579,59 +564,6 @@ sub _config {
         print Dumper $self->{params};
     }
 }
-sub _clean_config {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $config_vars = shift; # href of valid params
-    my $p = shift; # href of params passed in
-
-    # params that get set after the call to _config() need
-    # to be deleted manually here
-
-    for my $var (keys %$config_vars){
-       
-        last if ! $self->_run_end;
-
-        # skip if it's a persistent var
-
-        next if $config_vars->{$var} == 1;
-
-        delete $self->{params}{$var};
-    }
-
-    # delete non-valid params
-
-    for my $param (keys %$p){
-        if (! exists $config_vars->{$param}){
-            #warn "\n\nDES::_clean_config() deleting invalid param: $param\n";
-            delete $p->{$param};
-        }
-    }
-}
-sub _clean_core_config {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-
-    # deletes core phase info after each run
-
-    # clean params that we collected after _clean_config()
-
-    delete $self->{params}{file_contents};
-
-    my @core_phases = qw(
-        pre_proc
-        pre_filter
-        engine
-    );
-
-    for (@core_phases){
-        delete $self->{params}{$_};
-    }
-}
 sub _file {
     
     trace() if $ENV{TRACE};
@@ -690,6 +622,14 @@ sub _file {
 
    return $self->{params}{file};
 }
+sub _params {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my %params = @_;
+    return \%params;
+}
 sub _read_file {
     
     trace() if $ENV{TRACE};
@@ -705,7 +645,7 @@ sub _read_file {
     my $bak = "$basename.bak";
 
     copy $file, $bak
-      or croak "can't create backup copy of file $file!";
+      or croak "_read_file() can't create backup copy $bak!";
 
     $self->{rw} = File::Edit::Portable->new;
 
@@ -715,6 +655,67 @@ sub _read_file {
     @{ $p->{file_contents} } = @file_contents;
 
     return @file_contents;
+}
+sub _run_directory {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = shift;
+
+    my @files;
+
+    my $dir = $self->{params}{file};
+
+    find({wanted => sub {
+            
+            trace() if $ENV{TRACE};
+
+            return if ! -f;
+
+            my @extensions = @{$self->{params}{extensions}};
+            my $exts = join('|', @extensions);
+
+            if ($_ !~ /\.(?:$exts)$/i){
+                return;
+            }
+
+            my $file = "$File::Find::name";
+
+            push @files, $file;
+          },
+            no_chdir => 1
+        }, $dir
+    );
+
+    my %struct;
+
+    for my $file (@files){
+        
+        $self->{params}{file} = $file;
+        my $data = $self->_core($p);
+
+        $self->_write_file if $self->{write_file_contents};
+
+        my $exists = 0;
+        $exists = %$data if ref($data) eq 'HASH';
+        $exists = @$data if ref($data) eq 'ARRAY';
+
+        $struct{$file} = $data if $exists;
+    }
+
+    return \%struct;
+}
+sub _run_end {
+    
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $value = shift;
+
+    $self->{run_end} = $value if defined $value;
+
+    return $self->{run_end};
 }
 sub _write_file {
 
@@ -730,11 +731,13 @@ sub _write_file {
 
     $file = $copy if $copy;
 
+    my $write_response;
+
     eval {
-        $self->{rw}->write(file => $file, contents => $contents);
+        $write_response = $self->{rw}->write(file => $file, contents => $contents);
     };
 
-    if ($@){
+    if ($@ || ! $write_response){
         $@ = "\nDevel::Examine::Subs::_write_file() speaking...\n\n" .
              "File::Edit::Portable::write() returned a failure status.\n\n" .
              $@;
@@ -1794,8 +1797,7 @@ L<https://github.com/stevieb9/devel-examine-subs>
 
 If C<Devel::Trace::Subs> is installed, you can configure stack tracing.
 
-In your calling script, set C<$ENV{DTS_ENABLE} = 1> and 
-C<$ENV{DES_TRACE} = 1>.
+In your calling script, set C<$ENV{DES_TRACE} = 1>.
 
 See C<perldoc Devel::Trace::Subs> for information on how to access the traces.
 

@@ -31,4 +31,7 @@ sub testing {
 #</des>
 
 my $des = Devel::Examine::Subs->new(%params);
-$des->add_functionality(%params);
+
+# uncomment below line to inject
+
+#$des->add_functionality(%params);

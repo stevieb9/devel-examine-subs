@@ -3,7 +3,7 @@ use 5.012;
 use warnings;
 use strict;
 
-our $VERSION = '1.44_01';
+our $VERSION = '1.44_02';
 
 use Carp;
 use Data::Compare;

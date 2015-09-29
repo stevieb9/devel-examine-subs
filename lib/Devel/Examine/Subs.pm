@@ -402,6 +402,7 @@ sub _cache_enabled {
     return $self->{params}{cache};
 }
 sub _cache_safe {
+    
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -418,9 +419,6 @@ sub _clean_config {
     my $self = shift;
     my $config_vars = shift; # href of valid params
     my $p = shift; # href of params passed in
-
-    # params that get set after the call to _config() need
-    # to be deleted manually here
 
     for my $var (keys %$config_vars){
        
@@ -447,8 +445,6 @@ sub _clean_core_config {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-
-    # deletes core phase info after each run
 
     # clean params that we collected after _clean_config()
 
@@ -644,7 +640,7 @@ sub _read_file {
     my $bak = "$basename.bak";
 
     copy $file, $bak
-      or croak "_read_file() can't create backup copy $bak!";
+      or croak "DES::_read_file() can't create backup copy $bak!";
 
     $self->{rw} = File::Edit::Portable->new;
 
@@ -679,7 +675,7 @@ sub _run_directory {
                 return;
             }
 
-            my $file = "$File::Find::name";
+            my $file = $File::Find::name;
 
             push @files, $file;
           },
@@ -711,6 +707,9 @@ sub _run_end {
     my $value = shift;
 
     $self->{run_end} = $value if defined $value;
+
+    # we clean core_config here
+
     $self->_clean_core_config if $value;
 
     return $self->{run_end};
@@ -912,7 +911,8 @@ sub _proc {
     # this method is the core data collection/manipulation
     # routine (aka the 'Processor phase') for all of DES
 
-    # do not modify this sub
+    # make sure all unit tests are successful after any change
+    # to this subroutine!
 
     # if you want the data structure to look differently before 
     # reaching here, use a pre_proc. If you want it different 
@@ -947,7 +947,7 @@ sub _proc {
 
         my $name = $PPI_sub->name;
 
-        # skip over excluded subs
+        # skip over excluded (or not included) subs
 
         next if grep {$name eq $_ } @$exclude;
 
@@ -1056,7 +1056,6 @@ sub _pre_filter {
                 print Dumper $subs;
                 exit;
             }
-    
             push @pre_filters, $cref;
         }
     }

@@ -215,7 +215,7 @@ BEGIN {#1
 
 my @tempfiles = qw(
                 t/test/inject_after/inject_after.copy 
-                t/test/inject_after/inject_after.pm.bak
+                inject_after.pm.bak
               );
 
 my $fh;

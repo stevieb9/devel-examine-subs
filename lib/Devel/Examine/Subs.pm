@@ -1314,6 +1314,19 @@ The exact opposite of has.
 
 
 
+=head2 C<lines>
+
+Mandatory parameters: C<search =E<gt> 'text'>
+
+Gathers together all line text and line number of all subs where the
+subroutine contains lines matching the search term.
+
+Returns a hash reference with the subroutine name as the key, the value being
+an array reference which contains a hash reference in the format line_number
+=E<gt> line_text.
+
+
+
 
 =head2 C<objects>
 
@@ -1331,7 +1344,7 @@ See L<SYNOPSIS> for the structure of each object.
 
 
 
-=head2 C<module('Module::Name'>
+=head2 C<module('Module::Name')>
 
 Mandatory parameters: C<'Module::Name'>. Note that this is one public method
 that takes its parameter in string format (as opposed to hash format).
@@ -1341,17 +1354,6 @@ module's namespace symbol table.
 
 
 
-
-=head2 C<lines>
-
-Mandatory parameters: C<search =E<gt> 'text'>
-
-Gathers together all line text and line number of all subs where the
-subroutine contains lines matching the search term.
-
-Returns a hash reference with the subroutine name as the key, the value being
-an array reference which contains a hash reference in the format line_number
-=E<gt> line_text.
 
 
 
@@ -1371,35 +1373,6 @@ with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 
 
-
-=head2 C<inject>
-
-Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']> or
-C<inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;']>
-
-C<inject_use> will inject the statements prior to all existing C<use>
-statements that already exist in the file(s). If none are found, will inject
-the statements right after a C<Package> statement if found.
-
-Technically, you don't have to inject a C<use> statement, but I'd advise it.
-
-C<inject_after_sub_def> will inject the lines of code within the array
-reference value immediately following all sub definitions in a file.
-Next line indenting is used, and sub definitions with their opening brace
-on a separate line than the definition itself is caught.
-
-
-
-=head2 C<remove>
-
-Parameters: C<delete =E<gt> ['string1', 'string2']>
-
-Deletes from the file(s) the entire lines that contain the search terms.
-
-This method is file based... the work happens prior to digging up subs, hence
-C<exclude>, C<include> and other sub-based parameters have no effect.
-
-
 =head2 C<replace>
 
 Parameters: C<exec =E<gt> $cref, limit =E<gt> 1>
@@ -1412,6 +1385,14 @@ The C<exec> parameter is a code reference, eg: C<my $cref = sub {$_[0] =~ s/this
 All standard Perl regular expressions apply, along with their modifiers.
 
 Returns the number of lines changed in file mode, and an empty hashref in directory mode.
+
+
+
+
+
+
+
+
 
 
 
@@ -1455,10 +1436,37 @@ details.
 
 
 
+=head2 C<inject>
+
+Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']> or
+C<inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;']>
+
+C<inject_use> will inject the statements prior to all existing C<use>
+statements that already exist in the file(s). If none are found, will inject
+the statements right after a C<Package> statement if found.
+
+Technically, you don't have to inject a C<use> statement, but I'd advise it.
+
+C<inject_after_sub_def> will inject the lines of code within the array
+reference value immediately following all sub definitions in a file.
+Next line indenting is used, and sub definitions with their opening brace
+on a separate line than the definition itself is caught.
 
 
 
 
+=head2 C<remove>
+
+Parameters: C<delete =E<gt> ['string1', 'string2']>
+
+Deletes from the file(s) the entire lines that contain the search terms.
+
+This method is file based... the work happens prior to digging up subs, hence
+C<exclude>, C<include> and other sub-based parameters have no effect.
+
+
+
+=head1 C<DEVELOPER METHODS>
 
 =head2 C<valid_params>
 

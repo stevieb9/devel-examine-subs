@@ -13,6 +13,7 @@ examples/has.pl
 examples/inject.pl
 examples/inject_after.pl
 examples/line_endings.pl
+examples/module_as_file.pl
 examples/objects.pl
 examples/ppi.pl
 examples/tie.pl

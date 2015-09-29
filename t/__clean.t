@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 10;
+use Test::More tests => 19;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -28,6 +28,9 @@ my @files_to_delete = qw(
                     t/test.bak
                     t/test.data
                 );
+my @bak_glob = <*.bak>;
+
+push @files_to_delete, @bak_glob;
 
 for (@files_to_delete){
     eval { unlink $_ if -f $_; };

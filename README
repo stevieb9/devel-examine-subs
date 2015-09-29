@@ -22,8 +22,8 @@ SYNOPSIS
     
         for my $sub (@$subs){
             $sub->name;       # name of sub
-            $sub->start;      # file line number of start of sub
-            $sub->end;        # file line number of end of sub
+            $sub->start;      # number of first line in sub
+            $sub->end;        # number of last line in sub
             $sub->line_count; # number of lines in sub
             $sub->code;       # entire sub code from file
             $sub->lines;      # lines that match search term
@@ -72,14 +72,14 @@ SYNOPSIS
 
     Print out all lines in all subs that contain a search term
 
-        my $subs = $des->objects;
+        my $subs = $des->lines(search => 'this');
     
-        for my $sub (@$subs){
-        
-            my $lines_with_search_term = $sub->lines;
+        for my $sub (keys %$subs){
     
-            for (@$lines_with_search_term){
-                my ($line_num, $text) = split /:/, $_, 2;
+            print "\nSub: $sub\n";
+    
+            for my $line (@{ $subs->{$sub} }){
+                my ($line_num, $text) = each %$line;
                 say "Line num: $line_num";
                 say "Code: $text\n";
             }
@@ -102,10 +102,10 @@ SYNOPSIS
     
         for my $file (keys %$files){
             print "$file\n";
-            print join("\t", @{$files->{$file}}) . "\n\n";
+            print join('\t', @{$files->{$file}});
         }
 
-    All methods can include or exclude specific subs
+    Most methods can include or exclude specific subs
 
         my $has = $des->has( include => [qw(dump private)] );
     
@@ -139,6 +139,9 @@ METHODS
     on the same object, and are best set in new(). These parameters are
     file, extensions, cache, regex, copy, no_indent and diff.
 
+    Note: omit this parameter if all you'll be using is the module()
+    method.
+
  all
 
     Mandatory parameters: None
@@ -159,6 +162,17 @@ METHODS
 
     The exact opposite of has.
 
+ lines
+
+    Mandatory parameters: search => 'text'
+
+    Gathers together all line text and line number of all subs where the
+    subroutine contains lines matching the search term.
+
+    Returns a hash reference with the subroutine name as the key, the value
+    being an array reference which contains a hash reference in the format
+    line_number => line_text.
+
  objects
 
     Mandatory parameters: None
@@ -172,7 +186,7 @@ METHODS
 
     See SYNOPSIS for the structure of each object.
 
- module('Module::Name'
+ module('Module::Name')
 
     Mandatory parameters: 'Module::Name'. Note that this is one public
     method that takes its parameter in string format (as opposed to hash
@@ -180,22 +194,6 @@ METHODS
 
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
-
-    Note that this method short-circuits a lot of processing. If all you
-    need are the method names from a module, use this call. Otherwise,
-    specify the module name to the 'file' parameter in new() or any other
-    public method..
-
- lines
-
-    Mandatory parameters: search => 'text'
-
-    Gathers together all line text and line number of all subs where the
-    subroutine contains lines matching the search term.
-
-    Returns a hash reference with the subroutine name as the key, the value
-    being an array reference which contains a hash reference in the format
-    line_number => line_text.
 
  search_replace
 
@@ -210,33 +208,6 @@ METHODS
     This method will create a backup copy of the file with the same name
     appended with '.bak', but don't confuse this feature with the 'copy'
     parameter.
-
- inject
-
-    Parameters: inject_use => ['use Module::Name', 'use Module2::Name'] or
-    inject_after_sub_def => ['code line 1;', 'code line 2;']
-
-    inject_use will inject the statements prior to all existing use
-    statements that already exist in the file(s). If none are found, will
-    inject the statements right after a Package statement if found.
-
-    Technically, you don't have to inject a use statement, but I'd advise
-    it.
-
-    inject_after_sub_def will inject the lines of code within the array
-    reference value immediately following all sub definitions in a file.
-    Next line indenting is used, and sub definitions with their opening
-    brace on a separate line than the definition itself is caught.
-
- remove
-
-    Parameters: delete => ['string1', 'string2']
-
-    Deletes from the file(s) the entire lines that contain the search
-    terms.
-
-    This method is file based... the work happens prior to digging up subs,
-    hence exclude, include and other sub-based parameters have no effect.
 
  replace
 
@@ -284,6 +255,35 @@ METHODS
 
       How many injections do you want to do per sub? See PARAMETERS for
       more details.
+
+ inject
+
+    Parameters: inject_use => ['use Module::Name', 'use Module2::Name'] or
+    inject_after_sub_def => ['code line 1;', 'code line 2;']
+
+    inject_use will inject the statements prior to all existing use
+    statements that already exist in the file(s). If none are found, will
+    inject the statements right after a Package statement if found.
+
+    Technically, you don't have to inject a use statement, but I'd advise
+    it.
+
+    inject_after_sub_def will inject the lines of code within the array
+    reference value immediately following all sub definitions in a file.
+    Next line indenting is used, and sub definitions with their opening
+    brace on a separate line than the definition itself is caught.
+
+ remove
+
+    Parameters: delete => ['string1', 'string2']
+
+    Deletes from the file(s) the entire lines that contain the search
+    terms.
+
+    This method is file based... the work happens prior to digging up subs,
+    hence exclude, include and other sub-based parameters have no effect.
+
+DEVELOPER METHODS
 
  valid_params
 

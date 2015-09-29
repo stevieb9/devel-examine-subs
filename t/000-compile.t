@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 24;
+use Test::More;
 
 {
     ## no critic
@@ -16,6 +16,7 @@ plan skip_all => "Test::Compile not installed" if $@;
 
 exit if $@;
 
+plan tests => 24;
 my $test = Test::Compile->new;
 
 $test->verbose(0);

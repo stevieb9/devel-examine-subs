@@ -5,6 +5,7 @@ examples/any.pl
 examples/building_inject_after.pl
 examples/cache_benchmark.pl
 examples/core_dump.pl
+examples/core_output.pl
 examples/engine.pl
 examples/engine_creation.pl
 examples/full_object_access.pl
@@ -71,6 +72,7 @@ t/39-inject_after_sub_def.t
 t/40-dts_trace_checks.t
 t/41-win32_line_endings.t
 t/42-replace.t
+t/43-write_failure.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data

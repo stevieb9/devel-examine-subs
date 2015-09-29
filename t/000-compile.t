@@ -16,7 +16,7 @@ plan skip_all => "Test::Compile not installed" if $@;
 
 exit if $@;
 
-plan tests => 24;
+plan tests => 25;
 my $test = Test::Compile->new;
 
 $test->verbose(0);

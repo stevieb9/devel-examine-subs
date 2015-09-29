@@ -24,7 +24,7 @@ my %params = (
 
     my $res = $des->all(%params);
     ok ( ref($res) eq 'ARRAY', "all() returns array after setting 'include' param" );
-    is ( @$res, 1, "_subs() returns only a single sub when asked to via 'include'" );
+    is ( @$res, 1, "_proc() returns only a single sub when asked to via 'include'" );
 }
 {#2
     #delete $params->{include};
@@ -39,7 +39,7 @@ my %params = (
     my $res = $des->all(%params);
    
     ok ( ! (grep {'two' eq $_} @$res), "excluded sub isn't included" );
-    is ( @$res, 10, "_subs() returns correct data when used with 'exclude'" );
+    is ( @$res, 10, "_proc() returns correct data when used with 'exclude'" );
 }
 {#4
     $params{include} = undef;
@@ -49,7 +49,7 @@ my %params = (
     for my $exc (@{ $params{exclude} }){ 
         ok ( ! (grep {$exc eq $_} @$res), "excluded sub >$exc< isn't included" );
     }
-    is ( @$res, 7, "_subs() returns correct data when used with 'exclude'" );
+    is ( @$res, 7, "_proc() returns correct data when used with 'exclude'" );
 }
 {#5
     $params{include} = [qw(two four six eight)];
@@ -59,7 +59,7 @@ my %params = (
     for my $inc (@{ $params{include} }){ 
         ok ((grep /$inc/, @$res), "included sub >$inc< is included" );
     }
-    is ( @$res, 4, "_subs() returns correct data when used with 'include'" );
+    is ( @$res, 4, "_proc() returns correct data when used with 'include'" );
 }
 {#6
     $params{include} = [qw(two four six eight)];
@@ -70,6 +70,6 @@ my %params = (
     for my $item (@$res){   
         #ok ((grep /$item/, @{$params->{include}}), "included items not included" );
         ok ((! grep /$item/, @{$params{exclude}}), "excluded items not included" );
-        is ( @$res, 9, "_subs() include with exclude does the right thing" );
+        is ( @$res, 9, "_proc() include with exclude does the right thing" );
     }
 }

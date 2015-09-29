@@ -5,6 +5,8 @@ Revision history for Devel-Examine::Subs
           backwards compatibility has remained
         - _read_file() now uses File::Edit::Portable read()
         - _write_file() now uses File::Edit::Portable write()
+        - internally, _subs() has been renamed to _proc()
+        - reduced ~50 lines of storage within the object
 
 1.43    20150923
         - search_replace() now takes a coderef that encompasses the substitution

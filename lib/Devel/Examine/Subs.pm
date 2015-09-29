@@ -11,11 +11,12 @@ use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
+use File::Basename;
 use File::Copy;
 use File::Edit::Portable;
 use File::Find;
 use PPI;
-use Symbol;
+use Symbol qw(delete_package);
 
 BEGIN {
 
@@ -248,7 +249,7 @@ sub remove {
 }
 
 #
-# publicly available private methods
+# publicly available semi-private methods
 #
 
 sub add_functionality {
@@ -700,7 +701,11 @@ sub _read_file {
 
     return if ! $file;
 
-    copy $file, "$file.bak" or croak $!;
+    my $basename = basename($file);
+    my $bak = "$basename.bak";
+
+    copy $file, $bak
+      or croak "can't create backup copy of file $file!";
 
     $self->{rw} = File::Edit::Portable->new;
 
@@ -736,6 +741,11 @@ sub _write_file {
         croak $@;
     }
 }
+
+#
+# private methods for core phases
+#
+
 sub _core {
 
     trace() if $ENV{TRACE};
@@ -788,7 +798,7 @@ sub _core {
         $subs = $self->_cache($p->{file});
     }
     else {
-        $subs = $self->_subs;
+        $subs = $self->_proc;
     } 
     
     $subs = $subs // 0;
@@ -844,8 +854,69 @@ sub _core {
 
     return $subs;
 }
-sub _subs {
+sub _pre_proc {
     
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $p = shift;
+    my $subs = shift;
+
+    my $pre_proc = $self->{params}{pre_proc};
+
+    if (not $pre_proc or $pre_proc eq ''){
+        return $subs;
+    }
+   
+    # tell _core() to return directly from the pre_processor 
+    # if necessary, and bypass pre_filter and engine
+
+    if ($pre_proc eq 'module'){
+       $self->{params}{pre_proc_return} = 1;
+    }
+
+    my $cref;
+    
+    if (not ref($pre_proc) eq 'CODE'){
+        my $pre_proc_module = $self->{namespace} . "::Preprocessor";
+        my $compiler = $pre_proc_module->new;
+
+        if (! $compiler->exists($pre_proc)){
+            croak "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
+                  "pre_processor '$pre_proc' is not implemented.\n";
+        }
+
+        eval {
+            $cref = $compiler->{pre_procs}{$pre_proc}->();
+        };
+        
+        if ($@){
+            $@ = "\n[Devel::Examine::Subs speaking] " .
+                  "dispatch table in Devel::Examine::Subs::Preprocessor " .
+                  "has a mistyped function as a value, but the key is ok\n\n"
+            . $@;
+            croak $@;
+        }
+
+    }
+
+    if (ref($pre_proc) eq 'CODE'){
+        $cref = $pre_proc;
+    }
+    
+    return $cref;
+}
+sub _proc {
+   
+    # this method is the core data collection/manipulation
+    # routine (aka the 'Processor phase') for all of DES
+
+    # do not modify this sub
+
+    # if you want the data structure to look differently before 
+    # reaching here, use a pre_proc. If you want it different 
+    # afterwards, use a pre_filter or an engine
+
     trace() if $ENV{TRACE};
     
     my $self = shift;
@@ -914,58 +985,6 @@ sub _subs {
     }
    
     return \%subs;
-}
-sub _pre_proc {
-    
-    trace() if $ENV{TRACE};
-
-    my $self = shift;
-    my $p = shift;
-    my $subs = shift;
-
-    my $pre_proc = $self->{params}{pre_proc};
-
-    if (not $pre_proc or $pre_proc eq ''){
-        return $subs;
-    }
-   
-    # tell _core() to return directly from the pre_processor 
-    # if necessary, and bypass pre_filter and engine
-
-    if ($pre_proc eq 'module'){
-       $self->{params}{pre_proc_return} = 1;
-    }
-
-    my $cref;
-    
-    if (not ref($pre_proc) eq 'CODE'){
-        my $pre_proc_module = $self->{namespace} . "::Preprocessor";
-        my $compiler = $pre_proc_module->new;
-
-        if (! $compiler->exists($pre_proc)){
-            croak "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
-                  "pre_processor '$pre_proc' is not implemented.\n";
-        }
-
-        eval {
-            $cref = $compiler->{pre_procs}{$pre_proc}->();
-        };
-        
-        if ($@){
-            $@ = "\n[Devel::Examine::Subs speaking] " .
-                  "dispatch table in Devel::Examine::Subs::Preprocessor " .
-                  "has a mistyped function as a value, but the key is ok\n\n"
-            . $@;
-            croak $@;
-        }
-
-    }
-
-    if (ref($pre_proc) eq 'CODE'){
-        $cref = $pre_proc;
-    }
-    
-    return $cref;
 }
 sub _pre_filter {
     
@@ -1240,9 +1259,7 @@ options.
 
 =head1 METHODS
 
-All public methods take their parameters as a hash (C<key =E<gt> value>).
-
-See the L<PARAMETERS> for the full list of params, and which ones 
+See the L<PARAMETERS> for the full list of params, and which ones
 are persistent across runs using the same object.
 
 
@@ -1312,9 +1329,10 @@ See L<SYNOPSIS> for the structure of each object.
 
 
 
-=head2 C<module>
+=head2 C<module('Module::Name'>
 
-Mandatory parameters: C<'Module::Name'>
+Mandatory parameters: C<'Module::Name'>. Note that this is one public method
+that takes its parameter in string format (as opposed to hash format).
 
 Returns an array reference containing the names of all subs found in the
 module's namespace symbol table.

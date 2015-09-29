@@ -56,7 +56,6 @@ sub _dt {
         _test => \&_test,
         _test_print => \&_test_print,
         _test_bad => \&_test_bad,
-
     };
 
     return $dt;

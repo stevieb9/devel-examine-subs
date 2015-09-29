@@ -702,8 +702,10 @@ sub _read_file {
 
     copy $file, "$file.bak" or croak $!;
 
+    $self->{rw} = File::Edit::Portable->new;
+
     my @file_contents
-      = File::Edit::Portable->new->read(file => $file);
+      = $self->{rw}->read(file => $file);
 
     $self->{file_eol} = "\n";
 
@@ -727,6 +729,7 @@ sub _write_file {
     $file = $copy if $copy;
 
     open my $wfh, '>', $file or croak $!;
+
 
     for (@$contents){
         print $wfh "$_$self->{file_eol}";

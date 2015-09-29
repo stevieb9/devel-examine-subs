@@ -10,6 +10,7 @@ use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
 use Devel::Examine::Subs::Prefilter;
 use File::Copy;
+use File::Edit::Portable;
 use File::Find;
 use PPI;
 use Symbol;
@@ -696,28 +697,15 @@ sub _read_file {
     my $p = shift;
 
     my $file = $p->{file};
-    my $copy = $self->{params}{copy};
 
     return if ! $file;
 
     copy $file, "$file.bak" or croak $!;
 
-    open my $fh, '<', $file
-      or croak "Can't open the file $file: $!";
-
-    my @file_contents = <$fh>;
-
-    close $fh or croak $!;
+    my @file_contents
+      = File::Edit::Portable->new->read(file => $file);
 
     $self->{file_eol} = "\n";
-
-    if ($file_contents[0] && $file_contents[0] =~ /(\R)/){
-        $self->{file_eol} = $1;
-    }
-
-    for (@file_contents){
-        s/\R//g;
-    }
 
     @{ $p->{file_contents} } = @file_contents;
     @{ $self->{file_contents} } = @file_contents;

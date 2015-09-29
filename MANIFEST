@@ -16,6 +16,7 @@ examples/line_endings.pl
 examples/module_as_file.pl
 examples/objects.pl
 examples/ppi.pl
+examples/README.examples
 examples/tie.pl
 examples/ver.pl
 examples/write_new_engine.pl

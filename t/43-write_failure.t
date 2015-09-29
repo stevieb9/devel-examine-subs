@@ -25,6 +25,6 @@ else {
         });
     };
 
-    like ($@, qr/permission denied/i, "croak if file can't be written to")
+    like ($@, qr/_write_file/i, "croak if file can't be written to")
 }
 

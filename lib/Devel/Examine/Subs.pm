@@ -1,4 +1,4 @@
-package Devel::Examine::Subs 1.44;
+package Devel::Examine::Subs 1.44_01;
 use 5.012;
 use warnings;
 use strict;
@@ -704,8 +704,6 @@ sub _read_file {
 
     my @file_contents
       = $self->{rw}->read(file => $file);
-
-    $self->{file_eol} = "\n";
 
     @{ $p->{file_contents} } = @file_contents;
 

@@ -587,8 +587,6 @@ sub _clean_config {
     # params that get set after the call to _config() need
     # to be deleted manually here
 
-#    delete $p->{file_contents};
-
     for my $var (keys %$config_vars){
        
         last if ! $self->_run_end;
@@ -710,7 +708,6 @@ sub _read_file {
     $self->{file_eol} = "\n";
 
     @{ $p->{file_contents} } = @file_contents;
-    @{ $self->{file_contents} } = @file_contents;
 
     return @file_contents;
 }

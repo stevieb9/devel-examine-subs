@@ -438,7 +438,7 @@ sub _clean_config {
 
     for my $param (keys %$p){
         if (! exists $config_vars->{$param}){
-            #warn "\n\nDES::_clean_config() deleting invalid param: $param\n";
+            print "\n\nDES::_clean_config() deleting invalid param: $param\n";
             delete $p->{$param};
         }
     }
@@ -697,11 +697,9 @@ sub _run_directory {
 
         $self->_write_file if $self->{write_file_contents};
 
-        my $exists = 0;
-        $exists = %$data if ref($data) eq 'HASH';
-        $exists = @$data if ref($data) eq 'ARRAY';
-
-        $struct{$file} = $data if $exists;
+        if (ref $data eq 'HASH' || ref $data eq 'ARRAY'){
+            $struct{$file} = $data;
+        }
     }
 
     return \%struct;

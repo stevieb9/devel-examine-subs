@@ -1241,7 +1241,7 @@ Print all subs within each Perl file under a directory
         print join('\t', @{$files->{$file}});
     }
 
-All methods can include or exclude specific subs
+Most methods can include or exclude specific subs
 
     my $has = $des->has( include => [qw(dump private)] );
 
@@ -1280,7 +1280,7 @@ Only specific params are guaranteed to stay persistent throughout a run on the
 same object, and are best set in C<new()>. These parameters are C<file>,
 C<extensions>, C<cache>, C<regex>, C<copy>, C<no_indent> and C<diff>.
 
-
+Note: omit this parameter if all you'll be using is the C<module()> method.
 
 
 

@@ -1,7 +1,9 @@
-package Devel::Examine::Subs::Prefilter 1.44_01;
+package Devel::Examine::Subs::Prefilter;
 use 5.012;
 use strict;
 use warnings;
+
+our $VERSION = '1.44_01';
 
 use Carp;
 use Data::Dumper;

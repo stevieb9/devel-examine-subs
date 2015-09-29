@@ -1,7 +1,9 @@
-package Devel::Examine::Subs::Sub 1.44_01;
+package Devel::Examine::Subs::Sub;
 use 5.012;
 use strict;
 use warnings;
+
+our $VERSION = '1.44_01';
 
 use Data::Dumper;
 

@@ -25,5 +25,3 @@ eval {
 
 isnt ($@, undef, "{file => 'module'} with module not found croaks with DES error msg");
 
-
-

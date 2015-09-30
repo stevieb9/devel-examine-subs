@@ -801,8 +801,6 @@ sub _core {
         $subs = $self->_proc;
     } 
     
-    $subs = $subs // 0;
-
     return if ! $subs;
 
     $self->{data} = $subs;

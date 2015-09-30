@@ -969,8 +969,6 @@ sub _proc {
 
         $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
 
-        my $line_num = $subs{$file}{subs}{$name}{start};
-       
         # pull out just the subroutine from the file 
         # array and attach it to the structure
 
@@ -980,7 +978,7 @@ sub _proc {
                                     $subs{$file}{subs}{$name}{end}
                                    ];
 
-          $subs{$file}{subs}{$name}{contents} = \@sub_definition;
+        $subs{$file}{subs}{$name}{contents} = \@sub_definition;
     }
    
     return \%subs;

@@ -1,7 +1,7 @@
 Revision history for Devel-Examine::Subs
 
 1.46    20150930
-        - renamed everything from pre_filter to pre_proc
+        - renamed everything from pre_filter to post_proc
         - removed test that was failing across platforms (t/24)
 
 1.45    20150930

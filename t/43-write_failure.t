@@ -17,7 +17,7 @@ else {
 
     my $file = 't/sample.data';
 
-    my $des = Devel::Examine::Subs->new(file => $file, copy => '/usr/bin/no_write.data');
+    my $des = Devel::Examine::Subs->new(file => $file, copy => '/root/no_write.data');
 
     eval {
         $des->search_replace(exec => sub {

@@ -3,7 +3,7 @@ use 5.012;
 use warnings;
 use strict;
 
-our $VERSION = '1.44_03';
+our $VERSION = '1.46';
 
 use Carp;
 use Data::Compare;
@@ -1146,8 +1146,8 @@ Get all the subs as objects
 
     for my $sub (@$subs){
         $sub->name;       # name of sub
-        $sub->start;      # number of first line in sub
-        $sub->end;        # number of last line in sub
+        $sub->start;      # first line number of sub in file
+        $sub->end;        # last line number of sub in file
         $sub->line_count; # number of lines in sub
         $sub->code;       # entire sub code from file
         $sub->lines;      # lines that match search term
@@ -1234,7 +1234,7 @@ Print all subs within each Perl file under a directory
 
 Most methods can include or exclude specific subs
 
-    my $has = $des->has( include => [qw(dump private)] );
+    my $has = $des->has( include => ['dump', 'private'] );
 
     my $missing = $des->missing( exclude => ['this', 'that'] );
 
@@ -1263,7 +1263,7 @@ Mandatory parameters: C<file =E<gt> $filename>
 
 Instantiates a new object. If C<$filename> is a directory, we'll iterate
 through it finding all Perl files. If C<$filename> is a module name
-(eg: C<Data::Dumper>), we'll attempt to load the module, extract the file for
+(eg: C<Data::Dump>), we'll attempt to load the module, extract the file for
 the module, and load the file. CAUTION: this will be a production C<%INC> file
 so be careful.
 

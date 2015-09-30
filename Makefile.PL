@@ -40,7 +40,7 @@ WriteMakefile
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
                    'File::Basename' => 0,
-                   'File::Edit::Portable' => '0.07',
+                   'File::Edit::Portable' => '0.08',
                    'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,

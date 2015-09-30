@@ -18,7 +18,6 @@ SKIP: {
 
     skip "Devel::Trace::Subs not installed... skipping", 11 if $@;
 
-    $ENV{DTS_ENABLE} = 1;
     $ENV{DES_TRACE} = 1;
 
     my $des = Devel::Examine::Subs->new(file => 't/sample.data');

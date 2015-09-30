@@ -6,7 +6,7 @@ Revision history for Devel-Examine::Subs
         - _read_file() now uses File::Edit::Portable read()
         - _write_file() now uses File::Edit::Portable write()
         - internally, _subs() has been renamed to _proc()
-        - reduced ~50 lines of storage within the object
+        - reduced the size of the data and instance by ~100% (according to core_dump)
         - new prereq: File::Basename (fixes bug where module file bak couldn't be saved)
 
 1.43    20150923

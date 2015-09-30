@@ -766,7 +766,7 @@ sub _core {
     if ($self->{params}{pre_proc}){
         my $pre_proc = $self->_pre_proc;
 
-        $data = $pre_proc->($p);
+        $data = $pre_proc->($p, $data);
 
         if ($self->{params}{pre_proc_dump}){
             print Dumper $data;
@@ -800,10 +800,8 @@ sub _core {
     else {
         $subs = $self->_proc;
     } 
-    
+  
     return if ! $subs;
-
-    $self->{data} = $subs;
 
     # write to cache
 
@@ -814,10 +812,9 @@ sub _core {
     # pre engine filter
 
     if ($self->{params}{pre_filter}){
-        for my $pre_filter ($self->_pre_filter){
+        for my $pre_filter ($self->_pre_filter($p, $subs)){
             $subs = $pre_filter->($p, $subs);
             $self->{write_file_contents} = $p->{write_file_contents};
-            $self->{data} = $subs;
         }
     }  
 
@@ -827,7 +824,7 @@ sub _core {
 
     # engine
 
-    my $engine = $self->_engine($p);
+    my $engine = $self->_engine($p, $subs);
 
     if ($self->{params}{engine}){
         $subs = $engine->($p, $subs);
@@ -847,8 +844,6 @@ sub _core {
 
         exit;
     }
-
-    $self->{data} = $subs;
 
     return $subs;
 }
@@ -1048,7 +1043,7 @@ sub _pre_filter {
             }
 
             if ($pre_filter_dump && $pre_filter_dump == 1){
-                my $subs = $cref->($p, $self->{data});
+                my $subs = $cref->($p, $struct);
                 print Dumper $subs;
                 exit;
             }
@@ -1109,7 +1104,7 @@ sub _engine {
     }
 
     if ($self->{params}{engine_dump}){
-        my $subs = $cref->($p, $self->{data});
+        my $subs = $cref->($p, $struct);
         print Dumper $subs;
         exit;
     }

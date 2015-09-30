@@ -40,6 +40,6 @@ my $des = Devel::Examine::Subs->new(
     eval { close $fh; };
     ok (! $@, "engine dump output file closed successfully" );
 
-    eval { unlink $file; };
+#    eval { unlink $file; };
     ok (! $@, "engine dump temp file deleted successfully" );
 }

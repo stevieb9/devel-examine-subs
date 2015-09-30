@@ -10,7 +10,7 @@ use Data::Compare;
 use Data::Dumper;
 use Devel::Examine::Subs::Engine;
 use Devel::Examine::Subs::Preprocessor;
-use Devel::Examine::Subs::Prefilter;
+use Devel::Examine::Subs::Postprocessor;
 use File::Basename;
 use File::Copy;
 use File::Edit::Portable;
@@ -79,7 +79,7 @@ sub has {
     my $self = shift;
     my $p = $self->_params(@_);
 
-    $self->{params}{pre_filter} = 'file_lines_contain';
+    $self->{params}{post_proc} = 'file_lines_contain';
     $self->{params}{engine} = 'has';
     
     $self->run($p);
@@ -105,7 +105,7 @@ sub lines {
     $self->{params}{engine} = 'lines';
     
     if ($self->{params}{search} || $p->{search}){
-        $self->{params}{pre_filter} = 'file_lines_contain';
+        $self->{params}{post_proc} = 'file_lines_contain';
     }
 
     $self->run($p);
@@ -146,7 +146,7 @@ sub objects {
     my $self = shift;
     my $p = $self->_params(@_);
 
-    $self->{params}{pre_filter} = 'subs';
+    $self->{params}{post_proc} = 'subs';
     $self->{params}{engine} = 'objects';
 
     $self->run($p);
@@ -158,7 +158,7 @@ sub search_replace {
     my $self = shift;
     my $p = $self->_params(@_);
 
-    $self->{params}{pre_filter}
+    $self->{params}{post_proc}
       = ['file_lines_contain', 'subs', 'objects'];
 
     $self->{params}{engine} = 'search_replace';
@@ -188,7 +188,7 @@ sub inject_after {
         $p->{injects} = 1;
     }
 
-    $self->{params}{pre_filter}
+    $self->{params}{post_proc}
       = ['file_lines_contain', 'subs', 'objects'];
 
     $self->{params}{engine} = 'inject_after';
@@ -242,7 +242,7 @@ sub add_functionality {
 
     my @allowed = qw(
                     pre_proc
-                    pre_filter
+                    post_proc
                     engine
     );
 
@@ -283,7 +283,7 @@ sub add_functionality {
 
     my $des = Devel::Examine::Subs->new({
                                     file => $file,
-                                    pre_filter => 'end_of_last_sub',
+                                    post_proc => 'end_of_last_sub',
                                 });
 
     $p->{write_file_contents} = \@code;
@@ -318,20 +318,20 @@ sub pre_procs {
     }
     return @pre_procs;
 }
-sub pre_filters {
+sub post_procs {
     
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $module = $self->{namespace} . "::Prefilter";
-    my $pre_filter = $module->new;
+    my $module = $self->{namespace} . "::Postprocessor";
+    my $post_proc = $module->new;
 
-    my @pre_filters;
+    my @post_procs;
 
-    for (keys %{$pre_filter->_dt}){
-        push @pre_filters, $_ if $_ !~ /^_/;
+    for (keys %{$post_proc->_dt}){
+        push @post_procs, $_ if $_ !~ /^_/;
     }
-    return @pre_filters;
+    return @post_procs;
 }
 sub run {
 
@@ -452,7 +452,7 @@ sub _clean_core_config {
 
     my @core_phases = qw(
         pre_proc
-        pre_filter
+        post_proc
         engine
     );
 
@@ -482,7 +482,7 @@ sub _config {
         # persistent - core phases
 
         pre_proc => 1,
-        pre_filter => 1,
+        post_proc => 1,
         engine => 1,
 
         # transient
@@ -498,11 +498,11 @@ sub _config {
         module => 0,
         objects_in_hash => 0,
         pre_proc_dump => 0,
-        pre_filter_dump => 0,
+        post_proc_dump => 0,
         engine_dump => 0,
         core_dump => 0,
         pre_proc_return => 0,
-        pre_filter_return => 0,
+        post_proc_return => 0,
         engine_return => 0,
         config_dump => 0,
         cache_dump => 0,
@@ -809,16 +809,16 @@ sub _core {
         $self->_cache($p->{file}, $subs);
     }
 
-    # pre engine filter
+    # post processor
 
-    if ($self->{params}{pre_filter}){
-        for my $pre_filter ($self->_pre_filter($p, $subs)){
-            $subs = $pre_filter->($p, $subs);
+    if ($self->{params}{post_proc}){
+        for my $post_proc ($self->_post_proc($p, $subs)){
+            $subs = $post_proc->($p, $subs);
             $self->{write_file_contents} = $p->{write_file_contents};
         }
     }  
 
-    if ($self->{params}{pre_filter_return}){
+    if ($self->{params}{post_proc_return}){
         return $subs;
     }
 
@@ -862,7 +862,7 @@ sub _pre_proc {
     }
    
     # tell _core() to return directly from the pre_processor 
-    # if necessary, and bypass pre_filter and engine
+    # if necessary, and bypass post_proc and engine
 
     if ($pre_proc eq 'module'){
        $self->{params}{pre_proc_return} = 1;
@@ -909,7 +909,7 @@ sub _proc {
 
     # if you want the data structure to look differently before 
     # reaching here, use a pre_proc. If you want it different 
-    # afterwards, use a pre_filter or an engine
+    # afterwards, use a post_proc or an engine
 
     trace() if $ENV{TRACE};
     
@@ -978,7 +978,7 @@ sub _proc {
    
     return \%subs;
 }
-sub _pre_filter {
+sub _post_proc {
     
     trace() if $ENV{TRACE};
 
@@ -986,48 +986,48 @@ sub _pre_filter {
     my $p = shift;
     my $struct = shift;
 
-    my $pre_filter = $self->{params}{pre_filter};
+    my $post_proc = $self->{params}{post_proc};
 
-    my $pre_filter_dump = $self->{params}{pre_filter_dump};
+    my $post_proc_dump = $self->{params}{post_proc_dump};
 
-    my @pre_filters;
+    my @post_procs;
 
-    if ($pre_filter){
+    if ($post_proc){
 
-        my @pre_filter_list;
+        my @post_proc_list;
 
-        if (ref $pre_filter ne 'ARRAY'){
-            push @pre_filter_list, $pre_filter;
+        if (ref $post_proc ne 'ARRAY'){
+            push @post_proc_list, $post_proc;
         }
         else {
-            @pre_filter_list = @{$pre_filter};
+            @post_proc_list = @{$post_proc};
         }
 
-        for my $pf (@pre_filter_list){
+        for my $pf (@post_proc_list){
 
             my $cref;
 
             if (ref $pf ne 'CODE'){
 
-                my $pre_filter_module = $self->{namespace} . "::Prefilter";
-                my $compiler = $pre_filter_module->new;
+                my $post_proc_module = $self->{namespace} . "::Postprocessor";
+                my $compiler = $post_proc_module->new;
 
-                # pre_filter isn't in the dispatch table
+                # post_proc isn't in the dispatch table
 
                 if (! $compiler->exists($pf)){
-                    croak "\nDevel::Examine::Subs::_pre_filter() " .
-                          "speaking...\n\npre_filter '$pf' is not " .
-                          "implemented. '$pre_filter' was sent in.\n";
+                    croak "\nDevel::Examine::Subs::_post_proc() " .
+                          "speaking...\n\npost_proc '$pf' is not " .
+                          "implemented. '$post_proc' was sent in.\n";
                 }
                 
                 eval {
-                    $cref = $compiler->{pre_filters}{$pf}->();
+                    $cref = $compiler->{post_procs}{$pf}->();
                 };
         
                 if ($@){
                     $@ = "\n[Devel::Examine::Subs speaking] " .
                           "dispatch table in " .
-                          "Devel::Examine::Subs::Prefilter has a mistyped " .
+                          "Devel::Examine::Subs::Postprocessor has a mistyped " .
                           "function as a value, but the key is ok\n\n"
                     . $@;
                     croak $@;
@@ -1037,23 +1037,23 @@ sub _pre_filter {
                 $cref = $pf;
             }
 
-            if ($pre_filter_dump && $pre_filter_dump > 1){
-                $self->{params}{pre_filter_dump}--;
-                $pre_filter_dump = $self->{params}{pre_filter_dump};
+            if ($post_proc_dump && $post_proc_dump > 1){
+                $self->{params}{post_proc_dump}--;
+                $post_proc_dump = $self->{params}{post_proc_dump};
             }
 
-            if ($pre_filter_dump && $pre_filter_dump == 1){
+            if ($post_proc_dump && $post_proc_dump == 1){
                 my $subs = $cref->($p, $struct);
                 print Dumper $subs;
                 exit;
             }
-            push @pre_filters, $cref;
+            push @post_procs, $cref;
         }
     }
     else {
         return;
     }
-    return @pre_filters;
+    return @post_procs;
 }
 sub _engine {
     
@@ -1479,7 +1479,7 @@ C<has()> public method:
 
     my $params = {
             search => 'text',
-            pre_filter => 'file_lines_contain',
+            post_proc => 'file_lines_contain',
             engine => 'has',
     };
 
@@ -1515,7 +1515,7 @@ Parameters:
 =item C<add_functionality>
 
 Informs the system which type of processor to inject and configure. Permitted
-values are 'pre_proc', 'pre_filter' and 'engine'.
+values are 'pre_proc', 'post_proc' and 'engine'.
 
 =item C<add_functionality_prod>
 
@@ -1540,7 +1540,7 @@ change the copy. Useful for verifying the changes took properly.
 =back
 
 
-=head2 C<pre_procs>, C<pre_filters>, C<engines>
+=head2 C<pre_procs>, C<post_procs>, C<engines>
 
 For development. Returns the list of the respective built-in callbacks.
 
@@ -1697,7 +1697,7 @@ integer to inject after all.
 
 
 
-=item C<pre_proc_dump>, C<pre_filter_dump>, C<engine_dump>, C<cache_dump>,
+=item C<pre_proc_dump>, C<post_proc_dump>, C<engine_dump>, C<cache_dump>,
 C<core_dump>
 
 State: Transient
@@ -1710,15 +1710,15 @@ Print to STDOUT using Data::Dumper the structure of the data following the
 respective phase. The C<core_dump> will print the state of the data, as well
 as the current state of the entire DES object.
 
-NOTE: The 'pre_filter' phase is run in such a way that pre-filters can be
-daisy-chained. Due to this reason, the value of C<pre_filter_dump> works a
+NOTE: The 'post_proc' phase is run in such a way that the filters can be
+daisy-chained. Due to this reason, the value of C<post_proc_dump> works a
 little differently. For example:
 
-    pre_filter => ['one', 'two'];
+    post_proc => ['one', 'two'];
 
 ...will execute filter 'one' first, then filter 'two' with the data that came
 out of filter 'one'. Simply set the value to the number that coincides with
-the location of the filter. For instance, C<pre_filter_dump =E<gt> 2;> will
+the location of the filter. For instance, C<post_proc_dump =E<gt> 2;> will
 dump the output from the second filter and likewise, C<1> will dump after the
 first.
 
@@ -1727,7 +1727,7 @@ will continue. Set this parameter to an integer larger than one to have the
 application C<exit> immediately after dumping the cache to STDOUT.
 
 
-=item C<pre_proc_return>, C<pre_filter_return>, C<engine_return>
+=item C<pre_proc_return>, C<post_proc_return>, C<engine_return>
 
 State: Transient
 
@@ -1737,7 +1737,7 @@ Returns the structure of data immediately after being processed by the
 respective phase. Useful for writing new 'phases'. (See "SEE ALSO" for
 details).
 
-NOTE: C<pre_filter_return> does not behave like C<pre_filter_dump>. It will
+NOTE: C<post_proc_return> does not behave like C<post_proc_dump>. It will
 only return after all pre-filters have executed.
 
 
@@ -1754,7 +1754,7 @@ configuration parameters.
 
 
 
-=item C<pre_proc, pre_filter, engine>
+=item C<pre_proc, post_proc, engine>
 
 State: Transient
 
@@ -1766,7 +1766,7 @@ used by the C<run()> command.
 C<engine> and C<pre_proc> take either a single string that contains a valid
 built-in callback, or a single code reference of a custom callback.
 
-C<pre_filter> works a lot differently. These modules can be daisy-chained.
+C<post_proc> works a lot differently. These modules can be daisy-chained.
 Like C<engine> and C<pre_proc>, you can send in a string or cref, or to chain,
 send in an aref where each element is either a string or cref. The filters
 will be executed based on their order in the array reference.
@@ -1798,9 +1798,9 @@ See C<perldoc Devel::Trace::Subs> for information on how to access the traces.
 
 Information related to the 'pre_proc' phase core modules.
 
-=item C<perldoc Devel::Examine::Subs::Prefilter>
+=item C<perldoc Devel::Examine::Subs::Postprocessor>
 
-Information related to the 'pre_filter' phase core modules.
+Information related to the 'post_proc' phase core modules.
 
 =item C<perldoc Devel::Examine::Subs::Engine>
 

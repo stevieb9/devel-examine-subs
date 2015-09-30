@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 132;
+use Test::More tests => 126;
 use Data::Dumper;
 
 BEGIN {#1
@@ -13,7 +13,7 @@ my $file = 't/sample.data';
 
 my %p = (
     file => $file, 
-    pre_filter => 'subs',
+    post_processor => 'subs',
     engine => 'objects',
 );
 
@@ -92,4 +92,5 @@ for my $o (@$objects){
         }
     }
 }
+
 

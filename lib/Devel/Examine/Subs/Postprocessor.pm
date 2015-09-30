@@ -1,4 +1,4 @@
-package Devel::Examine::Subs::Prefilter;
+package Devel::Examine::Subs::Postprocessor;
 use 5.012;
 use strict;
 use warnings;
@@ -31,7 +31,7 @@ sub new {
 
     my $struct = shift;
 
-    $self->{pre_filters} = $self->_dt();
+    $self->{post_procs} = $self->_dt();
 
     return $self;
 }
@@ -60,7 +60,7 @@ sub exists {
     my $self = shift;
     my $string = shift;
 
-    if (exists $self->{pre_filters}{$string}){
+    if (exists $self->{post_procs}{$string}){
         return 1;
     }
     else {
@@ -186,7 +186,7 @@ sub objects {
     
     trace() if $ENV{TRACE};
 
-    # uses 'subs' pre_filter
+    # uses 'subs' post_proc
 
     return sub {
         
@@ -239,29 +239,29 @@ __END__
 
 =head1 NAME
 
-Devel::Examine::Subs::Prefilter - Provides core Pre-Filter callbacks for
+Devel::Examine::Subs::Postprocessor - Provides core Pre-Filter callbacks for
 Devel::Examine::Subs
 
 =head1 DESCRIPTION
 
-This module generates and supplies the core prefilter module callbacks.
-Prefilters run after the core Processor, and before any Engine is run.
+This module generates and supplies the core post-processor module callbacks.
+Postprocessors run after the core Processor, and before any Engine is run.
 
 =head1 SYNOPSIS
 
-Pre-filters can be daisy chained as text strings that represent a built-in
-prefilter, or as callbacks, or both.
+Post-processors can be daisy chained as text strings that represent a built-in
+post-processor, or as callbacks, or both.
 
-See C<Devel::Examine::Subs::_pre_filter()> for implementation details.
+See C<Devel::Examine::Subs::_post_proc()> for implementation details.
 
 =head1 METHODS
 
 All methods other than C<exists()> takes an href of configuration data as its
 first parameter.
 
-=head2 C<exists('prefilter')>
+=head2 C<exists('post-processor')>
 
-Verifies whether the prefilter name specified as the string parameter exists
+Verifies whether the post-processor name specified as the string parameter exists
 and is valid.
 
 =head2 C<subs()>

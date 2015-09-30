@@ -2,11 +2,13 @@
 use warnings;
 use strict;
 
-use Test::More tests => 19;
+use Test::More tests => 21;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
+    use_ok( 'Devel::Examine::Subs::Preprocessor' ) || print "Bail out!\n";
+    use_ok( 'Devel::Examine::Subs::Postprocessor' ) || print "Bail out!\n";
     use_ok( 'Devel::Examine::Subs::Engine' ) || print "Bail out!\n";
     use_ok( 'PPI' ) || print "PPI can't be loaded, bailing out!\n";
 
@@ -24,7 +26,7 @@ can_ok( $subs_namespace, 'all' );
 can_ok( $subs_namespace, '_file' );
 can_ok( $subs_namespace, '_core' );
 can_ok( $subs_namespace, '_engine' );
-can_ok( $subs_namespace, '_pre_filter' );
+can_ok( $subs_namespace, '_post_proc' );
 
 my $sub_namespace = "Devel::Examine::Subs::Sub";
 

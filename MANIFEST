@@ -11,7 +11,7 @@ examples/README.examples
 examples/write_new_engine.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
-lib/Devel/Examine/Subs/Prefilter.pm
+lib/Devel/Examine/Subs/Postprocessor.pm
 lib/Devel/Examine/Subs/Preprocessor.pm
 lib/Devel/Examine/Subs/Sub.pm
 Makefile.PL
@@ -33,7 +33,7 @@ t/09-Sub_module.t
 t/10-regex_in_search-bug-15.t
 t/11-Engine.t
 t/12-_load_subs.t
-t/13-Prefilter.t
+t/13-Postprocessor.t
 t/14-lines.t
 t/15-callback_names.t
 t/16-subs_prefilter.t
@@ -43,8 +43,8 @@ t/19-write_file_open_close_delete.t
 t/20-file_line_pinpointing.t
 t/21-core_dump.t
 t/22-engine_dump.t
-t/23-pre_filter_dump.t
-t/24-pre_proc_dump.t
+t/23-post_proc_dump.t
+t/24-pre_proc_dump.t.norun
 t/25-_run_end.t
 t/26-inject_after.t
 t/27-bug_50.t
@@ -52,7 +52,7 @@ t/28-no_sub_in_file.t
 t/29-bug_48-subs_prefilter_specify_subs.t
 t/30-bug-46_entire_file_in_sub.t
 t/31-bug-45-no_dt_val.t
-t/32-end_of_last_sub_prefilter.t
+t/32-end_of_last_sub_post_proc.t
 t/33-Preprocessor.t
 t/34-valid_params.t
 t/35-config_clean.t

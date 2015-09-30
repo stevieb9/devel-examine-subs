@@ -15,7 +15,7 @@ BEGIN {#1
     my %params = (
                     file => 't/sample.data',
                     copy => 't/inject_after.data',
-                    pre_filter => ['file_lines_contain', 'subs', 'objects'],
+                    post_proc => ['file_lines_contain', 'subs', 'objects'],
                     engine => 'inject_after',
                     search => 'this',
                     code => ['# comment line one', '# comment line 2' ],

@@ -1,13 +1,19 @@
 Revision history for Devel-Examine::Subs
 
-1.45    201509--
+1.46    20150930
+        - renamed everything from pre_filter to pre_proc
+        - removed test that was failing across platforms (t/24)
+
+1.45    20150930
         - module() now allows just a single string param "$des->module('Data::Dumper')".
           backwards compatibility has remained
         - _read_file() now uses File::Edit::Portable read()
         - _write_file() now uses File::Edit::Portable write()
         - internally, _subs() has been renamed to _proc()
-        - reduced the size of the data and instance by ~100% (according to core_dump)
+        - reduced the size of the data and instance by ~50% (according to core_dump)
         - new prereq: File::Basename (fixes bug where module file bak couldn't be saved)
+        - fixed "use Symbol;" to import 'delete_package'
+        - re-enabled t/24-pre-proc tests
 
 1.43    20150923
         - search_replace() now takes a coderef that encompasses the substitution

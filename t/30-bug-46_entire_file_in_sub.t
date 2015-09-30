@@ -13,7 +13,7 @@ my $des = Devel::Examine::Subs->new();
 
 my $params = {
             file => 't/sample.data',
-            pre_filter => 'subs',
+            post_proc => 'subs',
         };
 
 my $aref = $des->run($params);

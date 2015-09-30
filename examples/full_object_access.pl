@@ -16,9 +16,9 @@ my $orig = 't/sample.data.orig';
 my %params = (
                 file => 't/test',
                 search => 'this',
-                pre_filter => 'subs',
+                post_proc => 'subs',
                 engine => 'objects',
-#                pre_filter_return => 1,
+#                post_proc_return => 1,
               );
 
 my $des = Devel::Examine::Subs->new(%params);

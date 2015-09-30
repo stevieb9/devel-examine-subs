@@ -1,6 +1,7 @@
 ~$
 ^blib/
 ^pm_to_blib/
+^cover_db/
 .old$
 .orig$
 des.pl$

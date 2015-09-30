@@ -17,17 +17,17 @@ my $e_dt = $e->_dt();
 
 {
     my $des = Devel::Examine::Subs->new();
-    my @pre_filters = $des->pre_filters();
+    my @post_processors = $des->post_procs();
     my @engines = $des->engines();
     
-    isa_ok(\@pre_filters, 'ARRAY', "pre_filters() returns an array");
+    isa_ok(\@post_processors, 'ARRAY', "post_processors() returns an array");
     isa_ok(\@engines, 'ARRAY', "engines() returns an array");
 
     for (keys %$pf_dt){
-        ok ( grep /$_/, @pre_filters, "pre_filters() returns all the filter names" );
+        ok ( grep /$_/, @post_processors, "post_processors() returns all the filter names" );
     }
     for (keys %$e_dt){
-        ok ( grep /$_/, @engines, "pre_filters() returns all the filter names" );
+        ok ( grep /$_/, @engines, "post_processors() returns all the filter names" );
     }
 
 

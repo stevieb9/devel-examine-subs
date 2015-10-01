@@ -1782,7 +1782,9 @@ L<https://github.com/stevieb9/devel-examine-subs>
 
 =head1 BUILD REPORTS
 
-L<https://travis-ci.org/stevieb9/devel-examine-subs>
+Travis-CI: L<https://travis-ci.org/stevieb9/devel-examine-subs>
+
+CPAN Testers: L<http://matrix.cpantesters.org/?dist=Devel-Examine-Subs>
 
 =head1 DEBUGGING
 

@@ -19,3 +19,5 @@ before_install:
     - curl -L https://cpanmin.us/ -o cpanm
     - chmod +x cpanm
     - sudo mv cpanm /usr/bin
+    - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+    - source ~/travis-perl-helpers/init --auto

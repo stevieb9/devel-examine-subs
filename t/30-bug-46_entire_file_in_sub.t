@@ -18,7 +18,7 @@ my $params = {
 
 my $aref = $des->run($params);
 
-ok (ref $aref eq 'ARRAY', "subs prefilter returns aref" );
+ok (ref $aref eq 'ARRAY', "subs post_proc returns aref" );
 ok (ref $aref->[0]{file} eq 'ARRAY', "'file' attr in sub framework is aref" );
 
 for (@$aref){
@@ -28,19 +28,19 @@ for (@$aref){
 eval {
     for (@$aref){
         if (! ( @{$_->{file}} == 51 )){
-            die "not all subs from 'subs' prefilter have the full perl file";
+            die "not all subs from 'subs' post_proc have the full perl file";
         }
     }
 };
 
-ok (! $@, "all subs returned from 'subs' prefilter have the full perl file" );    
+ok (! $@, "all subs returned from 'subs' post_proc have the full perl file" );    
 
 eval {
     for (@$aref){
         if (! ( @{$_->{file}} == 9999 )){
-            die "not all subs from 'subs' prefilter have the full perl file";
+            die "not all subs from 'subs' post_proc have the full perl file";
         }
     }
 };
 
-ok ($@, "we can catch if 'subs' prefilter return arefs have bad full file info" );    
+ok ($@, "we can catch if 'subs' post_proc return arefs have bad full file info" );    

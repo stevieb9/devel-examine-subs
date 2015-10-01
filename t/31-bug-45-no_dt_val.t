@@ -14,8 +14,8 @@ my $des = Devel::Examine::Subs->new(file => 't/sample.data');
 eval { $des->run({pre_proc => '_test_bad'}); };
 like ($@, qr/dispatch table/, "pre_proc with bad method value in dispatch table confesses" );
 
-eval { $des->run({pre_filter => '_test_bad'}); };
-like ($@, qr/dispatch table/, "pre_filter with bad method value in dispatch table confesses" );
+eval { $des->run({post_proc => '_test_bad'}); };
+like ($@, qr/dispatch table/, "post_proc with bad method value in dispatch table confesses" );
 
 eval { $des->run({engine => '_test_bad'}); };
 like ($@, qr/dispatch table/, "engine with bad method value in dispatch table confesses" );

@@ -46,33 +46,3 @@ WriteMakefile
                    'Symbol' => 0,
                  }
 );
-
-__END__
-if ($^O eq 'MSWin32'){
-
-    print "\nPreparing unit tests for MSWin32 platform...\n\n";
-
-    my @files;
-
-    find({wanted => sub {
-            push @files, $File::Find::name if -f;
-        },
-        no_chdir => 1,
-      }, getcwd() . '/t'
-    );
-
-    for (@files){
-
-        open my $fh, '<', $_ or die $!;
-        my @file = <$fh>;
-        close $fh or die $!;
-
-        open my $wfh, '>', $_ or die $!;
-
-        for (@file){
-            s/\n/\r\n/g;
-            print $wfh $_;
-        }
-        close $wfh or die $!;
-    }
-}

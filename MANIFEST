@@ -8,6 +8,7 @@ examples/module_as_file.pl
 examples/objects.pl
 examples/ppi.pl
 examples/README.examples
+examples/ver.pl
 examples/write_new_engine.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
@@ -36,7 +37,7 @@ t/12-_load_subs.t
 t/13-Postprocessor.t
 t/14-lines.t
 t/15-callback_names.t
-t/16-subs_prefilter.t
+t/16-subs_postproc.t
 t/17-copy_test_file.t
 t/18-bug32_rework_tie_file.t
 t/19-write_file_open_close_delete.t

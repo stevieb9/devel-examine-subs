@@ -28,7 +28,7 @@ my %p = (
 
         for my $line_info (@{$subs{$sub}}){
             while (my ($k, $v) = each (%$line_info)){
-                ok ($v =~ /$search/, "lines() uses file_lines_contain prefilter correctly");
+                ok ($v =~ /$search/, "lines() uses file_lines_contain postproc correctly");
             }
         }
     }

@@ -3,7 +3,7 @@ use 5.012;
 use warnings;
 use strict;
 
-our $VERSION = '1.46_01';
+our $VERSION = '1.48';
 
 use Carp;
 use Data::Compare;
@@ -1738,7 +1738,7 @@ respective phase. Useful for writing new 'phases'. (See "SEE ALSO" for
 details).
 
 NOTE: C<post_proc_return> does not behave like C<post_proc_dump>. It will
-only return after all pre-filters have executed.
+only return after all post_procs have executed.
 
 
 

@@ -37,7 +37,7 @@ BEGIN {#1
           regex
           copy
           engine
-          pre_filter
+          post_proc
           extensions
           cache_enabled
     );

@@ -27,7 +27,7 @@ BEGIN {#1
 
     ok ( ref($struct) eq 'ARRAY', "search_replace engine returns an aref" );
     ok ( $struct->[0] =~ qr/\w+/, "elems of inject_after are simple names of subs" );
-    is ( @$struct, 5, "return from inject_after contains the proper number of subs with 'file_lines_contain' prefilter" );
+    is ( @$struct, 5, "return from inject_after contains the proper number of subs with 'file_lines_contain' post_proc" );
 
     my (@base_file, @test_file);
 
@@ -62,7 +62,7 @@ BEGIN {#1
 
     ok ( ref($struct) eq 'ARRAY', "inject_after() returns an aref" );
     ok ( $struct->[0] =~ qr/\w+/, "elems of inject_after() are simple names of subs" );
-    is ( @$struct, 5, "return from inject_after() contains the proper number of subs with 'file_lines_contain' prefilter" );
+    is ( @$struct, 5, "return from inject_after() contains the proper number of subs with 'file_lines_contain' post_proc" );
 
     my (@base_file, @test_file);
 

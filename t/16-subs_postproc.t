@@ -11,7 +11,7 @@ BEGIN {#1
 
 {
     my $p = {
-        pre_filter => 'file_lines_contain',
+        post_proc => 'file_lines_contain',
         file => 't/sample.data',
         engine => 'all',
     };
@@ -19,7 +19,7 @@ BEGIN {#1
     
     my $res = $des->run($p);
    
-    ok (@$res == 11, "file_lines_contain pre filter loads properly");
-    ok (ref $res eq 'ARRAY', "proper return when using a pre filter"); 
+    ok (@$res == 11, "file_lines_contain post_proc loads properly");
+    ok (ref $res eq 'ARRAY', "proper return when using a post_proc"); 
 
 }

@@ -22,8 +22,8 @@ SYNOPSIS
     
         for my $sub (@$subs){
             $sub->name;       # name of sub
-            $sub->start;      # number of first line in sub
-            $sub->end;        # number of last line in sub
+            $sub->start;      # first line number of sub in file
+            $sub->end;        # last line number of sub in file
             $sub->line_count; # number of lines in sub
             $sub->code;       # entire sub code from file
             $sub->lines;      # lines that match search term
@@ -107,7 +107,7 @@ SYNOPSIS
 
     Most methods can include or exclude specific subs
 
-        my $has = $des->has( include => [qw(dump private)] );
+        my $has = $des->has( include => ['dump', 'private'] );
     
         my $missing = $des->missing( exclude => ['this', 'that'] );
     
@@ -131,9 +131,9 @@ METHODS
 
     Instantiates a new object. If $filename is a directory, we'll iterate
     through it finding all Perl files. If $filename is a module name (eg:
-    Data::Dumper), we'll attempt to load the module, extract the file for
-    the module, and load the file. CAUTION: this will be a production %INC
-    file so be careful.
+    Data::Dump), we'll attempt to load the module, extract the file for the
+    module, and load the file. CAUTION: this will be a production %INC file
+    so be careful.
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
@@ -304,7 +304,7 @@ DEVELOPER METHODS
 
         my $params = {
                 search => 'text',
-                pre_filter => 'file_lines_contain',
+                post_proc => 'file_lines_contain',
                 engine => 'has',
         };
     
@@ -332,7 +332,7 @@ DEVELOPER METHODS
     add_functionality
 
       Informs the system which type of processor to inject and configure.
-      Permitted values are 'pre_proc', 'pre_filter' and 'engine'.
+      Permitted values are 'pre_proc', 'post_proc' and 'engine'.
 
     add_functionality_prod
 
@@ -347,7 +347,7 @@ DEVELOPER METHODS
       and only change the copy. Useful for verifying the changes took
       properly.
 
- pre_procs, pre_filters, engines
+ pre_procs, post_procs, engines
 
     For development. Returns the list of the respective built-in callbacks.
 
@@ -487,7 +487,7 @@ PARAMETERS
       Default is 1. Set to a higher value to achieve more injects. Set to a
       negative integer to inject after all.
 
-    pre_proc_dump, pre_filter_dump, engine_dump, cache_dump, core_dump
+    pre_proc_dump, post_proc_dump, engine_dump, cache_dump, core_dump
 
       State: Transient
 
@@ -499,16 +499,16 @@ PARAMETERS
       following the respective phase. The core_dump will print the state of
       the data, as well as the current state of the entire DES object.
 
-      NOTE: The 'pre_filter' phase is run in such a way that pre-filters
-      can be daisy-chained. Due to this reason, the value of
-      pre_filter_dump works a little differently. For example:
+      NOTE: The 'post_proc' phase is run in such a way that the filters can
+      be daisy-chained. Due to this reason, the value of post_proc_dump
+      works a little differently. For example:
 
-          pre_filter => ['one', 'two'];
+          post_proc => ['one', 'two'];
 
       ...will execute filter 'one' first, then filter 'two' with the data
       that came out of filter 'one'. Simply set the value to the number
       that coincides with the location of the filter. For instance,
-      pre_filter_dump => 2; will dump the output from the second filter and
+      post_proc_dump => 2; will dump the output from the second filter and
       likewise, 1 will dump after the first.
 
       For cache_dump, if it is set to one, it'll dump cache but the
@@ -516,7 +516,7 @@ PARAMETERS
       than one to have the application exit immediately after dumping the
       cache to STDOUT.
 
-    pre_proc_return, pre_filter_return, engine_return
+    pre_proc_return, post_proc_return, engine_return
 
       State: Transient
 
@@ -526,8 +526,8 @@ PARAMETERS
       the respective phase. Useful for writing new 'phases'. (See "SEE
       ALSO" for details).
 
-      NOTE: pre_filter_return does not behave like pre_filter_dump. It will
-      only return after all pre-filters have executed.
+      NOTE: post_proc_return does not behave like post_proc_dump. It will
+      only return after all post_procs have executed.
 
     config_dump
 
@@ -538,7 +538,7 @@ PARAMETERS
       Prints to STDOUT with Data::Dumper the current state of all loaded
       configuration parameters.
 
-    pre_proc, pre_filter, engine
+    pre_proc, post_proc, engine
 
       State: Transient
 
@@ -550,7 +550,7 @@ PARAMETERS
       engine and pre_proc take either a single string that contains a valid
       built-in callback, or a single code reference of a custom callback.
 
-      pre_filter works a lot differently. These modules can be
+      post_proc works a lot differently. These modules can be
       daisy-chained. Like engine and pre_proc, you can send in a string or
       cref, or to chain, send in an aref where each element is either a
       string or cref. The filters will be executed based on their order in
@@ -575,9 +575,9 @@ SEE ALSO
 
       Information related to the 'pre_proc' phase core modules.
 
-    perldoc Devel::Examine::Subs::Prefilter
+    perldoc Devel::Examine::Subs::Postprocessor
 
-      Information related to the 'pre_filter' phase core modules.
+      Information related to the 'post_proc' phase core modules.
 
     perldoc Devel::Examine::Subs::Engine
 

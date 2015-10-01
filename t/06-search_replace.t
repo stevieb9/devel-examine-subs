@@ -13,7 +13,7 @@ BEGIN {#1
 my %params = (
                 file => 't/sample.data',
                 copy => 't/search_replace.data',
-                pre_filter => ['file_lines_contain', 'subs', 'objects'],
+                post_proc => ['file_lines_contain', 'subs', 'objects'],
                 engine => 'search_replace',
 #                engine_dump => 1,
               );
@@ -43,7 +43,7 @@ for (0..4){
 }
 
 delete $params{engine};
-delete $params{pre_filter};
+delete $params{post_proc};
 
 my $m_struct = $des->search_replace(exec => $cref);
 

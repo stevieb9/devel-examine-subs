@@ -16,8 +16,12 @@ os:
 sudo: required
 
 before_install:
+    - curl -L http://install.perlbrew.pl | bash
     - curl -L https://cpanmin.us/ -o cpanm
     - chmod +x cpanm
     - sudo mv cpanm /usr/bin
     - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
     - source ~/travis-perl-helpers/init --auto
+
+install:
+    - cpan-install --deps

@@ -560,6 +560,10 @@ REPOSITORY
 
     https://github.com/stevieb9/devel-examine-subs
 
+BUILD REPORTS
+
+    https://travis-ci.org/stevieb9/devel-examine-subs
+
 DEBUGGING
 
     If Devel::Trace::Subs is installed, you can configure stack tracing.

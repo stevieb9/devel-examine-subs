@@ -3,7 +3,7 @@ use 5.012;
 use warnings;
 use strict;
 
-our $VERSION = '1.48';
+our $VERSION = '1.48_01';
 
 use Carp;
 use Data::Compare;
@@ -1780,6 +1780,9 @@ will be executed based on their order in the array reference.
 
 L<https://github.com/stevieb9/devel-examine-subs>
 
+=head1 BUILD REPORTS
+
+L<https://travis-ci.org/stevieb9/devel-examine-subs>
 
 =head1 DEBUGGING
 

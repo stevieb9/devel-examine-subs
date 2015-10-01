@@ -8,7 +8,7 @@ use Test::More;
     ## no critic
 
     eval "
-        use Test::Compile;
+        use Test::Compile 0.12.0;
     ";
 };
 

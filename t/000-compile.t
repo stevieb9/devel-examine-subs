@@ -14,6 +14,10 @@ use Test::More;
 
 plan skip_all => "Test::Compile not installed" if $@;
 
+unless ( $ENV{RELEASE_TESTING} ) {
+    plan( skip_all => "Author tests not required for installation" );
+}
+
 exit if $@;
 
 plan tests => 15;

@@ -48,11 +48,11 @@ for my $o (@$objects){
         is ($o->line_count(), 3, "sub six has 4 lines, including the def and closing brace" );
     } 
 }
-
 {
     my %params = (file => 't/test');
     my $des = Devel::Examine::Subs->new(%params);
     my $struct = $des->objects();
+    
     for my $file (keys %$struct){
         for my $o (@$objects){
            if ($o->name() eq 'four'){

@@ -137,9 +137,9 @@ METHODS
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
-    file, extensions, cache, regex, copy, no_indent and diff.
+    file, extensions, maxdepth, cache, regex, copy, no_indent and diff.
 
-    Note: omit this parameter if all you'll be using is the module()
+    Note: omit the file parameter if all you'll be using is the module()
     method.
 
  all
@@ -380,15 +380,22 @@ PARAMETERS
 
       State: Persistent
 
-      Default: [qw(pm pl)]
+      Default: ['*.pm', '*.pl')]
 
       By default, we load only *.pm and *.pl files. Use this parameter to
       load different files. Only useful when a directory is passed in as
       opposed to a file. This parameter is persistent until manually reset
       and should be set in new().
 
-      Values: Array reference where each element is the name of the
-      extension (less the dot). For example, [qw(pm pl)] is the default.
+      Values: Array reference where each element is the names of files to
+      find. Any wildcard or regex that are valid in File::Find::Rule's
+      <http://search.cpan.org/~rclamp/File-Find-Rule-0.33/lib/File/Find/Rule.pm>
+      are valid here. For example, [qw(*.pm *.pl)] is the default.
+
+    maxdepth
+
+      When running in directory mode, how many levels deep do you want to
+      traverse? Default is unlimited. Set to a positive integer to set.
 
     cache
 

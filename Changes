@@ -1,5 +1,12 @@
 Revision history for Devel-Examine::Subs
 
+1.51    xxx
+        - extensions param changed to accept what File::Find::Rule::name
+          takes
+        - _run_directory() now uses File::Edit::Portable::dir() for finding
+          files
+        - Travis-CI integration
+
 1.46    20150930
         - renamed everything from pre_filter to post_proc
         - removed test that was failing across platforms (t/24)

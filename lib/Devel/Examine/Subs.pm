@@ -14,7 +14,7 @@ use Devel::Examine::Subs::Postprocessor;
 use File::Basename;
 use File::Copy;
 use File::Edit::Portable;
-use File::Find;
+use File::Find::Rule;
 use PPI;
 use Symbol qw(delete_package);
 
@@ -473,6 +473,7 @@ sub _config {
 
         file => 1,
         extensions => 1,
+        maxdepth => 1,
         regex => 1,
         copy => 1,
         diff => 1,
@@ -607,7 +608,7 @@ sub _file {
 
     if (-d $self->{params}{file}){
         $self->{params}{directory} = 1;
-        $self->{params}{extensions} = $p->{extensions} // [qw(pm pl)];
+        $self->{params}{extensions} = $p->{extensions} // [qw(*.pm *.pl)];
     }
     else {
         if (! $self->{params}{file} || ! -f $self->{params}{file}){
@@ -658,30 +659,16 @@ sub _run_directory {
     my $self = shift;
     my $p = shift;
 
-    my @files;
-
     my $dir = $self->{params}{file};
 
-    find({wanted => sub {
-            
-            trace() if $ENV{TRACE};
+    $self->{rw} = File::Edit::Portable->new;
 
-            return if ! -f;
-
-            my @extensions = @{$self->{params}{extensions}};
-            my $exts = join('|', @extensions);
-
-            if ($_ !~ /\.(?:$exts)$/i){
-                return;
-            }
-
-            my $file = $File::Find::name;
-
-            push @files, $file;
-          },
-            no_chdir => 1
-        }, $dir
-    );
+    my @files = $self->{rw}->dir(
+                            dir => $dir,
+                            maxdepth => $self->{params}{maxdepth} || 0,
+                            types => $self->{params}{extensions},
+                            list => 1,
+                        );
 
     my %struct;
 
@@ -1269,9 +1256,9 @@ so be careful.
 
 Only specific params are guaranteed to stay persistent throughout a run on the
 same object, and are best set in C<new()>. These parameters are C<file>,
-C<extensions>, C<cache>, C<regex>, C<copy>, C<no_indent> and C<diff>.
+C<extensions>, C<maxdepth>, C<cache>, C<regex>, C<copy>, C<no_indent> and C<diff>.
 
-Note: omit this parameter if all you'll be using is the C<module()> method.
+Note: omit the C<file> parameter if all you'll be using is the C<module()> method.
 
 
 
@@ -1578,15 +1565,20 @@ persistent until changed again.
 
 State: Persistent
 
-Default: C<[qw(pm pl)]>
+Default: C<['*.pm', '*.pl')]>
 
 By default, we load only C<*.pm> and C<*.pl> files. Use this parameter to load
 different files. Only useful when a directory is passed in as opposed to a
 file. This parameter is persistent until manually reset and should be set in
 C<new()>.
 
-Values: Array reference where each element is the name of the extension
-(less the dot). For example, C<[qw(pm pl)]> is the default.
+Values: Array reference where each element is the names of files to find. Any wildcard or regex that are valid in L<File::Find::Rule's|http://search.cpan.org/~rclamp/File-Find-Rule-0.33/lib/File/Find/Rule.pm> are valid here. For example, C<[qw(*.pm *.pl)]> is the default.
+
+
+=item C<maxdepth>
+
+When running in directory mode, how many levels deep do you want to traverse? Default is unlimited. Set to a positive integer to set.
+
 
 =item C<cache>
 

@@ -2,9 +2,7 @@ use 5.012;
 use warnings;
 use strict;
 
-use Cwd;
 use ExtUtils::MakeMaker;
-use File::Find;
 
 WriteMakefile
 (
@@ -27,7 +25,6 @@ WriteMakefile
     },
     CONFIGURE_REQUIRES => {
         'Cwd' => 0,
-        'File::Find' => 0,
         'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES => {
@@ -42,7 +39,6 @@ WriteMakefile
                    'Data::Dumper' => 0,
                    'File::Basename' => 0,
                    'File::Edit::Portable' => '1.02',
-                   'File::Find' => 0,
                    'PPI' => 0,
                    'Symbol' => 0,
                  }

@@ -14,7 +14,6 @@ use Devel::Examine::Subs::Postprocessor;
 use File::Basename;
 use File::Copy;
 use File::Edit::Portable;
-use File::Find::Rule;
 use PPI;
 use Symbol qw(delete_package);
 
@@ -544,6 +543,7 @@ sub _config {
         file_contents => 0,
         exec => 0,
         limit => 0,
+        line_num => 0,              # inject()
         add_functionality => 0,
     );
 
@@ -1448,8 +1448,13 @@ details.
 
 =head2 C<inject>
 
-Parameters: C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']> or
+Parameters (all are mutually exclusive, use only one):
+
+C<line_num =E<gt> 33> with C<code =E<gt> \@code> or,
+C<inject_use =E<gt> ['use Module::Name', 'use Module2::Name']> or,
 C<inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;']>
+
+C<line_num> will inject the block of code in the array reference immediately after the line number specified.
 
 C<inject_use> will inject the statements prior to all existing C<use>
 statements that already exist in the file(s). If none are found, will inject

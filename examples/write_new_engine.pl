@@ -18,7 +18,7 @@ my %params = (
                 post_proc => 'file_lines_contain',
 #                post_proc_dump => 1,
 #                post_proc_return => 1,
-                engine => new_has(),
+                engine => dumps(),
 #                engine_return => 1,
 #                engine_dump => 1,
 #                core_dump => 1,
@@ -27,29 +27,26 @@ my %params = (
               );
 
 #<des>
-sub new_has {
+sub dumps {
 
     return sub {
 
         my $p = shift;
         my $struct = shift;
 
-        my $file = (keys %$struct)[0];
-
-        my @has = keys %{$struct->{$file}{subs}};
-
-        return \@has;
+        use Data::Dumper;
+        print Dumper $struct;
     };
 }
 #</des>
 
 my $des = Devel::Examine::Subs->new(%params);
-my $struct = $des->run(\%params);
 
-print Dumper $struct;
+#my $struct = $des->run(\%params);
+#print Dumper $struct;
 
 # uncomment below line to inject the code
 # after you're certain the return is correct
 
-#$des->add_functionality(add_functionality => 'engine');
+$des->add_functionality(add_functionality => 'engine');
 

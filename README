@@ -258,8 +258,14 @@ METHODS
 
  inject
 
-    Parameters: inject_use => ['use Module::Name', 'use Module2::Name'] or
-    inject_after_sub_def => ['code line 1;', 'code line 2;']
+    Parameters (all are mutually exclusive, use only one):
+
+    line_num => 33 with code => \@code or, inject_use => ['use
+    Module::Name', 'use Module2::Name'] or, inject_after_sub_def => ['code
+    line 1;', 'code line 2;']
+
+    line_num will inject the block of code in the array reference
+    immediately after the line number specified.
 
     inject_use will inject the statements prior to all existing use
     statements that already exist in the file(s). If none are found, will

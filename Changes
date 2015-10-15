@@ -1,8 +1,8 @@
 Revision history for Devel-Examine::Subs
 
 1.51    20151015
-        - extensions param changed to accept what File::Find::Rule::name
-          takes
+        - API CHANGE: extensions param changed to accept what File::Find::Rule::name
+          takes, as opposed to just the extensions less the dot
         - _run_directory() now uses File::Edit::Portable::dir() for finding
           files
         - Travis-CI integration

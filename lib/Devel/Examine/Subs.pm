@@ -54,7 +54,7 @@ sub new {
 
     # default configs
 
-    $self->{namespace} = 'Devel::Examine::Subs';
+    $self->{namespace} = __PACKAGE__;
     $self->{params}{regex} = 1;
 
     $self->_config($p);
@@ -418,7 +418,7 @@ sub _clean_config {
 
     my $self = shift;
     my $config_vars = shift; # href of valid params
-    my $p = shift; # href of params passed in
+    my $p = shift;           # href of params passed in
 
     for my $var (keys %$config_vars){
        

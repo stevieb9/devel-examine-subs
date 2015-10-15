@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
 
@@ -18,6 +18,14 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 );
 
     ok (@files >= 67, "with default extensions, the correct num of files is returned");
+
+    @files = $rw->dir(
+                    dir => $dir,
+                    list => 1,
+                    maxdepth => 1,
+                );
+
+    ok (@files >= 50 && @files <= 60, "things appear reasonable with maxdepth param set");
 
     @files = $rw->dir(
                 dir => $dir,

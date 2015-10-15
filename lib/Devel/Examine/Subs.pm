@@ -203,7 +203,7 @@ sub inject {
 
     # inject_use/inject_after_sub_def are preprocs
 
-    if ($p->{inject_use} || $p->{inject_after_sub_def}){
+    if ($p->{inject_use} || $p->{inject_after_sub_def} || $p->{line_num}){
         $self->{params}{pre_proc} = 'inject';
         $self->{params}{pre_proc_return} = 1;
     }
@@ -246,18 +246,39 @@ sub add_functionality {
                     engine
     );
 
+    my $is_allowed = 0;
 
-    if (! (grep {$to_add eq $_} @allowed)){
+    for (@allowed){
+        if ($_ eq $to_add){
+            $is_allowed = 1;
+            last;
+        }
+    }
+    
+    if (! $is_allowed){
         croak "Adding a non-allowed piece of functionality...\n";
     }
 
     my %dt = (
+            pre_proc => sub {
+                        trace() if $ENV{TRACE};
+                        return $in_prod
+                        ? $INC{'Devel/Examine/Subs/Preprocessor.pm'}
+                        : 'lib/Devel/Examine/Subs/Preprocessor.pm';
+                      },
+            post_proc => sub {
+                        trace() if $ENV{TRACE};
+                        return $in_prod
+                        ? $INC{'Devel/Examine/Subs/Postprocessor.pm'}
+                        : 'lib/Devel/Examine/Subs/Postprocessor.pm';
+                      },
             engine => sub {
                         trace() if $ENV{TRACE};
                         return $in_prod
                         ? $INC{'Devel/Examine/Subs/Engine.pm'}
                         : 'lib/Devel/Examine/Subs/Engine.pm';
                       },
+
     );
 
     my $caller = (caller)[1];
@@ -281,12 +302,22 @@ sub add_functionality {
 
     my $file = $dt{$to_add}->();
 
-    my $des = Devel::Examine::Subs->new({
+    my $des = Devel::Examine::Subs->new(
                                     file => $file,
-                                    post_proc => 'end_of_last_sub',
-                                });
+                                    engine => 'objects', 
+                                    post_proc => [qw(subs end_of_last_sub)],
+                                );
+    $p = {
+        engine => 'objects', 
+        post_proc => [qw(subs end_of_last_sub)],
+        post_proc_return => 1,
+    };
 
-    $p->{write_file_contents} = \@code;
+    my $start_writing = $des->run($p);
+
+    $des = Devel::Examine::Subs->new(file => $file);
+
+    $des->inject(line_num => $start_writing, code => \@code);
 }
 sub engines {
     
@@ -513,6 +544,7 @@ sub _config {
         file_contents => 0,
         exec => 0,
         limit => 0,
+        add_functionality => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -707,12 +739,12 @@ sub _write_file {
 
     my $self = shift;
 
-    my $file = $self->{params}{file};
     my $copy = $self->{params}{copy};
+    
+    my $file = $self->{params}{file};
     my $contents = $self->{write_file_contents};
-
+   
     return if ! $file;
-
     $file = $copy if $copy;
 
     my $write_response;

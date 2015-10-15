@@ -35,7 +35,6 @@ sub new {
 
     return $self;
 }
-
 sub _dt {
 
     trace() if $ENV{TRACE};
@@ -52,7 +51,6 @@ sub _dt {
 
     return $dt;
 }
-
 sub exists {
 
     trace() if $ENV{TRACE};
@@ -67,7 +65,6 @@ sub exists {
         return 0;
     }
 }
-
 sub module {
 
     trace() if $ENV{TRACE};
@@ -106,7 +103,6 @@ sub module {
         return \@subs;
     };
 }
-
 sub inject {
 
     trace() if $ENV{TRACE};
@@ -118,6 +114,17 @@ sub inject {
         my $p = shift;
 
         my @file_contents = @{ $p->{file_contents} };
+
+        # after line number
+
+        if ($p->{line_num}){
+            
+            splice @file_contents, $p->{line_num}, 0, @{ $p->{code} };
+
+            $p->{write_file_contents} = \@file_contents;
+        }
+
+        # inject a use statement
 
         if ($p->{inject_use}) {
 
@@ -142,6 +149,8 @@ sub inject {
             $p->{write_file_contents} = \@file_contents;
 
         }
+
+        # inject code after sub definition
 
         if ($p->{inject_after_sub_def}) {
 

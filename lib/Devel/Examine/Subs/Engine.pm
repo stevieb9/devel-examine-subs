@@ -3,7 +3,7 @@ use 5.012;
 use strict;
 use warnings;
 
-our $VERSION = '1.51';
+our $VERSION = '1.52';
 
 use Carp;
 use Data::Dumper;

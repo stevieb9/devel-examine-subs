@@ -2,6 +2,7 @@ Revision history for Devel-Examine::Subs
 
 1.52    xxx
         - inject() with line_num param now uses File::Edit::Portable::splice()
+        - inject() w/ inject_use param uses the same as inject() w/ line_num
 
 1.51    20151015
         - API CHANGE: extensions param changed to accept what File::Find::Rule::name

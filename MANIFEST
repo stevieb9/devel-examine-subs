@@ -66,6 +66,7 @@ t/41-win32_line_endings.t
 t/42-replace.t
 t/43-write_failure.t
 t/44-file_extensions.t
+t/45-inject.t
 t/__clean.t
 t/manifest.t
 t/orig/inject_after.data

@@ -3,7 +3,7 @@ use 5.012;
 use strict;
 use warnings;
 
-our $VERSION = '1.51';
+our $VERSION = '1.52';
 
 use Carp;
 use Data::Dumper;
@@ -120,7 +120,9 @@ sub inject {
         my $rw = File::Edit::Portable->new;
 
         if (defined $p->{line_num}){
-            
+           
+            # inject after line number
+
             $rw->splice(
                 file => $p->{file},
                 line => $p->{line_num},
@@ -128,14 +130,15 @@ sub inject {
                 copy => $p->{copy},
             );
         }
-
-        # inject a use statement
-
-        if ($p->{inject_use}) {
+        elsif ($p->{inject_use}){  
+            
+            # inject a use statement
 
             my $use = qr/use\s+\w+/;
+            
+            my $index;
 
-            my ($index) = grep {
+            ($index) = grep {
                 $file_contents[$_] =~ $use
             } 0..$#file_contents;
 
@@ -148,19 +151,15 @@ sub inject {
             if ($index) {
                 $rw->splice(
                     file => $p->{file},
-                    line => $p->{line_num},
+                    line => ++$index,
                     insert => $p->{inject_use},
                     copy => $p->{copy},
                 );
             }
-
-            $p->{write_file_contents} = \@file_contents;
-
         }
+        elsif ($p->{inject_after_sub_def}){
 
-        # inject code after sub definition
-
-        if ($p->{inject_after_sub_def}) {
+            # inject code after sub definition
 
             my $code = $p->{inject_after_sub_def};
 

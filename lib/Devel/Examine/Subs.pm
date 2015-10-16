@@ -314,9 +314,28 @@ sub add_functionality {
 
     my $start_writing = $des->run($p);
 
-    $des = Devel::Examine::Subs->new(file => $file);
+    my $rw = File::Edit::Portable->new;
 
-    $des->inject(line_num => $start_writing, code => \@code);
+    $rw->splice(file => $file, insert => \@code, line => $start_writing);
+
+    my $sub_name;
+
+    if ($code[0] =~ /sub\s+(\w+)\s+\{/){
+        $sub_name = $1;
+    }
+    else {
+        croak "add_functionality() couldn't extract the sub name.";
+    }
+
+    my @insert = ("        $sub_name => \\&$sub_name,");
+
+    my @ret = $rw->splice(
+        file => $file, 
+        find => 'my\s+\$dt\s+=\s+\{',
+        insert => \@insert,
+    );
+
+    return 1;
 }
 sub engines {
     
@@ -545,6 +564,7 @@ sub _config {
         limit => 0,
         line_num => 0,              # inject()
         add_functionality => 0,
+        add_functionality_prod => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -1518,8 +1538,7 @@ it easy to write new engines and for testing.
 
 =head2 C<add_functionality>
 
-WARNING!: This method is highly experimental and is used for developing
-internal processors only. Only 'engine' is functional, and only half way.
+WARNING!: This method is for development of this distribution only!
 
 While writing new processors, set the processor type to a callback within the
 local working file. When the code performs the actions you want it to, put a
@@ -1529,8 +1548,7 @@ specified processor, and configure it for use. See
 C<examples/write_new_engine.pl> for an example of creating a new 'engine'
 processor.
 
-
-
+Returns 1 on success.
 
 Parameters:
 

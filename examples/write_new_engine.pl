@@ -15,7 +15,7 @@ my %params = (
 #                pre_proc => ,
 #                pre_proc_return => 1,
 #                pre_proc_dump => 1,
-                post_proc => 'file_lines_contain',
+                post_proc => ['file_lines_contain'],
 #                post_proc_dump => 1,
 #                post_proc_return => 1,
                 engine => dumps(),
@@ -34,19 +34,20 @@ sub dumps {
         my $p = shift;
         my $struct = shift;
 
-        use Data::Dumper;
-        print Dumper $struct;
+        return $struct;
     };
 }
 #</des>
 
-my $des = Devel::Examine::Subs->new(%params);
+my $install = 0; # set this to true to install
 
-#my $struct = $des->run(\%params);
-#print Dumper $struct;
-
-# uncomment below line to inject the code
-# after you're certain the return is correct
-
-$des->add_functionality(add_functionality => 'engine');
-
+if ($install){
+    my $des = Devel::Examine::Subs->new;
+    my $ret = $des->add_functionality(add_functionality => 'engine');
+    print "\n$ret\n";
+}
+else {
+    my $des = Devel::Examine::Subs->new(%params);
+    my $struct = $des->run(\%params);
+    print Dumper $struct;
+}

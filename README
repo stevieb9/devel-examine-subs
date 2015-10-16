@@ -321,9 +321,7 @@ DEVELOPER METHODS
 
  add_functionality
 
-    WARNING!: This method is highly experimental and is used for developing
-    internal processors only. Only 'engine' is functional, and only half
-    way.
+    WARNING!: This method is for development of this distribution only!
 
     While writing new processors, set the processor type to a callback
     within the local working file. When the code performs the actions you
@@ -332,6 +330,8 @@ DEVELOPER METHODS
     live-time, inject it into the specified processor, and configure it for
     use. See examples/write_new_engine.pl for an example of creating a new
     'engine' processor.
+
+    Returns 1 on success.
 
     Parameters:
 

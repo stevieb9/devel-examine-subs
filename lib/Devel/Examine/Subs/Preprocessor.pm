@@ -338,10 +338,9 @@ The data is returned early as mentioned in the L<DESCRIPTION>.
 =head2 C<inject>
 
 Parameters: C<{ inject_use =E<gt> ['use statement1;', 'use statement2;'] }>
-or C<{ inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;'] }>
+or C<{ inject_after_sub_def =E<gt> ['code line 1;', 'code line 2;'] }> or C<{ line_num =E<gt> $num, code => \@code }>
 
-Injects each element of the array ref as either a use statement, or in the
-latter case, lines of code after a sub definition.
+Injects each element of the array ref as either a use statement, lines of code after a sub definition, or a block of code immediately after the line number.
 
 =head2 C<remove>
 

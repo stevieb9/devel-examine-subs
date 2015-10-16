@@ -202,7 +202,7 @@ sub inject {
 
     # inject_use/inject_after_sub_def are preprocs
 
-    if ($p->{inject_use} || $p->{inject_after_sub_def} || $p->{line_num}){
+    if ($p->{inject_use} || $p->{inject_after_sub_def} || defined $p->{line_num}){
         $self->{params}{pre_proc} = 'inject';
         $self->{params}{pre_proc_return} = 1;
     }

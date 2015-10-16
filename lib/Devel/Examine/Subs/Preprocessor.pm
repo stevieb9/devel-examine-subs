@@ -117,11 +117,16 @@ sub inject {
 
         # after line number
 
-        if ($p->{line_num}){
-            
-            splice @file_contents, $p->{line_num}, 0, @{ $p->{code} };
+        my $rw = File::Edit::Portable->new;
 
-            $p->{write_file_contents} = \@file_contents;
+        if (defined $p->{line_num}){
+            
+            $rw->splice(
+                file => $p->{file},
+                line => $p->{line_num},
+                insert => $p->{code},
+                copy => $p->{copy},
+            );
         }
 
         # inject a use statement
@@ -141,9 +146,12 @@ sub inject {
             }
 
             if ($index) {
-                for (@{$p->{inject_use}}) {
-                    splice @file_contents, $index, 0, $_;
-                }
+                $rw->splice(
+                    file => $p->{file},
+                    line => $p->{line_num},
+                    insert => $p->{inject_use},
+                    copy => $p->{copy},
+                );
             }
 
             $p->{write_file_contents} = \@file_contents;

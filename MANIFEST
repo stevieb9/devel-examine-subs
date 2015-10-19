@@ -1,14 +1,5 @@
 Changes
-examples/add_functionality.pl
-examples/building_inject_after.pl
 examples/cache_benchmark.pl
-examples/engine_creation.pl
-examples/full_object_access.pl
-examples/module_as_file.pl
-examples/objects.pl
-examples/ppi.pl
-examples/README.examples
-examples/ver.pl
 examples/write_new_engine.pl
 lib/Devel/Examine/Subs.pm
 lib/Devel/Examine/Subs/Engine.pm
@@ -23,7 +14,7 @@ t/000-compile.t
 t/002-critic-t
 t/009-load.t
 t/01-internal.t
-t/02-has.t
+t/02-file_extentions.t
 t/03-missing.t
 t/04-all.t
 t/05-objects.t
@@ -65,7 +56,7 @@ t/40-dts_trace_checks.t
 t/41-win32_line_endings.t
 t/42-replace.t
 t/43-write_failure.t
-t/44-file_extensions.t
+t/44-has.t
 t/45-inject.t
 t/__clean.t
 t/manifest.t

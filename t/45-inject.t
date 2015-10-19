@@ -22,7 +22,7 @@ my $rw = File::Edit::Portable->new;
 {
     $des->inject(code => \@code, line_num => 0);
     
-    my @c = $rw->read(file => $copy);
+    my @c = $rw->read($copy);
 
     is ($c[0], 'one', "inject() inserts at the proper spot with line_num => 0");
 
@@ -32,7 +32,7 @@ my $rw = File::Edit::Portable->new;
 {
     $des->inject(code => \@code, line_num => 5);
 
-    my @c = $rw->read(file => $copy);
+    my @c = $rw->read($copy);
 
     is ($c[5], 'one', "inject() inserts at the proper spot with line_num => 5");
 
@@ -46,9 +46,9 @@ my $rw = File::Edit::Portable->new;
 
     $des->inject(inject_use => \@code);
     
-    my @c = $rw->read(file => $copy);
+    my @c = $rw->read($copy);
 
-    is ($c[2], 'use This::Test;', "inject() inserts at the proper spot with line_num => 0");
+    is ($c[2], 'use This::Test;', "inject() inserts use statement properly");
 
     eval { unlink $copy; };
     is ($@, '', "unlinked copy file $copy ok");

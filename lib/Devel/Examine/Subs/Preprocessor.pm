@@ -146,12 +146,13 @@ sub inject {
                 ($index) = grep {
                     $file_contents[$_] =~ /^package\s+\w+/
                 } 0..$#file_contents;
+                $index++;
             }
 
             if ($index) {
                 $rw->splice(
                     file => $p->{file},
-                    line => ++$index,
+                    line => $index,
                     insert => $p->{inject_use},
                     copy => $p->{copy},
                 );

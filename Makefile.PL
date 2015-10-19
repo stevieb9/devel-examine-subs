@@ -28,7 +28,7 @@ WriteMakefile
         'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES => {
-        'File::Edit::Portable' => 1.04,
+        'File::Edit::Portable' => 1.06,
         'Test::More' => 0,
         'Test::Trap' => 0,
     },

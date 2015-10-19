@@ -1,5 +1,9 @@
 Revision history for Devel-Examine::Subs
 
+1.53    20151019
+        - reorganized tests as extensions.t was breaking on windows due to
+          the same number of files not being used
+
 1.52    20151016
         - inject() with line_num param now uses File::Edit::Portable::splice()
         - inject() w/ inject_use param uses the same as inject() w/ line_num

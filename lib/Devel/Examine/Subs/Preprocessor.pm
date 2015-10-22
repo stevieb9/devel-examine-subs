@@ -176,7 +176,11 @@ sub inject {
 
             my $is_multi = 0;
 
-            while (my ($i, $e) = each @file_contents){
+            my $i = -1;
+
+            for my $e (@file_contents){
+
+                $i++;
 
                 if ($e =~ /^\n/){
                     push @new_file, "\n";

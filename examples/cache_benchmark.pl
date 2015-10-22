@@ -3,13 +3,9 @@ use warnings;
 use strict;
 
 use Benchmark qw(timethese);
-
-use Data::Dumper;
 use Devel::Examine::Subs;
-use File::Copy;
 
 my $file = 't/sample.data';
-my $orig = 't/sample.data.orig';
 
 my %params = (
                 file => 'lib',

@@ -35,7 +35,11 @@ my @orig = <$orig_fh>;
 close $work_fh;
 close $orig_fh;
 
-while (my ($i, $e) = each @work){
+my $i = -1;
+
+for my $e (@work){
+
+    $i++;
 
     if ($i == 6) {
         ok ($e ne $orig[$i], "the broken line >$i< doesn't match" );

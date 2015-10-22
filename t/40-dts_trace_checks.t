@@ -28,8 +28,8 @@ SKIP: {
     is (ref $trace->{flow}, 'ARRAY', "code flow is an array ref");
     is (ref $trace->{stack}, 'ARRAY', "stack is an array ref");
 
-    is (values @{ $trace->{flow} }, 8, "code flow has the proper number of entries");
-    is (values @{ $trace->{stack} }, 8, "stack has the proper number of entries");
+    is (scalar @{ $trace->{flow} }, 8, "code flow has the proper number of entries");
+    is (scalar @{ $trace->{stack} }, 8, "stack has the proper number of entries");
 
     my @stack_items = keys %{ $trace->{stack}->[0] };
 

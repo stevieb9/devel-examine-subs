@@ -1,4 +1,4 @@
-use 5.006;
+use 5.008;
 use warnings;
 use strict;
 
@@ -9,7 +9,7 @@ WriteMakefile
   PL_FILES => {},
   EXE_FILES => [],
   NAME => 'Devel::Examine::Subs',
-  MIN_PERL_VERSION => '5.006',
+  MIN_PERL_VERSION => '5.008',
   LICENSE => 'perl',
   INSTALLDIRS => 'site',
   VERSION_FROM => 'lib/Devel/Examine/Subs.pm',
@@ -37,7 +37,7 @@ WriteMakefile
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
                    'File::Basename' => 0,
-                   'File::Edit::Portable' => '1.02',
+                   'File::Edit::Portable' => '1.07',
                    'PPI' => 0,
                    'Symbol' => 0,
                  }

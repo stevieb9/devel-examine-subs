@@ -1,9 +1,9 @@
 package Devel::Examine::Subs;
-use 5.006;
+use 5.008;
 use warnings;
 use strict;
 
-our $VERSION = '1.54_01';
+our $VERSION = '1.55';
 
 use Carp;
 use Data::Compare;

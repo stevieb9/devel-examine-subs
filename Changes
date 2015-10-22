@@ -1,5 +1,10 @@
 Revision history for Devel-Examine::Subs
 
+1.55    20151022
+        - no functional changes
+        - runs down to perl v5.8
+        - removed all features beyond 5.8 (defined-or, each on array etc)
+
 1.53    20151019
         - reorganized tests as extensions.t was breaking on windows due to
           the same number of files not being used

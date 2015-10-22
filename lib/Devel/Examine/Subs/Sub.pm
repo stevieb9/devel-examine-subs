@@ -1,9 +1,9 @@
 package Devel::Examine::Subs::Sub;
-use 5.006;
+use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '1.54_01';
+our $VERSION = '1.55';
 
 use Data::Dumper;
 

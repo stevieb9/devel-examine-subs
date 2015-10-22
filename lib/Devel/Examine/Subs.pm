@@ -619,7 +619,7 @@ sub _file {
     my $self = shift;
     my $p = shift;
 
-    $self->{params}{file} = $p->{file} // $self->{params}{file};
+    $self->{params}{file} = defined $p->{file} ? $p->{file} : $self->{params}{file};
 
     # if a module was passed in, dig up the file
 
@@ -660,7 +660,8 @@ sub _file {
 
     if (-d $self->{params}{file}){
         $self->{params}{directory} = 1;
-        $self->{params}{extensions} = $p->{extensions} // [qw(*.pm *.pl)];
+        $self->{params}{extensions} 
+          = defined $p->{extensions} ? $p->{extensions} : [qw(*.pm *.pl)];
     }
     else {
         if (! $self->{params}{file} || ! -f $self->{params}{file}){
@@ -972,8 +973,10 @@ sub _proc {
 
     for my $PPI_sub (@{$PPIsubs}){
 
-        my $include = $self->{params}{include} // [];
-        my $exclude = $self->{params}{exclude} // [];
+        my $include 
+          = defined $self->{params}{include} ? $self->{params}{include} : [];
+        my $exclude
+          = defined $self->{params}{exclude} ? $self->{params}{exclude} : [];
 
         delete $self->{params}{include} if $exclude->[0];
 
@@ -1102,7 +1105,8 @@ sub _engine {
     my $p = shift;
     my $struct = shift;
 
-    my $engine = $p->{engine} // $self->{params}{engine};
+    my $engine 
+      = defined $p->{engine} ? $p->{engine} : $self->{params}{engine};
 
     if (not $engine or $engine eq ''){
         return $struct;

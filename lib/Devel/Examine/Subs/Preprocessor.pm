@@ -236,7 +236,7 @@ sub replace {
 
         my $p = shift;
         my $exec = $p->{exec};
-        my $limit = $p->{limit} // -1;
+        my $limit = defined $p->{limit} ? $p->{limit} : -1;
 
         my @file = @{ $p->{file_contents} };
 

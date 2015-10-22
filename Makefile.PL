@@ -9,7 +9,7 @@ WriteMakefile
   PL_FILES => {},
   EXE_FILES => [],
   NAME => 'Devel::Examine::Subs',
-  MIN_PERL_VERSION => '5.006,
+  MIN_PERL_VERSION => '5.006',
   LICENSE => 'perl',
   INSTALLDIRS => 'site',
   VERSION_FROM => 'lib/Devel/Examine/Subs.pm',

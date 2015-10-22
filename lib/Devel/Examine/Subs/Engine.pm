@@ -382,7 +382,7 @@ sub inject_after {
 
             my $sub = $subs_hash->{$_};
 
-            my $num_injects = $p->{injects} // 1;
+            my $num_injects = defined $p->{injects} $p->{injects} : 1;
 
             push @processed, $sub->name;
 

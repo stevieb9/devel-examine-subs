@@ -1,4 +1,4 @@
-use 5.012;
+use 5.006;
 use warnings;
 use strict;
 
@@ -9,7 +9,7 @@ WriteMakefile
   PL_FILES => {},
   EXE_FILES => [],
   NAME => 'Devel::Examine::Subs',
-  MIN_PERL_VERSION => '5.012',
+  MIN_PERL_VERSION => '5.006,
   LICENSE => 'perl',
   INSTALLDIRS => 'site',
   VERSION_FROM => 'lib/Devel/Examine/Subs.pm',
@@ -32,8 +32,7 @@ WriteMakefile
         'Test::More' => 0,
         'Test::Trap' => 0,
     },
-
-  PREREQ_PM => {
+    PREREQ_PM => {
                    'Carp' => 0,
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,

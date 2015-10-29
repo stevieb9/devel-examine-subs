@@ -1,5 +1,9 @@
 Revision history for Devel-Examine::Subs
 
+1.56    xxx
+        - most examples have been removed as unnecessary
+        - extra check put in before we clobber *trace() in BEGIN
+
 1.55    20151022
         - no functional changes
         - runs down to perl v5.8

@@ -3,7 +3,7 @@ use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '1.55';
+our $VERSION = '1.56';
 
 use Carp;
 use Data::Dumper;
@@ -20,8 +20,7 @@ BEGIN {
         import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@){
-
+    if ($@ && ! exists $Devel::Examine::Subs{'trace'}){
         # override DTS's trace() function if necessary
         *trace = sub {};
     }
@@ -201,7 +200,7 @@ sub objects {
     
     trace() if $ENV{TRACE};
 
-    # uses 'subs' pre_filter
+    # uses 'subs' post_processor 
 
     return sub {
         
@@ -482,7 +481,7 @@ Returns an aref.
 
 =head2 C<has>
 
-Takes C<$struct> from the output of the 'file_lines_contain' Pre-filter.
+Takes C<$struct> from the output of the 'file_lines_contain' Postprocessor.
 
 Returns an aref.
 

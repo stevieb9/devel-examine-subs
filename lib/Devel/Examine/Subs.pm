@@ -3,7 +3,7 @@ use 5.008;
 use warnings;
 use strict;
 
-our $VERSION = '1.55';
+our $VERSION = '1.56';
 
 use Carp;
 use Data::Compare;
@@ -27,7 +27,7 @@ BEGIN {
         import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@){
+    if ($@ && ! exists $Devel::Examine::Subs{'trace'}){
         *trace = sub {};
     }
 };
@@ -195,7 +195,6 @@ sub inject_after {
     $self->run($p);
 }
 sub inject {
-    
     trace() if $ENV{TRACE};
     my $self = shift;
     my $p = $self->_params(@_);
@@ -210,7 +209,6 @@ sub inject {
     $self->run($p);
 }
 sub remove {
-    
     trace() if $ENV{TRACE};
 
     my $self = shift;

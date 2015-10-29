@@ -3,7 +3,7 @@ use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '1.55';
+our $VERSION = '1.56';
 
 use Carp;
 use Data::Dumper;
@@ -17,7 +17,7 @@ BEGIN {
         import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@){
+    if ($@ && ! exists $Devel::Examine::Subs{'trace'}){
         *trace = sub {};
     }
 };

@@ -1,6 +1,7 @@
 Revision history for Devel-Examine::Subs
 
-1.56    xxx
+1.56    20151029
+        - no noticeable functional changes
         - most examples have been removed as unnecessary
         - extra check put in before we clobber *trace() in BEGIN
 

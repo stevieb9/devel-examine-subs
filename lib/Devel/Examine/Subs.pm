@@ -1827,6 +1827,12 @@ will be executed based on their order in the array reference.
 
 =head1 REPOSITORY
 
+=begin html
+ 
+<a href="http://travis-ci.org/stevieb9/devel-examine-subs"><img src="https://secure.travis-ci.org/stevieb9/devel-examine-subs.png"/></a> <a href="https://coveralls.io/r/stevieb9/devel-examine-subs"><img src="https://coveralls.io/repos/stevieb9/devel-examine-subs.png?branch=master"/></a>
+ 
+=end html
+
 L<https://github.com/stevieb9/devel-examine-subs>
 
 =head1 BUILD REPORTS

@@ -30,4 +30,5 @@ script:
   - make                      # or ./Build
   - make test
 after_success:
-  - coverage-report
+  - cover -report coveralls
+    #  - coverage-report

@@ -37,7 +37,7 @@ WriteMakefile
                    'Data::Compare' => 0,
                    'Data::Dumper' => 0,
                    'File::Basename' => 0,
-                   'File::Edit::Portable' => '1.07',
+                   'File::Edit::Portable' => '1.09',
                    'PPI' => 0,
                    'Symbol' => 0,
                  }

@@ -1,5 +1,14 @@
 Revision history for Devel-Examine::Subs
 
+1.57    xxx
+        - reworked _read_file(), it now populates $self->{params}{file_contents}
+          from a PPI doc
+        - _proc() modified to use PPI to get the sub code from the file, instead
+          of extracting it out manually out of an array slice by counting
+          line nums
+        - $subs struct no longer has a copy of the entire file contents in each
+          sub. This reduces the size of the data and all objects significantly
+
 1.56    20151029
         - no noticeable functional changes
         - most examples have been removed as unnecessary

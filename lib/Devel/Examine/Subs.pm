@@ -1344,7 +1344,7 @@ Note: omit the C<file> parameter if all you'll be using is the C<module()> metho
 Mandatory parameters: None
 
 Returns an array reference containing the names of all subroutines found in
-the file.
+the file, listed in the order they appear in the file.
 
 
 

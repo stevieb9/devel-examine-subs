@@ -147,7 +147,7 @@ METHODS
     Mandatory parameters: None
 
     Returns an array reference containing the names of all subroutines
-    found in the file.
+    found in the file, listed in the order they appear in the file.
 
  has
 

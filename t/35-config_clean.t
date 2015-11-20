@@ -38,6 +38,10 @@ is (keys %{$des->{params}}, 7, "config retains all specified persistent " .
 
 my @persistent = qw(file extensions cache copy no_indent regex diff);
 
+### NOTE: if the following test fails for a new transient param,
+### be sure to check if you need to put it in _clean_core_config()
+### as these vars won't be cleaned if set after _config()
+
 for my $p (keys %{$des->{params}}){
     ok ((grep {$p eq $_} @persistent), "$p is a valid persistent param");
 }

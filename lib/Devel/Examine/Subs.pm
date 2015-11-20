@@ -496,6 +496,7 @@ sub _clean_core_config {
     # delete params we collected after _clean_config()
 
     delete $self->{params}{file_contents};
+    delete $self->{params}{order};
 
     my @core_phases = qw(
         pre_proc
@@ -563,6 +564,7 @@ sub _config {
         line_num => 0,              # inject()
         add_functionality => 0,
         add_functionality_prod => 0,
+        order => 0,
     );
 
     $self->{valid_params} = \%valid_params;
@@ -986,9 +988,10 @@ sub _proc {
 
     my %subs;
     $subs{$file} = {};
-    
-    for my $PPI_sub (@{$PPI_subs}){
+    my @sub_order;
 
+    for my $PPI_sub (@{$PPI_subs}){
+        
         my $include 
           = defined $self->{params}{include} ? $self->{params}{include} : [];
         my $exclude
@@ -997,6 +1000,8 @@ sub _proc {
         delete $self->{params}{include} if $exclude->[0];
 
         my $name = $PPI_sub->name;
+        
+        push @sub_order, $name;
 
         # skip over excluded (or not included) subs
 
@@ -1024,7 +1029,8 @@ sub _proc {
 
         @{ $subs{$file}{subs}{$name}{code} } = split /\n/, $PPI_sub->content;
     }
-   
+  
+    @{ $p->{order} } = @sub_order; 
     return \%subs;
 }
 sub _post_proc {

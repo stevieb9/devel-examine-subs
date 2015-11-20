@@ -1,6 +1,12 @@
 Revision history for Devel-Examine::Subs
 
-1.57    xxx
+1.57_01   20151120
+        - DEPRECATIONS: search_replace(), replace(), inject() and inject_after()
+          are now depricated (they will be replaced later). Some of this module
+          will be broken out to a new module, and we'll *only* focus on subs in 
+          this one (as opposed to entire files).
+        - certain deprications will be necessary after the rest of the module is
+          rewritten to use PPI where it currently isn't
         - reworked _read_file(), it now populates $self->{params}{file_contents}
           from a PPI doc
         - _proc() modified to use PPI to get the sub code from the file, instead

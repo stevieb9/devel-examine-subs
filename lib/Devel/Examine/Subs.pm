@@ -1409,6 +1409,10 @@ module's namespace symbol table.
 
 
 
+=head2 C<order>
+
+After one of the other user methods are called, call this method to get returned to you an array of
+the names of subs you collected, in the order that they appear in the file. By default, because we use hashes internally, subs aren't ever in proper order.
 
 
 

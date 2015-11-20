@@ -195,6 +195,13 @@ METHODS
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
 
+ order
+
+    After one of the other user methods are called, call this method to get
+    returned to you an array of the names of subs you collected, in the
+    order that they appear in the file. By default, because we use hashes
+    internally, subs aren't ever in proper order.
+
  search_replace
 
     Mandatory parameters: exec => $cref

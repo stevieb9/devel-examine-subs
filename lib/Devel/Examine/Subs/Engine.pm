@@ -186,7 +186,7 @@ sub lines {
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
                 my $line_num = $struct->{$file}{subs}{$sub}{start};
-                my @code = @{$struct->{$file}{subs}{$sub}{contents}};
+                my @code = @{$struct->{$file}{subs}{$sub}{code}};
                 for my $line (@code){
                     $line_num++;
                     push @{$return{$sub}}, {$line_num => $line};

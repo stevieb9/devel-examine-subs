@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 16;
+use Test::More tests => 2;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -19,28 +19,3 @@ my $params = {
 my $aref = $des->run($params);
 
 ok (ref $aref eq 'ARRAY', "subs post_proc returns aref" );
-ok (ref $aref->[0]{file} eq 'ARRAY', "'file' attr in sub framework is aref" );
-
-for (@$aref){
-    is (@{$_->{file}}, 51, "sub $_->{name}'s complete file array has correct number of lines" );
-}
-
-eval {
-    for (@$aref){
-        if (! ( @{$_->{file}} == 51 )){
-            die "not all subs from 'subs' post_proc have the full perl file";
-        }
-    }
-};
-
-ok (! $@, "all subs returned from 'subs' post_proc have the full perl file" );    
-
-eval {
-    for (@$aref){
-        if (! ( @{$_->{file}} == 9999 )){
-            die "not all subs from 'subs' post_proc have the full perl file";
-        }
-    }
-};
-
-ok ($@, "we can catch if 'subs' post_proc return arefs have bad full file info" );    

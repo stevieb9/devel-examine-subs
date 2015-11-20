@@ -678,7 +678,10 @@ sub _params {
     return \%params;
 }
 sub _read_file {
-    
+
+    # this sub prepares a temp copy of the original file,
+    # recseps changed to local platform for PPI
+
     trace() if $ENV{TRACE};
 
     my $self = shift;
@@ -696,12 +699,20 @@ sub _read_file {
 
     $self->{rw} = File::Edit::Portable->new;
 
-    my @file_contents
-      = $self->{rw}->read(file => $file);
+    my $fh = $self->{rw}->read($file);
+    my $tempfile = $self->{rw}->tempfile;
+    my $tempfile_name = $tempfile->filename;
+    my $platform_recsep = $self->{rw}->platform_recsep;
 
-    @{ $p->{file_contents} } = @file_contents;
+    $self->{rw}->write(
+        copy => $tempfile_name, 
+        contents => $fh, 
+        recsep => $platform_recsep
+    );
 
-    return @file_contents;
+    close $tempfile;
+
+    return $tempfile_name;
 }
 sub _run_directory {
     
@@ -794,8 +805,6 @@ sub _core {
 
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
-
-    $self->_read_file($p);
 
     # pre processor
 
@@ -957,19 +966,18 @@ sub _proc {
 
     return {} if ! $file;
 
-    my $PPI_doc = PPI::Document->new($file);
-    my $PPIsubs = $PPI_doc->find("PPI::Statement::Sub");
+    my $PPI_file = $self->_read_file($file);
+    my $PPI_doc = PPI::Document->new($PPI_file);
+    my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
 
-    return if ! $PPIsubs;
+    return if ! $PPI_subs;
 
-    my @file_contents = @{ $self->{params}{file_contents} };
+    my @file_contents = @{ $PPI_doc->content };
 
     my %subs;
     $subs{$file} = {};
     
-    @{$subs{$file}{contents}} = @file_contents;
-
-    for my $PPI_sub (@{$PPIsubs}){
+    for my $PPI_sub (@{$PPI_subs}){
 
         my $include 
           = defined $self->{params}{include} ? $self->{params}{include} : [];
@@ -1004,16 +1012,7 @@ sub _proc {
 
         $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
 
-        # pull out just the subroutine from the file 
-        # array and attach it to the structure
-
-        my @sub_definition = @file_contents[
-                                    $subs{$file}{subs}{$name}{start}
-                                    ..
-                                    $subs{$file}{subs}{$name}{end}
-                                   ];
-
-        $subs{$file}{subs}{$name}{contents} = \@sub_definition;
+        $subs{$file}{subs}{$name}{contents} = $PPI_sub->content;
     }
    
     return \%subs;

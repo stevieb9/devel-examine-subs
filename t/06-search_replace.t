@@ -64,7 +64,8 @@ for (0..4){
     my $des = Devel::Examine::Subs->new(%params);
 
     eval {
-        $des->search_replace($cref => sub {});
+        $cref = sub {};
+        $des->search_replace(code => $cref);
     };
 
     like ($@, qr/without specifying a file/, "search_replace() croaks if no file is sent in" );

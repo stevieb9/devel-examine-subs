@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 7;
+use Test::More tests => 6;
 use Data::Dumper;
 
 BEGIN {#1
@@ -19,13 +19,10 @@ my $struct = $des->run();
 {#3
     ok ( ref($struct->{$file}) eq 'HASH', "top level of struct are hashes" );
 }
-{#4
-    ok ( ref($struct->{$file}{contents}) eq 'ARRAY', "contents 2nd level is hash" );
-}
 {#5
     my $sub = 'one';
     ok ( ref($struct->{$file}{subs}) eq 'HASH', "'subs' hard container is a hash" );
     ok ( ref($struct->{$file}{subs}{$sub}) eq 'HASH', "\$sub 3rd level is hash" );
-    ok ( ref($struct->{$file}{subs}{$sub}{contents}) eq 'ARRAY', "contents 3rd level is array" );
+    ok ( ref($struct->{$file}{subs}{$sub}{code}) eq 'ARRAY', "code 3rd level is array" );
 
 }

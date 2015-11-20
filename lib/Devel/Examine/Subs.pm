@@ -767,7 +767,7 @@ sub _write_file {
     
     my $file = $self->{params}{file};
     my $contents = $self->{write_file_contents};
-   
+
     return if ! $file;
     $file = $copy if $copy;
 
@@ -966,6 +966,9 @@ sub _proc {
     my ($PPI_file, $temp) = $self->_read_file(file => $file);
    
     my $PPI_doc = PPI::Document->new($PPI_file);
+
+    @{ $self->{params}{file_contents} } = split /\n/, $PPI_doc->content;
+
     my $PPI_subs = $PPI_doc->find('PPI::Statement::Sub');
 
     close $temp; 

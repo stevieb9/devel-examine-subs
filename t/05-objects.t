@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 126;
+use Test::More tests => 132;
 use Data::Dumper;
 
 BEGIN {#1

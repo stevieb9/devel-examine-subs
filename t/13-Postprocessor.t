@@ -66,8 +66,8 @@ my $post_proc = $compiler->{post_procs}{subs}->();
     is ($res->{end}, 34, "aref of crefs: good data");
     is ($res->{start}, 29, "aref of crefs: good data");
     is ($res->{num_lines}, 6, "aref of crefs: good data");
-    ok (ref $res->{contents} eq 'ARRAY', "aref of crefs: good data");
-    is ($res->{contents}[0], 'sub four {', "aref of crefs: good data");
+    ok (ref $res->{code} eq 'ARRAY', "aref of crefs: good data");
+    is ($res->{code}[0], 'sub four {', "aref of crefs: good data");
 }
 
 {#6

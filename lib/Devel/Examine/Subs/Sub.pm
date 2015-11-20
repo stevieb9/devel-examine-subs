@@ -90,7 +90,7 @@ sub code {
 
     my $self = shift;
 
-    my $code = $self->{data}{contents};
+    my $code = $self->{data}{code};
 
     return $code;
 }

@@ -131,7 +131,7 @@ sub file_lines_contain {
             for my $sub (keys %{$s->{$f}{subs}}){
                 my $found = 0;
                 my @has;
-                for (@{$s->{$f}{subs}{$sub}{contents}}){
+                for (@{$s->{$f}{subs}{$sub}{code}}){
                     if ($_ and /$search/){
                         $found++;
                         push @has, $_;
@@ -141,7 +141,7 @@ sub file_lines_contain {
                     delete $s->{$f}{subs}{$sub};                
                     next;
                 }
-                $s->{$f}{subs}{$sub}{contents} = \@has;
+                $s->{$f}{subs}{$sub}{code} = \@has;
             }
         }
         return $struct;

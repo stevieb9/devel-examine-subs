@@ -154,7 +154,7 @@ sub missing {
 
         for my $file (keys %$struct){
             for my $sub (keys %{$struct->{$file}{subs}}){
-                my @code = @{$struct->{$file}{subs}{$sub}{contents}};
+                my @code = @{$struct->{$file}{subs}{$sub}{code}};
 
                 my @clean;
 

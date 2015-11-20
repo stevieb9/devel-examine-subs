@@ -960,7 +960,8 @@ sub _proc {
 
     return {} if ! $file;
 
-    #FIXME: having temp here is really crappy...
+    #FIXME: having temp here is really crappy, but File::Temp erases
+    # the temp file as soon as it is closed...
 
     my ($PPI_file, $temp) = $self->_read_file(file => $file);
    
@@ -1009,7 +1010,7 @@ sub _proc {
 
         $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
 
-        @{ $subs{$file}{subs}{$name}{contents} } = split /\n/, $PPI_sub->content;
+        @{ $subs{$file}{subs}{$name}{code} } = split /\n/, $PPI_sub->content;
     }
    
     return \%subs;

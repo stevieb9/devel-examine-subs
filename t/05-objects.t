@@ -13,7 +13,7 @@ my $file = 't/sample.data';
 
 my %p = (
     file => $file, 
-    post_processor => 'subs',
+    post_proc => 'subs',
     engine => 'objects',
 );
 

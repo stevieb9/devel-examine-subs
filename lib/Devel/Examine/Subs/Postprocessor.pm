@@ -97,7 +97,7 @@ sub subs {
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;
                 $s->{$f}{subs}{$sub}{name} = $sub;
-                @{ $s->{$f}{subs}{$sub}{file} } = @{ $s->{$f}{contents} };
+                @{ $s->{$f}{subs}{$sub}{code} } = @{ $s->{$f}{subs}{$sub}{code} };
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }

@@ -685,9 +685,9 @@ sub _read_file {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my %p = @_;
+    my $p = shift;
 
-    my $file = $p{file};
+    my $file = $p->{file};
 
     return if ! $file;
 
@@ -710,7 +710,19 @@ sub _read_file {
         recsep => $platform_recsep
     );
 
-    return ($tempfile_name, $tempfile);
+    my $ppi_doc = PPI::Document->new($tempfile_name);
+    
+    @{ $p->{file_contents} } = split /\n/, $ppi_doc->content;
+
+    close $tempfile;
+
+    if (! $p->{file_contents}->[0]){
+        return 0;
+    }
+    else {
+        $self->{params}{file_contents} = $p->{file_contents};
+        return 1;
+    }
 }
 sub _run_directory {
     
@@ -804,6 +816,8 @@ sub _core {
     my $search = $self->{params}{search};
     my $file = $self->{params}{file};
 
+    $self->_read_file($p);
+
     # pre processor
 
     my $data;
@@ -843,9 +857,9 @@ sub _core {
         $subs = $self->_cache($p->{file});
     }
     else {
-        $subs = $self->_proc;
+        $subs = $self->_proc($p);
     } 
-  
+
     return if ! $subs;
 
     # write to cache
@@ -959,24 +973,15 @@ sub _proc {
     trace() if $ENV{TRACE};
     
     my $self = shift;
-    
+    my $p = shift;
+   
     my $file = $self->{params}{file};
 
     return {} if ! $file;
 
-    #FIXME: having temp here is really crappy, but File::Temp erases
-    # the temp file as soon as it is closed...
-
-    my ($PPI_file, $temp) = $self->_read_file(file => $file);
-   
-    my $PPI_doc = PPI::Document->new($PPI_file);
-
-    @{ $self->{params}{file_contents} } = split /\n/, $PPI_doc->content;
-
+    my $PPI_doc = PPI::Document->new($file);   
     my $PPI_subs = $PPI_doc->find('PPI::Statement::Sub');
 
-    close $temp; 
-    
     return if ! $PPI_subs;
 
     my %subs;

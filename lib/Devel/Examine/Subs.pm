@@ -493,6 +493,10 @@ sub _clean_core_config {
 
     my $self = shift;
 
+    # delete params we collected after _clean_config()
+
+    delete $self->{params}{file_contents};
+
     my @core_phases = qw(
         pre_proc
         post_proc

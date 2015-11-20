@@ -685,9 +685,9 @@ sub _read_file {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $p = shift;
+    my %p = @_;
 
-    my $file = $p->{file};
+    my $file = $p{file};
 
     return if ! $file;
 
@@ -710,9 +710,7 @@ sub _read_file {
         recsep => $platform_recsep
     );
 
-    close $tempfile;
-
-    return $tempfile_name;
+    return ($tempfile_name, $tempfile);
 }
 sub _run_directory {
     
@@ -966,10 +964,15 @@ sub _proc {
 
     return {} if ! $file;
 
-    my $PPI_file = $self->_read_file($file);
-    my $PPI_doc = PPI::Document->new($PPI_file);
-    my $PPI_subs = $PPI_doc->find("PPI::Statement::Sub");
+    #FIXME: having temp here is really crappy...
 
+    my ($PPI_file, $temp) = $self->_read_file(file => $file);
+   
+    my $PPI_doc = PPI::Document->new($PPI_file);
+    my $PPI_subs = $PPI_doc->find('PPI::Statement::Sub');
+
+    close $temp; 
+    
     return if ! $PPI_subs;
 
     my @file_contents = @{ $PPI_doc->content };

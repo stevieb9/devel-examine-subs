@@ -27,7 +27,7 @@ my $des = Devel::Examine::Subs->new(file => 't/sample.data');
     ok ( $res->[0] =~ '\w+', "has() returns an array if file exists and text available" );
 }
 {#5
-    my $res = $des->has( file => 't/sample.data', search => '', config_dump => 1 );
+    my $res = $des->has( file => 't/sample.data', search => '');
     is ( @$res, 11, "has() acts like all() when search term is empty" );
 }
 {#5

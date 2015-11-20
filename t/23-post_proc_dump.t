@@ -36,7 +36,7 @@ my $des = Devel::Examine::Subs->new(
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 728, "Based on test data, post_proc dump dumps the correct info" );
+    is (@lines, 145, "Based on test data, post_proc dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "post_proc dump output file closed successfully" );

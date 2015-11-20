@@ -493,10 +493,6 @@ sub _clean_core_config {
 
     my $self = shift;
 
-    # clean params that we collected after _clean_config()
-
-    delete $self->{params}{file_contents};
-
     my @core_phases = qw(
         pre_proc
         post_proc
@@ -975,8 +971,6 @@ sub _proc {
     
     return if ! $PPI_subs;
 
-    my @file_contents = @{ $PPI_doc->content };
-
     my %subs;
     $subs{$file} = {};
     
@@ -1015,7 +1009,7 @@ sub _proc {
 
         $subs{$file}{subs}{$name}{num_lines} = $sub_line_count;
 
-        $subs{$file}{subs}{$name}{contents} = $PPI_sub->content;
+        @{ $subs{$file}{subs}{$name}{contents} } = split /\n/, $PPI_sub->content;
     }
    
     return \%subs;

@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 16;
+use Test::More tests => 38;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -76,4 +76,31 @@ my $des = Devel::Examine::Subs->new();
         ok (ref $struct->{$_} eq 'ARRAY', "all() directory files contain arefs" );
         is (@{$struct->{$_}}, 11, "all() directory contains the correct number of elements" );
     }
+}
+{
+     my $des = Devel::Examine::Subs->new();
+
+     my $all = $des->all(file => 't/sample.data');
+
+     my @manual_order = qw(
+                one one_inner one_inner_two
+                two three four function
+                five six seven eight
+              );
+
+     my @order = $des->order;
+
+     my $i = 0;
+
+     for (@manual_order){
+         is ($_, $order[$i], "order() seems to do the right thing");
+         $i++;
+     }
+
+     $i = 0;
+
+     for (@$all){
+         is ($_, $order[$i], "all() sorts the subs in proper order");
+         $i++;
+     }
 }

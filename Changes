@@ -1,5 +1,11 @@
 Revision history for Devel-Examine::Subs
 
+1.58    xxx
+        - _core() now sets $p->{order}, which keeps track of the original order
+          of subs in the file being worked on 
+        - added order(), returns the list of sub names in the order they appear
+          in the file
+
 1.57_01   20151120
         - DEPRECATIONS: search_replace(), replace(), inject() and inject_after()
           are now depricated (they will be replaced later). Some of this module

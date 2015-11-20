@@ -105,7 +105,11 @@ sub all {
 
         my $file = $p->{file};
 
-        my @subs = keys %{$struct->{$file}{subs}};
+        my @subs;
+
+        for my $name (@{ $p->{order} }){
+            push @subs, grep {$name eq $_} keys %{ $struct->{$file}{subs} };
+        } 
 
         return \@subs;
     };

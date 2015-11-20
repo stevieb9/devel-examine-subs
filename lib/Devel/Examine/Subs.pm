@@ -219,6 +219,12 @@ sub remove {
 
     $self->run($p);
 }
+sub order {
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    return @{ $self->{order} };
+}
 
 #
 # publicly available semi-private developer methods
@@ -1031,6 +1037,8 @@ sub _proc {
     }
   
     @{ $p->{order} } = @sub_order; 
+    @{ $self->{order} } = @sub_order;
+
     return \%subs;
 }
 sub _post_proc {

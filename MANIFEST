@@ -36,7 +36,7 @@ t/20-file_line_pinpointing.t
 t/21-core_dump.t
 t/22-engine_dump.t
 t/23-post_proc_dump.t
-t/24-pre_proc_dump.t.norun
+t/24-pre_proc_dump.t
 t/25-_run_end.t
 t/26-inject_after.t
 t/27-bug_50.t

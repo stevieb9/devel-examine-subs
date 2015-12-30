@@ -8,6 +8,8 @@ Revision history for Devel-Examine::Subs
         - fixed minor issues in a couple of unit test files (file cleanup on 
           windows wasn't working correctly)
         - removed 'blead' from travis
+        - win32 tests in CPAN Testers should be ok again after last dev version
+        - re-enable t/24-preproc (seems to be working on win32 again)
 
 1.57_01   20151120
         - certain deprications will be necessary after the rest of the module is

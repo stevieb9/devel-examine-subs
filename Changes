@@ -1,5 +1,7 @@
 Revision history for Devel-Examine::Subs
 
+1.59    xxx
+
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order
           of subs in the file being worked on 

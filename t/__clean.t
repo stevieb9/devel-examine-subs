@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -19,6 +19,7 @@ eval {
 like ( $@, qr/open the write/, "Test sample.data unlinked/deleted successfully" );
 
 my @files_to_delete = qw(
+                    t/replace_copy.data
                     t/sample.data.bak
                     t/sample.data.orig
                     t/search_replace.data

@@ -20,7 +20,7 @@ unless ( $ENV{RELEASE_TESTING} ) {
 
 exit if $@;
 
-plan tests => 15;
+plan tests => 7;
 my $test = Test::Compile->new;
 
 $test->verbose(0);

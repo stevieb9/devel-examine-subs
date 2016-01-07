@@ -1868,6 +1868,8 @@ Travis-CI: L<https://travis-ci.org/stevieb9/devel-examine-subs>
 
 CPAN Testers: L<http://matrix.cpantesters.org/?dist=Devel-Examine-Subs>
 
+Coverage: L<https://coveralls.io/github/stevieb9/devel-examine-subs>
+
 =head1 DEBUGGING
 
 If C<Devel::Trace::Subs> is installed, you can configure stack tracing.

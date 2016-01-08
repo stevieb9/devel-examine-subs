@@ -7,6 +7,9 @@ use Mock::Sub;
 use Test::More tests => 84;
 
 BEGIN {#1
+    use_ok( 'Devel::Examine::Subs::Preprocessor' );
+    use_ok( 'Devel::Examine::Subs::Engine' );
+    use_ok( 'Devel::Examine::Subs::Postprocessor' );
     use_ok( 'Devel::Examine::Subs::Sub' );
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }

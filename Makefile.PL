@@ -29,6 +29,7 @@ WriteMakefile
     },
     BUILD_REQUIRES => {
         'File::Edit::Portable' => 1.13,
+        'Mock::Sub' => '1.01',
         'Test::More' => 0,
         'Test::Trap' => 0,
     },

@@ -30,7 +30,6 @@ BEGIN {#1
 
     is_deeply ({a=>1}, $data, "the return from the _test _engine() is what we expect" );
 }
-
 sub _des {  
     my $des =  Devel::Examine::Subs->new(@_); 
     return $des;

@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 21;
+use Test::More tests => 24;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -26,7 +26,7 @@ can_ok( $subs_namespace, 'all' );
 can_ok( $subs_namespace, '_file' );
 can_ok( $subs_namespace, '_core' );
 can_ok( $subs_namespace, '_engine' );
-can_ok( $subs_namespace, '_post_proc' );
+can_ok( $subs_namespace, '_pod' );
 
 my $sub_namespace = "Devel::Examine::Subs::Sub";
 
@@ -40,3 +40,14 @@ my $engine_namespace = "Devel::Examine::Subs::Engine";
 
 can_ok( $engine_namespace, '_test' );
 can_ok( $engine_namespace, '_test_print' );  
+can_ok( $engine_namespace, '_vim_placeholder' );  
+
+my $preproc_namespace = "Devel::Examine::Subs::Preprocessor";
+
+can_ok( $preproc_namespace, '_vim_placeholder' );
+
+my $postproc_namespace = "Devel::Examine::Subs::Preprocessor";
+
+can_ok( $postproc_namespace, '_vim_placeholder' );
+
+

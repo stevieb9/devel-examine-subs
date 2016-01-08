@@ -45,7 +45,7 @@ SKIP: {
 };
 {
     no strict 'refs';
-#    $SIG{__WARN__} = sub {};
+    $SIG{__WARN__} = sub {};
 
     $ENV{DES_TRACE} = 1;
 
@@ -53,25 +53,24 @@ SKIP: {
 
     my ($sub_count, $called_count);
 
-    for my $file (keys %{ $mods }){
+    while (my $file (keys %{ $mods }){
 
        my $mock = Mock::Sub->new;
        my $trace = $mock->mock($file . "::trace");
        
         my $obj = $file->new;
 
-        is ($trace->called, 1, "$file->new calls trace()");
+        is ($trace->called, 1, "$file new calls trace()");
         
         for my $sub (@{ $mods->{$file} }){
             $sub_count++;
             $trace->reset;
             eval { $obj->$sub(); };
-            is ($trace->called, 1, "$file->$sub calls trace()");
+            is ($trace->called, 1, "$file $sub calls trace()");
             $called_count++ if $trace->called;
         }
     }
     is ($sub_count, $called_count, "all subs have a trace() call");
-    print "$sub_count\n";
 }
 
 sub _subs {
@@ -154,4 +153,3 @@ sub _subs {
                                          ]
     };
 }
-

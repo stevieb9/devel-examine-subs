@@ -4,13 +4,13 @@ use strict;
 
 use Data::Dumper;
 use Mock::Sub;
-use Test::More tests => 84;
+use Test::More tests => 83;
 
 BEGIN {#1
-    use_ok( 'Devel::Examine::Subs::Preprocessor' );
-    use_ok( 'Devel::Examine::Subs::Engine' );
-    use_ok( 'Devel::Examine::Subs::Postprocessor' );
-    use_ok( 'Devel::Examine::Subs::Sub' );
+    #use_ok( 'Devel::Examine::Subs::Postprocessor' );
+    #use_ok( 'Devel::Examine::Subs::Preprocessor' );
+    #use_ok( 'Devel::Examine::Subs::Engine' );
+    #use_ok( 'Devel::Examine::Subs::Sub' );
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
@@ -56,7 +56,7 @@ SKIP: {
 
     my ($sub_count, $called_count);
 
-    for my $file (keys %{ $mods }){
+    for my $file (sort { length($a) <=> length($b) } keys %{ $mods }){
 
        my $mock = Mock::Sub->new;
        my $trace = $mock->mock($file . "::trace");

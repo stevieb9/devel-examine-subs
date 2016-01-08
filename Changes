@@ -1,6 +1,6 @@
 Revision history for Devel-Examine::Subs
 
-1.59    xxx
+1.59    - added numerous new tests, bringing coverage up from 88% to 91%
 
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order

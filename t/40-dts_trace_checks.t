@@ -71,6 +71,7 @@ SKIP: {
         }
     }
     is ($sub_count, $called_count, "all subs have a trace() call");
+    print "$sub_count\n";
 }
 
 sub _subs {

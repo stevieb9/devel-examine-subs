@@ -53,7 +53,7 @@ SKIP: {
 
     my ($sub_count, $called_count);
 
-    while (my $file (keys %{ $mods }){
+    for my $file (keys %{ $mods }){
 
        my $mock = Mock::Sub->new;
        my $trace = $mock->mock($file . "::trace");

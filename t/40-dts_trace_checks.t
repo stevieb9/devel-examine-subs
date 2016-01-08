@@ -45,7 +45,7 @@ SKIP: {
 };
 {
     no strict 'refs';
-    $SIG{__WARN__} = sub {};
+#    $SIG{__WARN__} = sub {};
 
     $ENV{DES_TRACE} = 1;
 

@@ -586,6 +586,8 @@ BUILD REPORTS
 
     CPAN Testers: http://matrix.cpantesters.org/?dist=Devel-Examine-Subs
 
+    Coverage: https://coveralls.io/github/stevieb9/devel-examine-subs
+
 DEBUGGING
 
     If Devel::Trace::Subs is installed, you can configure stack tracing.
@@ -621,7 +623,7 @@ SUPPORT
 
 LICENSE AND COPYRIGHT
 
-    Copyright 2015 Steve Bertrand.
+    Copyright 2016 Steve Bertrand.
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of either: the GNU General Public License as published

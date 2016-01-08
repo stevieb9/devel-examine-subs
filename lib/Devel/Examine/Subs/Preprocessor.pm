@@ -284,7 +284,7 @@ sub remove {
 1;
 
 
-sub _vim_placeholder {}
+sub _vim_placeholder {1;}
 
 __END__
 

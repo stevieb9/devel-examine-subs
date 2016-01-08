@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 24;
+use Test::More tests => 28;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -27,6 +27,7 @@ can_ok( $subs_namespace, '_file' );
 can_ok( $subs_namespace, '_core' );
 can_ok( $subs_namespace, '_engine' );
 can_ok( $subs_namespace, '_pod' );
+is (Devel::Examine::Subs::_pod(), 1, "subs placeholder check");
 
 my $sub_namespace = "Devel::Examine::Subs::Sub";
 
@@ -40,14 +41,17 @@ my $engine_namespace = "Devel::Examine::Subs::Engine";
 
 can_ok( $engine_namespace, '_test' );
 can_ok( $engine_namespace, '_test_print' );  
-can_ok( $engine_namespace, '_vim_placeholder' );  
+can_ok( $engine_namespace, '_vim_placeholder' );
+is (Devel::Examine::Subs::Engine::_vim_placeholder(), 1, "engine placeholder check");
 
 my $preproc_namespace = "Devel::Examine::Subs::Preprocessor";
 
 can_ok( $preproc_namespace, '_vim_placeholder' );
+is (Devel::Examine::Subs::Preprocessor::_vim_placeholder(), 1, "pre placeholder check");
 
 my $postproc_namespace = "Devel::Examine::Subs::Preprocessor";
 
 can_ok( $postproc_namespace, '_vim_placeholder' );
+is (Devel::Examine::Subs::Postprocessor::_vim_placeholder(), 1, "post placeholder check");
 
 

@@ -1180,7 +1180,7 @@ sub _engine {
 # pod
 #
 
-sub _pod{} #vim placeholder 
+sub _pod{1;} #vim placeholder
 1; 
 __END__
 

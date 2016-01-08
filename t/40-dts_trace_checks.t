@@ -66,7 +66,7 @@ SKIP: {
             $sub_count++;
             $trace->reset;
             eval { $obj->$sub(); };
-            is ($trace->called, 1, "$file::$sub calls trace()");
+            is ($trace->called, 1, "$file->$sub calls trace()");
             $called_count++ if $trace->called;
         }
     }

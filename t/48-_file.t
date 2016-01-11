@@ -11,9 +11,9 @@ BEGIN {#1
 
 my $des = Devel::Examine::Subs->new(file => 't/sample.data');
 
-$des->_file({file => 'Archive::Tar'});
+$des->_file({file => 'Pod::Usage'});
 
 use Data::Dumper;
 
-ok (! exists $INC{'Archive::Tar'}, "module unloaded if not previously loaded in _file()");
-ok (! $Archive::Tar::VERSION, "_file() also unloads an unloaded module");
+ok (! exists $INC{'Pod::Usage'}, "module unloaded if not previously loaded in _file()");
+ok (! $Pod::Usage::VERSION, "_file() also unloads an unloaded module");

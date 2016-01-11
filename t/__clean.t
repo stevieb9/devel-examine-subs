@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 24;
+use Test::More tests => 26;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -29,6 +29,8 @@ my @files_to_delete = qw(
     t/test.bak
     t/test.data
     t/core_dump.debug
+    t/cache_dump.debug
+    t/config_dump.debug
     t/engine_dump.debug
     t/post_proc_dump.debug
     t/pre_proc_dump.debug

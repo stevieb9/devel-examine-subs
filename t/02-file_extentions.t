@@ -41,7 +41,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.data)],
             );
 
-    is (@files, 6, "using *.data extension works properly");
+    is (@files, 7, "using *.data extension works properly");
 
     @files = $rw->dir(
                 dir => $dir,
@@ -49,7 +49,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.data *.t)],
             );
 
-    is (@files, 59, "using *.data and *.t extensions works properly");
+    is (@files, 60, "using *.data and *.t extensions works properly");
 
 }
 

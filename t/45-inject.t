@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
@@ -53,7 +53,26 @@ my $rw = File::Edit::Portable->new;
     eval { unlink $copy; };
     is ($@, '', "unlinked copy file $copy ok");
 }
+{
+    # inject use
 
+    my $copy = 't/inject.debug';
+    my $des = Devel::Examine::Subs->new(
+        file => 't/orig/inject.data',
+        copy => $copy,
+    );
+
+    my @code = ('hello();');
+
+    $des->inject(inject_after_sub_def => \@code);
+
+    my @c = $rw->read($copy);
+
+    is ($c[4], '    hello();', "inject() inserts use statement properly after multi-line sub def");
+
+    eval { unlink $copy; };
+    is ($@, '', "unlinked copy file $copy ok");
+}
 __DATA__
 one
 two

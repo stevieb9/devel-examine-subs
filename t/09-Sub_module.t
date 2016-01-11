@@ -2,11 +2,16 @@
 use warnings;
 use strict;
 
-use Test::More tests => 496;
+use Data::Dumper;
+use Test::More tests => 497;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
+    eval {
+        require Devel::Trace::Subs;
+        import Devel::Trace::Subs qw(trace_dump);
+    };
 }
 
 my $des = Devel::Examine::Subs->new(file => 'lib/Devel/Examine/Subs.pm');
@@ -43,4 +48,13 @@ my $des = Devel::Examine::Subs->new(file => 'lib/Devel/Examine/Subs.pm');
         can_ok( $href->{$_}, 'code' );
         can_ok( $href->{$_}, 'lines' );
     }
+}
+{ # test lines_with
+
+    my $data;
+    $data->{lines_with} = [{1 => 'a'}];
+    my $obj = Devel::Examine::Subs::Sub->new($data);
+    my $lines = $obj->lines();
+
+    is (ref $lines, 'ARRAY', "lines_with returns correct");
 }

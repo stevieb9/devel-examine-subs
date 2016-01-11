@@ -7,16 +7,12 @@ use Mock::Sub;
 use Test::More tests => 83;
 
 BEGIN {#1
-    #use_ok( 'Devel::Examine::Subs::Postprocessor' );
-    #use_ok( 'Devel::Examine::Subs::Preprocessor' );
-    #use_ok( 'Devel::Examine::Subs::Engine' );
-    #use_ok( 'Devel::Examine::Subs::Sub' );
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
 eval {
     require Devel::Trace::Subs;
-    import Devel::Trace::Subs qw(trace trace_dump);
+    import Devel::Trace::Subs qw(trace);
 };
 
 SKIP: {

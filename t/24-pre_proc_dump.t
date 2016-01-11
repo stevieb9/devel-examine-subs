@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 8;
+use Test::More tests => 11;
 use Test::Trap;
 
 BEGIN {#1
@@ -13,6 +13,19 @@ BEGIN {#1
 my $des = Devel::Examine::Subs->new(
                             file => 't/sample.data',
                           );
+{
+    my $des = Devel::Examine::Subs->new;
+    my $ret = $des->_pre_proc({}, {a =>1});
+
+    is (ref $ret, 'HASH', "_pre_proc() returns properly with no preproc set");
+    is ($ret->{a}, 1, "preproc returns correctly");
+
+    my $cref = sub { return 55; };
+    $des->{params}{pre_proc} = $cref;
+    my $ret_cref = $des->_pre_proc({}, {});
+
+    is ($ret_cref->(), 55, "with a cref set, preproc returns it");
+}
 {#2 - pre_proc dump
 
     my $file = 't/pre_proc_dump.debug';
@@ -43,3 +56,4 @@ my $des = Devel::Examine::Subs->new(
     eval { unlink $file; };
     ok (! $@, "pre_proc dump temp file deleted successfully" );
 }
+

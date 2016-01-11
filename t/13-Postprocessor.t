@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Data::Dumper;
 
 BEGIN {#1-2
@@ -123,4 +123,8 @@ my $post_proc = $compiler->{post_procs}{subs}->();
     ok ( ! $@, "post_proc works when sent an array ref with a cref and a " .
              "string" );
 }
-
+{#11
+    my $des = Devel::Examine::Subs->new(file => 't/sample.data');
+    my $ret = $des->run({engine => 'all', post_proc_return => 1});
+    is (ref $ret, 'HASH', "post_proc_return returns the struct");
+}

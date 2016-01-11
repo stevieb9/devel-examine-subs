@@ -44,3 +44,4 @@ my $des = Devel::Examine::Subs->new(
     eval { unlink $file; };
     ok (! $@, "post_proc dump temp file deleted successfully" );
 }
+

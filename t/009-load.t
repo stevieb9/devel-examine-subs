@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 28;
+use Test::More tests => 27;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -40,7 +40,6 @@ can_ok( $sub_namespace, 'line_count' );
 my $engine_namespace = "Devel::Examine::Subs::Engine";
 
 can_ok( $engine_namespace, '_test' );
-can_ok( $engine_namespace, '_test_print' );  
 can_ok( $engine_namespace, '_vim_placeholder' );
 is (Devel::Examine::Subs::Engine::_vim_placeholder(), 1, "engine placeholder check");
 

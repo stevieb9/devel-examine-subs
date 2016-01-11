@@ -4,7 +4,7 @@ use strict;
 
 use Data::Dumper;
 use Mock::Sub;
-use Test::More tests => 83;
+use Test::More tests => 82;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -101,7 +101,6 @@ sub _subs {
                                                         'replace'
                                                       ],
           'Devel::Examine::Subs::Engine' => [
-                                                  '_test_print',
                                                   'missing',
                                                   'lines',
                                                   '_test',

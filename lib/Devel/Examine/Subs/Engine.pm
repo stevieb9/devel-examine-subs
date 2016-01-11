@@ -53,7 +53,6 @@ sub _dt {
         inject_after => \&inject_after,
         dt_test => \&dt_test,
         _test => \&_test,
-        _test_print => \&_test_print,
         _test_bad => \&_test_bad,
     };
 
@@ -80,16 +79,6 @@ sub _test {
     return sub {
         trace() if $ENV{TRACE};
         return {a => 1};
-    };
-}
-sub _test_print {
-    
-    trace() if $ENV{TRACE};
-
-    return sub {
-        
-        trace() if $ENV{TRACE};
-        print "Hello, world!\n";
     };
 }
 sub all {

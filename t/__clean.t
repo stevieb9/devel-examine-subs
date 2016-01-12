@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 36;
+use Test::More tests => 98;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -48,5 +48,3 @@ for (@files_to_delete){
     eval { unlink $_ if -f $_; };
     ok (! $@, "test file >>$_<< deleted ok" );
 }
-
-exit if $@;

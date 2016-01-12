@@ -801,7 +801,21 @@ sub _write_file {
     my $contents = $self->{write_file_contents};
 
     return if ! $file;
-    $file = $copy if $copy;
+
+    if ($self->{params}{directory} && ! -d $copy){
+        warn "\n\nin directory mode, all files are copied to the dir named " .
+             "in the copy param, which is $copy\n\n";
+
+        mkdir $copy or croak "can't create directory $copy";
+    }
+    if ($copy && -d $copy){
+        copy $file, $copy;
+        my $filename = basename $file;
+        $file = "$copy/$filename";
+    }
+    elsif ($copy) {
+        $file = $copy;
+    }
 
     my $write_response;
 

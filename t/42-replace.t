@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 12;
+use Test::More tests => 24;
 use Data::Dumper;
 
 BEGIN {#1
@@ -84,4 +84,41 @@ my $copy = 't/replace_copy.data';
     };
 
     like ( $@, qr/DES::replace/,  "failure if a cref isn't passed into replace()" );
+}
+{
+    my $file = 't/orig';
+    my $copy = 't/dir_copy';
+
+    my $warning;
+    $SIG{__WARN__} = sub { $warning = shift; };
+
+    my $des = Devel::Examine::Subs->new(
+        file => $file, 
+        copy => $copy,
+        extensions => ['*.data'],
+    );
+
+    my $cref = sub { $_[0] =~ s/(?:\}|\{)//g; };
+
+    my $ret = $des->replace(exec => $cref, limit => -1);
+
+    like ($warning, qr/in directory mode, all files/, "_write_file() properly warns");
+
+    is (-d $copy, 1, "copy dir created properly when file param is a dir and we're writing");
+
+    my @files = glob "$copy/*";
+    is (@files, 4, "the proper number of files were copied to the new dir");
+
+    for (@files){
+        open my $fh, '<', $_ or die $!;
+        my $lines = <$fh>;
+        my $ok = 10 if $lines !~ /(?:\}|\{)/;
+        is ($ok, 10, "$_ has been copied and modified properly"); 
+        
+        eval { unlink $_ or die $!; };
+        is ($@, '', "unlinked $_ copy file ok");
+    }
+
+    eval { rmdir $copy or die $!; };
+    is ($@, '', "copy dir removed ok");
 }

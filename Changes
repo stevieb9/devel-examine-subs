@@ -1,6 +1,10 @@
 Revision history for Devel-Examine::Subs
 
-1.59    - added numerous new tests, bringing coverage up from 88% to 91%
+1.59    xxx  
+        - 100% test coverage!!!
+        - when file param is a directory, we now use the copy param as a dir,
+          create that dir, and copy all the files in the file param to it, and
+          operate on those
 
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order

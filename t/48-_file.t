@@ -9,11 +9,13 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 }
 
-my $des = Devel::Examine::Subs->new(file => 't/sample.data');
+{
+    my $des = Devel::Examine::Subs->new(file => 't/sample.data');
 
-$des->_file({file => 'Pod::Usage'});
+    $des->_file({file => 'Pod::Usage'});
 
-use Data::Dumper;
+    use Data::Dumper;
 
-ok (! exists $INC{'Pod::Usage'}, "module unloaded if not previously loaded in _file()");
-ok (! $Pod::Usage::VERSION, "_file() also unloads an unloaded module");
+    ok (! exists $INC{'Pod::Usage'}, "module unloaded if not previously loaded in _file()");
+    ok (! $Pod::Usage::VERSION, "_file() also unloads an unloaded module");
+}

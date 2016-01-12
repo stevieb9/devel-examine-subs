@@ -54,9 +54,10 @@ my $rw = File::Edit::Portable->new;
     is ($@, '', "unlinked copy file $copy ok");
 }
 {
-    # inject use
+    # inject after sub def
 
     my $copy = 't/inject.debug';
+
     my $des = Devel::Examine::Subs->new(
         file => 't/orig/inject.data',
         copy => $copy,
@@ -67,6 +68,8 @@ my $rw = File::Edit::Portable->new;
     my @c = $rw->read($copy);
 
     is ($c[4], '    one', "inject() inserts use statement properly after multi-line sub def");
+
+    print "$_\n" for @c;
 
     eval { unlink $copy; };
     is ($@, '', "unlinked copy file $copy ok");

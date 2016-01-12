@@ -335,7 +335,6 @@ sub add_functionality {
 
     my $start_writing = $des->run($p);
 
-
     my $rw = File::Edit::Portable->new;
 
     $rw->splice(file => $file, insert => \@code, line => $start_writing);

@@ -186,10 +186,6 @@ sub inject {
 
                 $i++;
 
-                if ($e =~ /^\n/){
-                    push @new_file, "\n";
-                }
-
                 my $indent = '';
 
                 my $count = $i;

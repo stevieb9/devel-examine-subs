@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 28;
+use Test::More tests => 30;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -35,6 +35,7 @@ my @files_to_delete = qw(
     t/engine_dump.debug
     t/post_proc_dump.debug
     t/pre_proc_dump.debug
+    t/remove.data
 );
 my @bak_glob = <*.bak>;
 

@@ -62,7 +62,7 @@ my $rw = File::Edit::Portable->new;
         copy => $copy,
     );
 
-    my @code = ('hello();');
+    my @code = ('hello();', "\n", 'there();');
 
     $des->inject(inject_after_sub_def => \@code);
 

@@ -328,16 +328,14 @@ sub add_functionality {
 
     my $sub_name;
 
-    print "***$code[0]***\n";
     if ($code[0] =~ /sub\s+(\w+)/){
-        print "IN HERE!\n";
         $sub_name = $1;
     }
     else {
+        print "IN ELSE\n";
         croak "add_functionality() couldn't extract the sub name.";
     }
 
-    print "*** $sub_name\n";
     my $rw = File::Edit::Portable->new;
 
     $rw->splice(file => $file, insert => \@code, line => $start_writing);

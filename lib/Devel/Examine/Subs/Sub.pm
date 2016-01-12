@@ -15,11 +15,12 @@ BEGIN {
         require Devel::Trace::Subs;
     };
 
-    if ($@){
-        *trace = sub {};
-    }
-    else {
+    eval {
         import Devel::Trace::Subs qw(trace);
+    };
+
+    if ($@ || ! defined &trace){
+        *trace = sub {};
     }
 };
 

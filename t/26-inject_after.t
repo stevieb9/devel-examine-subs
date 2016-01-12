@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 153;
+use Test::More tests => 156;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -212,17 +212,74 @@ BEGIN {#1
 
     is ($count, 2, "'injects' param is carried through from new()");
 }
+{
+    my $base_file = 't/orig/inject_after.data';
+
+    my %params = (
+        file      => 't/sample.data',
+        copy      => 't/inject_after.data',
+        post_proc => [ 'file_lines_contain', 'subs', 'objects' ],
+        engine    => 'inject_after',
+        #search => 'this',
+        code      => [ '# comment line one', '# comment line 2' ],
+    );
+
+    my $des = Devel::Examine::Subs->new(%params);
+
+    eval { my $struct = $des->run(); };
+    like ($@,
+          qr/inject_after engine without specifying a search term/,
+          "without a search term, inject_after() croaks"
+    );
+}
+{
+    my $base_file = 't/orig/inject_after.data';
+
+    my %params = (
+        file      => 't/sample.data',
+        copy      => 't/inject_after.data',
+        post_proc => [ 'file_lines_contain', 'subs', 'objects' ],
+        engine    => 'inject_after',
+        search => 'this',
+        #code      => [ '# comment line one', '# comment line 2' ],
+    );
+
+    my $des = Devel::Examine::Subs->new(%params);
+
+    eval { my $struct = $des->run(); };
+    like ($@,
+          qr/inject_after engine without code to inject/,
+          "without the code param, inject_after() croaks"
+    );
+}
+{
+    my $base_file = 't/orig/inject_after.data';
+
+    my %params = (
+        file      => 't/sample.data',
+        copy      => 't/inject_after.data',
+        post_proc => [ 'file_lines_contain', 'subs', 'objects' ],
+        engine    => 'inject_after',
+        search    => 'this',
+        code      => [ '# comment line one', '# comment line 2' ],
+        regex     => 0,
+    );
+
+    my $des = Devel::Examine::Subs->new(%params);
+
+    eval { my $struct = $des->run(); };
+    is ($@, '', "with regex off, inject_after() still works");
+}
 
 my @tempfiles = qw(
-                t/test/inject_after/inject_after.copy 
+                t/test/inject_after/inject_after.copy
                 inject_after.pm.bak
               );
 
 my $fh;
 
-
 for (@tempfiles){
-    
+
     eval { open $fh, '<', $_ or die $!; };
     ok (! $@, "inject_after() properly creates a $_ file and it can be opened" );
     eval {close $fh;};
@@ -233,4 +290,3 @@ for (@tempfiles){
     eval { open my $fh, '<', $_ or die $!; };
     ok ($@, "temp file really is deleted" );
 }
-

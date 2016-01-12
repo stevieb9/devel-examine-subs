@@ -136,7 +136,7 @@ sub missing {
 
         my $file = $p->{file};
         my $search = $p->{search};
- 
+
         if ($search && ! $p->{regex}){
             $search = "\Q$search";
         }
@@ -209,9 +209,7 @@ sub objects {
 
         my $lines;
 
-        my $des_sub;
-        my %obj_hash;
-        my @obj_array;
+        my ($des_sub, %obj_hash, @obj_array);
 
         for my $sub (@$struct){
 

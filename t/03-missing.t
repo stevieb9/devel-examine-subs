@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 15;
+use Test::More tests => 17;
 use Data::Dumper;
 
 BEGIN {#1
@@ -90,4 +90,10 @@ my $des = Devel::Examine::Subs->new();
         is (@{$ret->{$_}}, 6, "missing() directory keys have the correct number of elements" );
     }
 }
+{#4
+    my $res = $des->missing( file => 't/sample.data', search => 'my?', regex => 0 );
+    is (@$res, 11, "without regex, search doesn't act like a regex");
 
+    $res = $des->missing( file => 't/sample.data', search => 'm.', regex => 1);
+    is (@$res, 4, "with regex, search acts like a regex");
+}

@@ -10,17 +10,19 @@ use Data::Dumper;
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to a circular install
+    # we need to do some trickery for DTS due to circular referencing,
+    # which broke CPAN installs.
 
     eval {
         require Devel::Trace::Subs;
     };
 
+    eval {
+        import Devel::Trace::Subs qw(trace);
+    };
+
     if ($@){
         *trace = sub {};
-    }
-    else {
-        import Devel::Trace::Subs qw(trace);
     }
 };
 

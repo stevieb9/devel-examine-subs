@@ -128,3 +128,17 @@ my $post_proc = $compiler->{post_procs}{subs}->();
     my $ret = $des->run({engine => 'all', post_proc_return => 1});
     is (ref $ret, 'HASH', "post_proc_return returns the struct");
 }
+{#11
+    my $des = Devel::Examine::Subs->new(file => 't/sample.data', search => "hello");
+    my $ret = $des->run({
+        engine => 'all',
+        post_proc => 'subs',
+        post_proc_return => 1,
+        search => 'four'
+    });
+
+    for (@$ret){
+        print Dumper $_ if $_->{name} eq 'four';
+    }
+    #is (ref $ret, 'HASH', "post_proc_return returns the struct");
+}

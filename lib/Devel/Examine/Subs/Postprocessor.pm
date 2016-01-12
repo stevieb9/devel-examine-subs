@@ -81,19 +81,9 @@ sub subs {
         my $s = $struct;
         my @subs;
 
-        my $search = $p->{search};
-
-        if ($search && ! $p->{regex}){
-            $search = "\Q$search";
-        }
-
         for my $f (keys %$s){
         
             for my $sub (keys %{$s->{$f}{subs}}){
-                
-                if ($search && $sub eq $search){
-                    next;
-                }
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;
                 $s->{$f}{subs}{$sub}{name} = $sub;
@@ -212,19 +202,8 @@ sub objects {
 
         for my $sub (@$struct){
 
-            # if the name of the callback method is mistyped in the
-            # dispatch table, this will be triggered
-
             $des_sub
               = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
-
-            #FIXME: this eval catch catches bad dispatch and "not a hashref"
-
-            if ($@){
-                print "dispatch table in engine has a mistyped function " .
-                      "value\n\n";
-                confess $@;
-            }
 
             push @return, $des_sub;
         }

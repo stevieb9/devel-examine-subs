@@ -58,8 +58,16 @@ t/42-replace.t
 t/43-write_failure.t
 t/44-has.t
 t/45-inject.t
+t/46-cache_dump.t
+t/47-config_dump.t
+t/48-_file.t
+t/49-remove.t
+t/50-add_func_engine.t
+t/51-add_func_preproc.t
+t/52-add_func_postproc.t
 t/__clean.t
 t/manifest.t
+t/orig/inject.data
 t/orig/inject_after.data
 t/orig/sample.data
 t/orig/sub_def.data

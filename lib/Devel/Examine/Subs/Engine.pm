@@ -206,31 +206,14 @@ sub objects {
         return if not ref($struct) eq 'ARRAY';
 
         my $file = $p->{file};
-        my $search = $p->{search};
-
-        if ($search && ! $p->{regex}){
-            $search = "\Q$search";
-        }
 
         my $lines;
-
-        if ($search){
-            my $des = Devel::Examine::Subs->new({
-                                            file => $file, 
-                                            search => $search
-                                        });
-            $lines = $des->lines;
-        }
 
         my $des_sub;
         my %obj_hash;
         my @obj_array;
 
         for my $sub (@$struct){
-
-            if ($lines){
-                $sub->{lines_with} = $lines->{$sub->{name}};
-            }
 
             $des_sub
               = Devel::Examine::Subs::Sub->new($sub, $sub->{name});

@@ -21,7 +21,7 @@ $SIG{__WARN__} = sub {};
 
 #<des>
 {
-    print "test";
+    1;
 }
 #</des>
 

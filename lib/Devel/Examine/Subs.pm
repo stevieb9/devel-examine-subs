@@ -328,8 +328,7 @@ sub add_functionality {
 
     my $sub_name;
 
-    print Dumper \@code;
-    if ($code[0] =~ /sub\s+(\w+)\s+\{/){
+    if ($code[0] =~ /sub\s+(\w+)/){
         $sub_name = $1;
     }
     else {

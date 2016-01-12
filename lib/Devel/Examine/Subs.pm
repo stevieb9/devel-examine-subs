@@ -234,7 +234,7 @@ sub order {
 #
 
 sub add_functionality {
-   
+
     trace() if $ENV{TRACE};
     
     my $self = shift;
@@ -313,6 +313,15 @@ sub add_functionality {
         $file = $copy;
     }
 
+    my $sub_name;
+    
+    if ($code[0] =~ /sub\s+(\w+)/){
+        $sub_name = $1;
+    }
+    else {
+        croak "couldn't extract the sub name";
+    }
+
     my $des = Devel::Examine::Subs->new(
                                     file => $file,
                                     engine => 'objects', 
@@ -326,15 +335,6 @@ sub add_functionality {
 
     my $start_writing = $des->run($p);
 
-    my $sub_name;
-
-    if ($code[0] =~ /sub\s+(\w+)/){
-        $sub_name = $1;
-    }
-    else {
-        print "IN ELSE\n";
-        croak "add_functionality() couldn't extract the sub name.";
-    }
 
     my $rw = File::Edit::Portable->new;
 

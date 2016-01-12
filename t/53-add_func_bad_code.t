@@ -17,19 +17,16 @@ my %params = (
     #engine          => testing(),
 );
 
-$SIG{__WARN__} = sub {};
-
 #<des>
-{
-    1;
-}
+1;
 #</des>
 
 my $install = 1; # set this to true to install
 
 if ($install) {
-    my $des = Devel::Examine::Subs->new(copy => $copy);
+    my $des = Devel::Examine::Subs->new(file => $file, copy => $copy);
     eval { $des->add_functionality(add_functionality => 'engine'); };
+    
     like ($@,
         qr/couldn't extract the sub name/,
         "with a malformed sub def line, we croak"

@@ -326,18 +326,19 @@ sub add_functionality {
 
     my $start_writing = $des->run($p);
 
-    my $rw = File::Edit::Portable->new;
-
-    $rw->splice(file => $file, insert => \@code, line => $start_writing);
-
     my $sub_name;
 
+    print Dumper \@code;
     if ($code[0] =~ /sub\s+(\w+)\s+\{/){
         $sub_name = $1;
     }
     else {
         croak "add_functionality() couldn't extract the sub name.";
     }
+
+    my $rw = File::Edit::Portable->new;
+
+    $rw->splice(file => $file, insert => \@code, line => $start_writing);
 
     my @insert = ("        $sub_name => \\&$sub_name,");
 

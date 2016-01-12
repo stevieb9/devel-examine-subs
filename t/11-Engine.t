@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use Data::Dumper;
 
@@ -52,7 +52,20 @@ my $engine = $compiler->{engines}{_test}->();
 
     like ( $@, qr/'asdfasdf'/, "engine module croaks if an invalid internal engine is called" );
 }
+{
+    my $des = Devel::Examine::Subs->new;
 
+    my $cref = sub { return 55; };
+    my $p = {
+        engine => $cref,
+    };
+
+    my $ret = $des->_engine($p, {a => 1});
+
+    is (ref $ret, 'CODE', "_engine() returns a cref properly");
+    is ($ret->(), 55, "...and the cref does the right thing");
+
+}
 sub _engine { 
     my $p = shift; 
     return \&{$compiler->{engines}{$p}}; 

@@ -62,13 +62,11 @@ my $rw = File::Edit::Portable->new;
         copy => $copy,
     );
 
-    my @code = ('hello();', "\n", 'there();');
-
     $des->inject(inject_after_sub_def => \@code);
 
     my @c = $rw->read($copy);
 
-    is ($c[4], '    hello();', "inject() inserts use statement properly after multi-line sub def");
+    is ($c[4], '    one', "inject() inserts use statement properly after multi-line sub def");
 
     eval { unlink $copy; };
     is ($@, '', "unlinked copy file $copy ok");
@@ -76,4 +74,5 @@ my $rw = File::Edit::Portable->new;
 __DATA__
 one
 two
+
 three

@@ -25,7 +25,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                     maxdepth => 1,
                 );
 
-    ok (@files >= 50 && @files <= 60, "things appear reasonable with maxdepth param set");
+    ok (@files >= 60 && @files <= 70, "things appear reasonable with maxdepth param set");
 
     @files = $rw->dir(
                 dir => $dir,
@@ -33,7 +33,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.t)],
             );
 
-    is (@files, 57, "using *.t extension works properly");
+    is (@files, 59, "using *.t extension works properly");
 
     @files = $rw->dir(
                 dir => $dir,
@@ -49,7 +49,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.data *.t)],
             );
 
-    is (@files, 64, "using *.data and *.t extensions works properly");
+    is (@files, 66, "using *.data and *.t extensions works properly");
 
 }
 

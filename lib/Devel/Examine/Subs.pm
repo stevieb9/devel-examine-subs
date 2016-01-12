@@ -333,11 +333,11 @@ sub add_functionality {
         print "IN HERE!\n";
         $sub_name = $1;
     }
-    print "*** $sub_name\n";
     else {
         croak "add_functionality() couldn't extract the sub name.";
     }
 
+    print "*** $sub_name\n";
     my $rw = File::Edit::Portable->new;
 
     $rw->splice(file => $file, insert => \@code, line => $start_writing);

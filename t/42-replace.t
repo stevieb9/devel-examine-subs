@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 use Data::Dumper;
 
 BEGIN {#1
@@ -114,11 +114,34 @@ my $copy = 't/replace_copy.data';
         my $lines = <$fh>;
         my $ok = 10 if $lines !~ /(?:\}|\{)/;
         is ($ok, 10, "$_ has been copied and modified properly"); 
-        
+
+        close $fh;        
         eval { unlink $_ or die $!; };
         is ($@, '', "unlinked $_ copy file ok");
     }
 
     eval { rmdir $copy or die $!; };
     is ($@, '', "copy dir removed ok");
+}
+{
+    my $file = 't/orig';
+    my $copy = '/c:';
+
+    my $warning;
+    $SIG{__WARN__} = sub { $warning = shift; };
+
+    my $des = Devel::Examine::Subs->new(
+        file => $file, 
+        copy => $copy,
+        extensions => ['*.data'],
+    );
+
+    my $cref = sub { $_[0] =~ s/(?:\}|\{)//g; };
+
+    eval { $des->replace(exec => $cref, limit => -1); };
+
+    my $err;
+    $err = 1 if $@;
+
+    is ($err, 1, "_write_file croaks in dir mode if the copy dir can't be created");
 }

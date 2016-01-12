@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Data::Dumper;
 
 BEGIN {#1
@@ -18,4 +18,12 @@ BEGIN {#1
 
     ok (! exists $INC{'Pod::Usage'}, "module unloaded if not previously loaded in _file()");
     ok (! $Pod::Usage::VERSION, "_file() also unloads an unloaded module");
+}
+{
+    my $des = Devel::Examine::Subs->new;
+
+    my $file = '/c:';
+
+    eval { $des->_read_file({ file => $file }); };
+    like ($@, qr/DES::_read_file\(\) can't create backup/, "_read_file() croaks if it can't create backup file");
 }

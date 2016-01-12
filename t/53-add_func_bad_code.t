@@ -14,20 +14,14 @@ my %params = (
     file            => $file,
     copy            => $copy,
     post_proc       => [ 'file_lines_contain' ],
-    engine          => testing(),
+    #engine          => testing(),
 );
 
+$SIG{__WARN__} = sub {};
+
 #<des>
-sub
-testing {
-
-    return sub {
-
-        my $p = shift;
-        my $struct = shift;
-
-        return $struct;
-    };
+{
+    print "test";
 }
 #</des>
 

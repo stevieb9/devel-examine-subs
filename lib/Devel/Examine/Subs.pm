@@ -24,11 +24,13 @@ BEGIN {
 
     eval {
         require Devel::Trace::Subs;
-        import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@ && ! exists $Devel::Examine::Subs{'trace'}){
+    if ($@){
         *trace = sub {};
+    }
+    else {
+        import Devel::Trace::Subs qw(trace);
     }
 };
 

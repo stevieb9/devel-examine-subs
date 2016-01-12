@@ -17,12 +17,13 @@ BEGIN {
 
     eval {
         require Devel::Trace::Subs;
-        import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@ && ! exists $Devel::Examine::Subs{'trace'}){
-        # override DTS's trace() function if necessary
+    if ($@){
         *trace = sub {};
+    }
+    else {
+        import Devel::Trace::Subs qw(trace);
     }
 };
 

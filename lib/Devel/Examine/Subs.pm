@@ -240,7 +240,6 @@ sub add_functionality {
     $self->_config($p);
     
     my $to_add = $self->{params}{add_functionality};
-    
     my $in_prod = $self->{params}{add_functionality_prod};
 
     my @allowed = qw(
@@ -304,6 +303,12 @@ sub add_functionality {
     }
 
     my $file = $dt{$to_add}->();
+    my $copy = $self->{params}{copy};
+
+    if ($copy) {
+        copy $file, $copy or die $!;
+        $file = $copy;
+    }
 
     my $des = Devel::Examine::Subs->new(
                                     file => $file,

@@ -24,7 +24,7 @@ BEGIN {
         import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@ || ! defined &trace){
+    if (! defined &trace){
         *trace = sub {};
     }
 };

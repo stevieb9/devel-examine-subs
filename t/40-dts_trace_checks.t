@@ -4,7 +4,7 @@ use strict;
 
 use Data::Dumper;
 use Mock::Sub;
-use Test::More tests => 82;
+use Test::More tests => 151;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -70,6 +70,36 @@ SKIP: {
         }
     }
     is ($sub_count, $called_count, "all subs have a trace() call");
+}
+{
+    no strict 'refs';
+
+    $ENV{TRACE} = 1;
+
+    my $trace_sub;
+    my $mods = _subs();
+
+    for my $file (sort { length($a) <=> length($b) } keys %{ $mods }) {
+
+        $trace_sub = $file . "::trace";
+        *$trace_sub = sub { die "exiting trace"; };
+
+        my $obj;
+        eval { $obj = $file->new; };
+        like ($@, qr/exiting trace/, "trace did the right thing in $file new()");
+
+        *$trace_sub = sub {};
+        $obj = $file->new;
+        *$trace_sub = sub { die "exiting trace"; };
+
+        for my $sub (@{ $mods->{$file} }) {
+            eval { $file->$sub; };
+            like ($@, qr/exiting trace/, "trace did the right thing in $file $sub");
+        }
+    }
+
+    *$trace_sub = sub {};
+    $ENV{TRACE} = 0;
 }
 
 sub _subs {

@@ -30,7 +30,7 @@ BEGIN {
         import Devel::Trace::Subs qw(trace);
     };
 
-    if ($@ || ! defined &trace){
+    if (! defined &trace){
         *trace = sub {};
     }
 };
@@ -75,7 +75,7 @@ sub all {
     $self->run($p);
 }
 sub has {
-    
+
     trace() if $ENV{TRACE};
 
     my $self = shift;

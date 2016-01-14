@@ -322,7 +322,18 @@ sub add_functionality {
         croak "couldn't extract the sub name";
     }
 
-    my $des = Devel::Examine::Subs->new(
+    my $des = Devel::Examine::Subs->new(file => $file);
+
+    my @existing_subs = $des->all;
+
+    print "$sub_name :: \n";
+    print "$_\n" for @existing_subs;
+
+    if (grep { $sub_name eq $_ } @existing_subs){
+        croak "the sub you're trying to add already exists";
+    }
+
+    $des = Devel::Examine::Subs->new(
                                     file => $file,
                                     engine => 'objects', 
                                     post_proc => [qw(subs end_of_last_sub)],

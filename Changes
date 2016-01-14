@@ -1,7 +1,7 @@
 Revision history for Devel-Examine::Subs
 
 1.59    xxx  
-        - 100% test coverage!!!
+        - 100% test coverage!
         - when file param is a directory, we now use the copy param as a dir,
           create that dir, and copy all the files in the file param to it, and
           operate on those

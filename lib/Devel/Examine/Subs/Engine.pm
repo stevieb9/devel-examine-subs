@@ -412,9 +412,8 @@ sub inject_after {
         return \@processed;
     };                        
 }
-1;
-
 sub _vim_placeholder {1;}
+1;
 
 __END__
 

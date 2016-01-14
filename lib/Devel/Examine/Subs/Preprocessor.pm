@@ -280,12 +280,8 @@ sub remove {
         $p->{write_file_contents} = \@file;
     }
 }
-
-1;
-
-
 sub _vim_placeholder {1;}
-
+1;
 __END__
 
 =head1 NAME

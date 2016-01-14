@@ -27,11 +27,15 @@ my $install = 1; # set this to true to install
 
 if ($install) {
     my $des = Devel::Examine::Subs->new(file => $file, copy => $copy);
-    eval { $des->add_functionality(add_functionality => 'engine'); };
-    
+
+    local $@;
+    eval {
+        $des->add_functionality(add_functionality => 'engine');
+    };
+
     like ($@,
-        qr/the sub you're trying to add already exists/,
-        "we croak if the sub we're trying to add already exists"
+    qr/the sub you're trying to add already exists/,
+    "we croak if the sub we're trying to add already exists"
     );
 }
 

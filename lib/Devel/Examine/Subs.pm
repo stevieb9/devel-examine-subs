@@ -328,7 +328,6 @@ sub add_functionality {
 
     if (grep { $sub_name eq $_ } @$existing_subs){
         croak "the sub you're trying to add already exists";
-    }
 
     $des = Devel::Examine::Subs->new(
                                     file => $file,

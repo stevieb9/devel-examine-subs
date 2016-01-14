@@ -15,5 +15,5 @@ use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
 {
     my $des = Devel::Examine::Subs->new(file => 't', extensions => ['*.t']);
     my $files = $des->all;  
-    is (keys %$files, 51, "dir finds correct files with extensions param");
+    is (keys %$files, 52, "dir finds correct files with extensions param");
 }

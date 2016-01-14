@@ -50,5 +50,5 @@ close $fh;
 is ((grep { $_ =~ /testing =>/ } @file), 1, "dt updated ok");
 is ((grep { $_ =~ /sub testing \{/ } @file), 1, "sub added ok");
 
-eval { unlink $copy or die $!; };
+#eval { unlink $copy or die $!; };
 is ($@, '', "temp file removed ok");

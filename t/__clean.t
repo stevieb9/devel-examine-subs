@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 98;
+use Test::More tests => 99;
 use File::Copy qw(copy);
 
 BEGIN {#1

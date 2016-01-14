@@ -17,7 +17,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                     list => 1,
                 );
 
-    ok (@files >= 65, "with default extensions, the correct num of files is returned");
+    ok (@files >= 60, "with default extensions, the correct num of files is returned");
 
     @files = $rw->dir(
                     dir => $dir,
@@ -33,7 +33,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.t)],
             );
 
-    is (@files, 60, "using *.t extension works properly");
+    is (@files, 61, "using *.t extension works properly");
 
     @files = $rw->dir(
                 dir => $dir,
@@ -49,7 +49,7 @@ use_ok( 'File::Edit::Portable' ) || print "Bail out!\n";
                 types => [qw(*.data *.t)],
             );
 
-    is (@files, 67, "using *.data and *.t extensions works properly");
+    is (@files, 68, "using *.data and *.t extensions works properly");
 
 }
 

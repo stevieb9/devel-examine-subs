@@ -324,12 +324,9 @@ sub add_functionality {
 
     my $des = Devel::Examine::Subs->new(file => $file);
 
-    my @existing_subs = $des->all;
+    my $existing_subs = $des->all;
 
-    print "$sub_name :: \n";
-    print "$_\n" for @existing_subs;
-
-    if (grep { $sub_name eq $_ } @existing_subs){
+    if (grep { $sub_name eq $_ } @$existing_subs){
         croak "the sub you're trying to add already exists";
     }
 

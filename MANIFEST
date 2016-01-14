@@ -66,8 +66,10 @@ t/50-add_func_engine.t
 t/51-add_func_preproc.t
 t/52-add_func_postproc.t
 t/53-add_func_bad_code.t
+t/54-add_func_sub_exists.t
 t/54-post_proc_dump_multi.t
 t/55-dir.t
+t/56-post_proc_dump_multi.t
 t/__clean.t
 t/manifest.t
 t/orig/inject.data

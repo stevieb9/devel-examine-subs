@@ -6,7 +6,6 @@ use Data::Dumper;
 use Devel::Examine::Subs;
 use File::Copy;
 use Test::More tests => 2;
-use Try::Tiny;
 
 my $file = 't/sample.data';
 my $copy = 't/add_func_engine.data';

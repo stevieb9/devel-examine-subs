@@ -1,14 +1,13 @@
 Revision history for Devel-Examine::Subs
 
-1.59    xxx  
+1.59    2016-01-14
         - 100% test coverage!
         - when file param is a directory, we now use the copy param as a dir,
           create that dir, and copy all the files in the file param to it, and
-          operate on those
+          operate on those (in operations that write to files)
         - closes #2; add_functionality() now checks to see if the sub being
           added already exists
-        - closes #1; true value at end of module now remains in the correct
-          place
+        - closes #1; true value at end of module remains in the correct place
 
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order

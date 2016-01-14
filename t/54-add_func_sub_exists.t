@@ -6,6 +6,7 @@ use Data::Dumper;
 use Devel::Examine::Subs;
 use File::Copy;
 use Test::More tests => 2;
+use Try::Tiny;
 
 my $file = 't/sample.data';
 my $copy = 't/add_func_engine.data';
@@ -25,18 +26,14 @@ sub _test {
 
 my $install = 1; # set this to true to install
 
+my $des = Devel::Examine::Subs->new(file => $file, copy => $copy);
+
 if ($install) {
-    my $des = Devel::Examine::Subs->new(file => $file, copy => $copy);
 
-    local $@;
-    eval {
-        $des->add_functionality(add_functionality => 'engine');
-    };
+    local $SIG{__DIE__} 
+      = sub { ok (1 == 1, "if the sub being added already exists, we croak"); };
 
-    like ($@,
-    qr/the sub you're trying to add already exists/,
-    "we croak if the sub we're trying to add already exists"
-    );
+    eval { $des->add_functionality(add_functionality => 'engine'); };
 }
 
 eval { unlink $copy or die $!; };

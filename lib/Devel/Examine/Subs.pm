@@ -283,7 +283,6 @@ sub add_functionality {
                         ? $INC{'Devel/Examine/Subs/Engine.pm'}
                         : 'lib/Devel/Examine/Subs/Engine.pm';
                       },
-
     );
 
     my $caller = (caller)[1];

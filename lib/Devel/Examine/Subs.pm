@@ -1218,6 +1218,10 @@ __END__
 Devel::Examine::Subs - Get info about, search/replace and inject code into
 Perl files and subs.
 
+=for html
+<a href="http://travis-ci.org/stevieb9/devel-examine-subs"><img src="https://secure.travis-ci.org/stevieb9/devel-examine-subs.png"/>
+<a href='https://coveralls.io/github/stevieb9/devel-examine-subs?branch=master'><img src='https://coveralls.io/repos/stevieb9/devel-examine-subs/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
+
 =head1 SYNOPSIS
 
     use Devel::Examine::Subs;
@@ -1890,11 +1894,6 @@ L<https://github.com/stevieb9/devel-examine-subs>
 =head1 BUILD REPORTS
 
 CPAN Testers: L<http://matrix.cpantesters.org/?dist=Devel-Examine-Subs>
-
-=begin html
-<a href="http://travis-ci.org/stevieb9/devel-examine-subs"><img src="https://secure.travis-ci.org/stevieb9/devel-examine-subs.png"/>
- <a href='https://coveralls.io/github/stevieb9/devel-examine-subs?branch=master'><img src='https://coveralls.io/repos/stevieb9/devel-examine-subs/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
-=end html
 
 =head1 DEBUGGING
 

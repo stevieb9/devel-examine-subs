@@ -582,11 +582,7 @@ REPOSITORY
 
 BUILD REPORTS
 
-    Travis-CI: https://travis-ci.org/stevieb9/devel-examine-subs
-
     CPAN Testers: http://matrix.cpantesters.org/?dist=Devel-Examine-Subs
-
-    Coverage: https://coveralls.io/github/stevieb9/devel-examine-subs
 
 DEBUGGING
 

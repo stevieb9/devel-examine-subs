@@ -809,7 +809,7 @@ sub _write_file {
 
     return if ! $file;
 
-    if ($self->{params}{directory} && ! -d $copy){
+    if ($self->{params}{directory} && $copy && ! -d $copy){
         warn "\n\nin directory mode, all files are copied to the dir named " .
              "in the copy param, which is $copy\n\n";
 

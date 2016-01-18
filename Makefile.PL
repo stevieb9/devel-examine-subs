@@ -16,6 +16,9 @@ WriteMakefile
   META_MERGE => {
         'meta-spec' => { version => 2 },
         resources   => {
+             bugtracker => {
+                web => 'https://github.com/stevieb9/devel-examine-subs/issues',
+            },
             repository => {
                 type => 'git',
                 url => 'https://github.com/stevieb9/devel-examine-subs.git',

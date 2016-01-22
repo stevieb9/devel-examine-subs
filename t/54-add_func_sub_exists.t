@@ -13,8 +13,6 @@ my $copy = 't/add_func_engine.data';
 my %params = (
     file            => $file,
     copy            => $copy,
-    post_proc       => [ 'file_lines_contain' ],
-    engine          => _test(),
 );
 
 #<des>

@@ -1,8 +1,8 @@
 Revision history for Devel-Examine::Subs
 
 1.61    2016-01-18
-        - closes #3; _write_file() was breaking with file is a dir param and
-          no copy param was sent in
+        - _write_file() was breaking with file is a dir param and no copy param
+          was sent in (closes #3)
 
 1.60    2016-01-16
         - no functional changes
@@ -13,9 +13,9 @@ Revision history for Devel-Examine::Subs
         - when file param is a directory, we now use the copy param as a dir,
           create that dir, and copy all the files in the file param to it, and
           operate on those (in operations that write to files)
-        - closes #2; add_functionality() now checks to see if the sub being
-          added already exists
-        - closes #1; true value at end of module remains in the correct place
+        - add_functionality() now checks to see if the sub being added already
+          exists (closes #2)
+        - true value at end of module remains in the correct place (closes #1)
 
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order

@@ -723,6 +723,7 @@ sub _read_file {
     $self->{rw} = File::Edit::Portable->new;
 
     my $fh = $self->{rw}->read($file);
+
     my $tempfile = $self->{rw}->tempfile;
     my $tempfile_name = $tempfile->filename;
     my $platform_recsep = $self->{rw}->platform_recsep;

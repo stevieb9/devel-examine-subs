@@ -1,8 +1,9 @@
 Revision history for Devel-Examine::Subs
 
 1.62    2016-01-26
-        - we now require File::Edit::Portable v1.17 due to an flock() issue
-          in FBSD 10.1 and 9.2 amd64
+        - we now require File::Edit::Portable v1.17 due a bug fix where an
+          flock() issue in FBSD 10.1 and 9.2 amd64 was causing tests to fail
+          on those platforms
 
 1.61    2016-01-18
         - _write_file() was breaking with file is a dir param and no copy param

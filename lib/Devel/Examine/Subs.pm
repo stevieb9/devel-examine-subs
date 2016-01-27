@@ -722,23 +722,31 @@ sub _read_file {
 
     $self->{rw} = File::Edit::Portable->new;
 
-    my $fh = $self->{rw}->read($file);
+    my $ppi_doc;
 
-    my $tempfile = $self->{rw}->tempfile;
-    my $tempfile_name = $tempfile->filename;
-    my $platform_recsep = $self->{rw}->platform_recsep;
+    if ($self->{rw}->recsep($file, 'hex') ne $self->{rw}->platform_recsep('hex')) {
+        my $fh = $self->{rw}->read($file);
 
-    $self->{rw}->write(
-        copy => $tempfile_name, 
-        contents => $fh, 
-        recsep => $platform_recsep
-    );
+        my $tempfile = $self->{rw}->tempfile;
+        my $tempfile_name = $tempfile->filename;
+        my $platform_recsep = $self->{rw}->platform_recsep;
 
-    my $ppi_doc = PPI::Document->new($tempfile_name);
-    
+        $self->{rw}->write(
+            copy => $tempfile_name,
+            contents => $fh,
+            recsep => $platform_recsep
+        );
+
+        $ppi_doc = PPI::Document->new($tempfile_name);
+
+        close $tempfile;
+    }
+    else {
+        $ppi_doc = PPI::Document->new($file);
+    }
+
     @{ $p->{file_contents} } = split /\n/, $ppi_doc->content;
 
-    close $tempfile;
 
     if (! $p->{file_contents}->[0]){
         return 0;

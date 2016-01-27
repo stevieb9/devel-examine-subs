@@ -34,13 +34,13 @@ Revision history for Devel-Examine::Subs
         - re-enable t/24-preproc (seems to be working on win32 again)
 
 1.57_01   20151120
-        - certain deprications will be necessary after the rest of the module is
-          rewritten to use PPI where it currently isn't
+        - certain deprications will be necessary after the rest of the module
+          is rewritten to use PPI where it currently isn't
         - reworked _read_file(), it now populates $self->{params}{file_contents}
           from a PPI doc
-        - _proc() modified to use PPI to get the sub code from the file, instead
-          of extracting it out manually out of an array slice by counting
-          line nums
+        - _proc() modified to use PPI to get the sub code from the file,
+          instead of extracting it out manually out of an array slice by
+          counting line nums
         - $subs struct no longer has a copy of the entire file contents in each
           sub. This reduces the size of the data and all objects significantly
 
@@ -63,38 +63,42 @@ Revision history for Devel-Examine::Subs
         - inject() w/ inject_use param uses the same as inject() w/ line_num
 
 1.51    20151015
-        - API CHANGE: extensions param changed to accept what File::Find::Rule::name
-          takes, as opposed to just the extensions less the dot
+        - API CHANGE: extensions param changed to accept what
+          File::Find::Rule::name takes, as opposed to just the extensions less
+          the dot
         - _run_directory() now uses File::Edit::Portable::dir() for finding
           files
         - Travis-CI integration
         - inject() now allows a line_num param along with a code param, will
           inject the block of code in the array ref immediately after the
           line number in the file
-        - File::Find prereq removed, we now use File::Edit::Portable for everything
-        - add_functionality() now injects the new sub, updates the dispatch table in 
-          all three core phases (pre_proc, engine, post_proc)
+        - File::Find prereq removed, we now use File::Edit::Portable for
+          everything
+        - add_functionality() now injects the new sub, updates the dispatch
+          table in all three core phases (pre_proc, engine, post_proc)
 
 1.46    20150930
         - renamed everything from pre_filter to post_proc
         - removed test that was failing across platforms (t/24)
 
 1.45    20150930
-        - module() now allows just a single string param "$des->module('Data::Dumper')".
-          backwards compatibility has remained
+        - module() now allows just a single string param
+          "$des->module('Data::Dumper')". Backwards compatibility has remained
         - _read_file() now uses File::Edit::Portable read()
         - _write_file() now uses File::Edit::Portable write()
         - internally, _subs() has been renamed to _proc()
-        - reduced the size of the data and instance by ~50% (according to core_dump)
-        - new prereq: File::Basename (fixes bug where module file bak couldn't be saved)
+        - reduced the size of the data and instance by ~50% (according to
+          core_dump)
+        - new prereq: File::Basename (fixes bug where module file bak couldn't
+          be saved)
         - fixed "use Symbol;" to import 'delete_package'
         - re-enabled t/24-pre-proc tests
 
 1.43    20150923
-        - search_replace() now takes a coderef that encompasses the substitution
-          regex info
-        - new replace() method, similar to search_replace(), but works on entire file. See
-          examples/ver.pl
+        - search_replace() now takes a coderef that encompasses the
+          substitution regex info
+        - new replace() method, similar to search_replace(), but works on
+          entire file. See examples/ver.pl
         - added/updated tests
 
 1.41    20150922
@@ -102,10 +106,12 @@ Revision history for Devel-Examine::Subs
         - disabled t/24 preproc tests
 
 1.39    20150921
-        - Tie::File no longer needed, we have our own built-in read/write methods
-        - upon reading in a file, the line endings are saved, then completely removed
-          prior to the file array being populated. Upon write, the saved line endings
-          are added back in to each line
+        - Tie::File no longer needed, we have our own built-in read/write
+          methods
+        - upon reading in a file, the line endings are saved, then completely
+          removed
+          prior to the file array being populated. Upon write, the saved line
+          endings are added back in to each line
         - hundreds of new tests across numerous files
         - fixed a couple bugs in inject_after() relating to Tie::File removal
         - modules now have their version applied in the 'package' line
@@ -123,8 +129,8 @@ Revision history for Devel-Examine::Subs
 
 1.32    20150915
         - moved repo from bitbucket to https://github.com/stevieb9/devel-examine-subs
-        - removed Devel::Trace::Subs integration... breaks CPAN install because of
-          the circular dependency
+        - removed Devel::Trace::Subs integration... breaks CPAN install because
+          of the circular dependency
 
 1.31    20150915
         - Devel::Trace::Subs has been introduced. See DEBUGGING in
@@ -191,7 +197,7 @@ Revision history for Devel-Examine::Subs
         - removed the old _subs() that was not PPI-based
         - most everything is OO based now
         - all core parameters are set into $self through _config()
-        - basic consolodation of error checking in _config()
+        - basic consolidation of error checking in _config()
         - extensive refactoring to make tests pass
         - separate out the ::Sub.pm module into its own file
         - bug 12 fix: new() now sets $self->{file} for use by other methods

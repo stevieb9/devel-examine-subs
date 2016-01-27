@@ -112,7 +112,11 @@ my $copy = 't/replace_copy.data';
     for (@files){
         open my $fh, '<', $_ or die $!;
         my $lines = <$fh>;
-        my $ok = 10 if $lines !~ /(?:\}|\{)/;
+        my $ok;
+
+        if ($lines !~ /(?:\}|\{)/){
+            $ok = 10;
+        }
         is ($ok, 10, "$_ has been copied and modified properly"); 
 
         close $fh;        

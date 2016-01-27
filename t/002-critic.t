@@ -16,8 +16,9 @@ use Test::More;
     ";
 };
 
-plan skip_all => "Test::Perl::Critic not installed" if $@;
-
+if ($@ or ! $ENV{RELEASE_TESTING}){
+    plan skip_all => "Test::Perl::Critic not installed or not RELEASE_TESTING";
+}
 
 all_critic_ok('.');
 

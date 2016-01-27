@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 99;
+use Test::More;
 use File::Copy qw(copy);
 
 BEGIN {#1
@@ -40,7 +40,7 @@ my @files_to_delete = qw(
     t/add_func_postproc.data
     t/add_func_preproc.data
 );
-my @bak_glob = <*.bak>;
+my @bak_glob = glob "*.bak";
 
 push @files_to_delete, @bak_glob;
 
@@ -48,3 +48,5 @@ for (@files_to_delete){
     eval { unlink $_ if -f $_; };
     ok (! $@, "test file >>$_<< deleted ok" );
 }
+
+done_testing();

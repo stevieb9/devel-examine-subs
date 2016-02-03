@@ -56,8 +56,7 @@ SKIP: {
 
        my $mock = Mock::Sub->new;
        my $trace = $mock->mock($file . "::trace");
-       
-        my $obj = $file->new;
+       my $obj = $file->new;
 
         is ($trace->called, 1, "$file new calls trace()");
         

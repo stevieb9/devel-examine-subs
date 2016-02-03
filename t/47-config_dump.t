@@ -37,7 +37,7 @@ my $des = Devel::Examine::Subs->new(
     open my $fh, '<', $file or die $!;
     
     my @lines = <$fh>;
-    is (@lines, 5, "Based on test data, config dump dumps the correct info" );
+    is (@lines, 6, "Based on test data, config dump dumps the correct info" );
 
     eval { close $fh; };
     ok (! $@, "config dump output file closed successfully" );

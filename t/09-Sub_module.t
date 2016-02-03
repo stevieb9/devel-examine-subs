@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 497;
+use Test::More;
 
 BEGIN {
     use_ok( 'Devel::Examine::Subs::Sub' ) || print "Bail out!\n";
@@ -32,12 +32,12 @@ my $des = Devel::Examine::Subs->new(file => 'lib/Devel/Examine/Subs.pm');
 {
     my $href = $des->objects(objects_in_hash => 1);
 
-    for (keys %$href){
+    for (keys %$href) {
         is (
-            ref $href->{$_}, 
-            'Devel::Examine::Subs::Sub', 
+            ref $href->{$_},
+            'Devel::Examine::Subs::Sub',
             "each item in hash is a Sub obj"
-        );
+        )
     }
 
     for (keys %$href){
@@ -58,3 +58,5 @@ my $des = Devel::Examine::Subs->new(file => 'lib/Devel/Examine/Subs.pm');
 
     is (ref $lines, 'ARRAY', "lines_with returns correct");
 }
+
+done_testing();

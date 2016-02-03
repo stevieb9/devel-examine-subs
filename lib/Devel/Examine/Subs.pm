@@ -58,6 +58,7 @@ sub new {
 
     $self->{namespace} = __PACKAGE__;
     $self->{params}{regex} = 1;
+    $self->{params}{backup} = 0;
 
     $self->_config($p);
 
@@ -227,6 +228,15 @@ sub order {
 
     my $self = shift;
     return @{ $self->{order} };
+}
+sub backup {
+    trace() if $ENV{TRACE};
+
+    my $self = shift;
+    my $state = shift if @_;
+
+    $self->{params}{backup} = $state if defined $state;
+    return $self->{params}{backup};
 }
 
 #
@@ -540,14 +550,15 @@ sub _config {
 
         # persistent
 
-        file => 1,
-        extensions => 1,
-        maxdepth => 1,
-        regex => 1,
+        backup => 1,
+        cache => 1,
         copy => 1,
         diff => 1,
+        extensions => 1,
+        file => 1,
+        maxdepth => 1,
         no_indent => 1,
-        cache => 1,
+        regex => 1,
 
         # persistent - core phases
 
@@ -580,7 +591,7 @@ sub _config {
         inject_after_sub_def => 0,
         delete => 0,
         file_contents => 0,
-        exec => 0,
+        exec => 0,                  # replace(), search_replace()
         limit => 0,
         line_num => 0,              # inject()
         add_functionality => 0,
@@ -714,11 +725,13 @@ sub _read_file {
 
     return if ! $file;
 
-    my $basename = basename($file);
-    my $bak = "$basename.bak";
+    if ($self->{params}{backup}) {
+        my $basename = basename($file);
+        my $bak = "$basename.bak";
 
-    copy $file, $bak
-      or croak "DES::_read_file() can't create backup copy $bak!";
+        copy $file, $bak
+            or croak "DES::_read_file() can't create backup copy $bak!";
+    }
 
     $self->{rw} = File::Edit::Portable->new;
 
@@ -1375,7 +1388,8 @@ so be careful.
 
 Only specific params are guaranteed to stay persistent throughout a run on the
 same object, and are best set in C<new()>. These parameters are C<file>,
-C<extensions>, C<maxdepth>, C<cache>, C<regex>, C<copy>, C<no_indent> and C<diff>.
+C<extensions>, C<maxdepth>, C<cache>, C<regex>, C<copy>, C<no_indent>,
+C<backup> and C<diff>.
 
 Note: omit the C<file> parameter if all you'll be using is the C<module()> method.
 
@@ -1468,9 +1482,6 @@ Core optional parameter: C<copy =E<gt> 'filename.txt'>
 Coderef should be created in the form C<sub { $_[0] =~ s/search/replace/; };>.
 This allows us to avoid string C<eval>, and allows us to use any regex
 modifiers you choose.
-
-This method will create a backup copy of the file with the same name appended
-with '.bak', but don't confuse this feature with the 'copy' parameter.
 
 
 
@@ -1571,6 +1582,13 @@ This method is file based... the work happens prior to digging up subs, hence
 C<exclude>, C<include> and other sub-based parameters have no effect.
 
 
+=head2 C<backup(Bool)>
+
+Configure whether to make a filename.bak copy of all files read by DES. A true
+value sent in will enable this feature, a false value will disable it. Returns
+1 (true) if this feature is enabled, and 0 (false) if not.
+
+Disabled by default.
 
 =head1 C<DEVELOPER METHODS>
 
@@ -1686,6 +1704,14 @@ If set in C<new()>, you can omit it from all subsequent method calls until you
 want it changed. Once changed in a call, the updated value will remain
 persistent until changed again.
 
+=item C<backup>
+
+State: Persistent
+
+Default: Disabled
+
+Set this to a true value to have a C<.bak> file copy created on all file reads.
+The C<.bak> file will be created in the directory the script is run in.
 
 =item C<extensions>
 

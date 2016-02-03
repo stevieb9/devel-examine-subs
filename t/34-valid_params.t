@@ -3,7 +3,7 @@ use warnings;
 use strict;
 
 use Data::Dumper;
-use Test::More tests => 26;
+use Test::More;
 
 BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
@@ -15,7 +15,7 @@ BEGIN {#1
 
     my %vp = $des->valid_params();
 
-    is( keys %vp, 40, "valid_params() returns proper number of valid params");
+    is( keys %vp, 41, "valid_params() returns proper number of valid params");
     my @persistent;
     my @transient;
 
@@ -24,7 +24,7 @@ BEGIN {#1
         push @transient, $_;
     }
 
-    is (@persistent, 11, "valid_params() returns the correct num of " .
+    is (@persistent, 12, "valid_params() returns the correct num of " .
                          "persistent params");
     is (@transient, 29, "valid_params() returns the correct num of " .
                         "transient params");
@@ -50,3 +50,5 @@ BEGIN {#1
         ok (grep(/^$_$/, @valid), "$_ matches valid");
     }
 }
+
+done_testing();

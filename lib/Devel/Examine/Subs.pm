@@ -233,7 +233,7 @@ sub backup {
     trace() if $ENV{TRACE};
 
     my $self = shift;
-    my $state = shift if @_;
+    my $state = shift || 0;
 
     $self->{params}{backup} = $state if defined $state;
     return $self->{params}{backup};

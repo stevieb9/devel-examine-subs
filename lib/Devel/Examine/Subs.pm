@@ -662,7 +662,7 @@ sub _file {
         $file .= '.pm';
        
         my $module_is_loaded;
-        
+
         if (! $INC{$file}){
             
             eval { require $file; import $module; };
@@ -1459,6 +1459,11 @@ See L<SYNOPSIS> for the structure of each object.
 
 Mandatory parameters: C<'Module::Name'>. Note that this is one public method
 that takes its parameter in string format (as opposed to hash format).
+
+Note that this method pulls the subroutine names from the namespace (which may
+include C<include>ed subs. If you only want a list of subs within the actual
+module file, send the module name as the value to the C<file> parameter, and
+use the common methods (C<all>, C<has>, C<missing> etc) to extract the names.
 
 Returns an array reference containing the names of all subs found in the
 module's namespace symbol table.

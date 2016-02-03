@@ -70,7 +70,9 @@ my $des = Devel::Examine::Subs->new();
     my $des = Devel::Examine::Subs->new( file => 't/test/files' );
     my $struct = $des->all();
 
-    is (keys %$struct, 2, "all() directory has the correct number of keys");
+    is (keys %$struct, 3, "all() directory has the correct number of keys");
+
+    delete $struct->{'t/test/files/module.pm'};
 
     for (keys %$struct){
         ok (ref $struct->{$_} eq 'ARRAY', "all() directory files contain arefs" );

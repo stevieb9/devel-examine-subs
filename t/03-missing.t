@@ -83,7 +83,9 @@ my $des = Devel::Examine::Subs->new();
 
     my $ret = $des->missing();
 
-    is (keys %$ret, 2, "missing() directory has the correct number of keys" );
+    is (keys %$ret, 3, "missing() directory has the correct number of keys" );
+
+    delete $ret->{'t/test/files/module.pm'};;
 
     for (keys %$ret){
         ok (ref $ret->{$_} eq 'ARRAY', "missing() directory keys contain arefs" );

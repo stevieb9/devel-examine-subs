@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 26;
+use Test::More;
 use Data::Dumper;
 
 BEGIN {#1
@@ -102,10 +102,12 @@ my $des = Devel::Examine::Subs->new(file => 't/win_sample.data');
 
     my $ret = $des->has();
 
-    is (keys %$ret, 2, "has() directory has the correct number of keys" );
+    is (keys %$ret, 3, "has() directory has the correct number of keys" );
 
     for (keys %$ret){
         ok (ref $ret->{$_} eq 'ARRAY', "has() directory keys contain arefs" );
         is (@{$ret->{$_}}, 5, "has() directory keys have the correct number of elements" );
     }
 }
+
+done_testing();

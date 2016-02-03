@@ -1,7 +1,6 @@
 Revision history for Devel-Examine::Subs
 
-1.63    xxx
-        - ***.bak backup files no longer created by default***
+1.63    2016-02-03
         - added backup(), set/get status of _read_file() creating a '.bak' copy
           of each file on every read. Defaults to disabled (0) (fixes #7)
         - _read_file() now compares the file's line endings with that of the
@@ -10,6 +9,8 @@ Revision history for Devel-Examine::Subs
         - re-implemented t/002-critic.t, if RELEASE_TESTING is enabled, and
           Perl::Critic is installed
         - cosmetic changes to tests and test data files to satisfy critic
+        - module() now checks to see if a module is already loaded, and then
+          unloads it if it wasn't (fixes #5)
 
 
 1.62    2016-01-26

@@ -7,6 +7,7 @@ our $VERSION = '1.63';
 
 use Carp;
 use Data::Dumper;
+use Symbol qw(delete_package);
 
 BEGIN {
 
@@ -80,18 +81,26 @@ sub module {
 
         my $p = shift;
 
-        if (!$p->{module} or $p->{module} eq '') {
+        if (! $p->{module} or $p->{module} eq '') {
             return [];
         }
 
         (my $module_file = $p->{module}) =~ s|::|/|g;
+        $module_file .= '.pm';
 
-        eval {
-            require "$module_file.pm";
-        };
+        my $module_is_loaded = 0;
 
-        if ($@){
-            die "Module $p->{module} not found: $!";
+        if (! $INC{$module_file}){
+            eval {
+                require "$module_file";
+            };
+
+            if ($@) {
+                die "Problem loading $p->{module}: $@";
+            }
+        }
+        else {
+            $module_is_loaded = 1;
         }
 
         my $namespace = "$p->{module}::";
@@ -102,6 +111,11 @@ sub module {
             if (defined &{$namespace . $sub}){
                 push @subs, $sub;
             }
+        }
+
+        if (! $module_is_loaded){
+            delete_package($p->{module});
+            delete $INC{$module_file};
         }
 
         return \@subs;

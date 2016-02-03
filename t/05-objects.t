@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 132;
+use Test::More;
 use Data::Dumper;
 
 BEGIN {#1
@@ -93,3 +93,4 @@ for my $o (@$objects){
     }
 }
 
+done_testing();

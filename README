@@ -137,7 +137,8 @@ METHODS
 
     Only specific params are guaranteed to stay persistent throughout a run
     on the same object, and are best set in new(). These parameters are
-    file, extensions, maxdepth, cache, regex, copy, no_indent and diff.
+    file, extensions, maxdepth, cache, regex, copy, no_indent, backup and
+    diff.
 
     Note: omit the file parameter if all you'll be using is the module()
     method.
@@ -192,6 +193,12 @@ METHODS
     method that takes its parameter in string format (as opposed to hash
     format).
 
+    Note that this method pulls the subroutine names from the namespace
+    (which may include includeed subs. If you only want a list of subs
+    within the actual module file, send the module name as the value to the
+    file parameter, and use the common methods (all, has, missing etc) to
+    extract the names.
+
     Returns an array reference containing the names of all subs found in
     the module's namespace symbol table.
 
@@ -211,10 +218,6 @@ METHODS
     Coderef should be created in the form sub { $_[0] =~ s/search/replace/;
     };. This allows us to avoid string eval, and allows us to use any regex
     modifiers you choose.
-
-    This method will create a backup copy of the file with the same name
-    appended with '.bak', but don't confuse this feature with the 'copy'
-    parameter.
 
  replace
 
@@ -295,6 +298,15 @@ METHODS
 
     This method is file based... the work happens prior to digging up subs,
     hence exclude, include and other sub-based parameters have no effect.
+
+ backup(Bool)
+
+    Configure whether to make a filename.bak copy of all files read by DES.
+    A true value sent in will enable this feature, a false value will
+    disable it. Returns 1 (true) if this feature is enabled, and 0 (false)
+    if not.
+
+    Disabled by default.
 
 DEVELOPER METHODS
 
@@ -388,6 +400,16 @@ PARAMETERS
       If set in new(), you can omit it from all subsequent method calls
       until you want it changed. Once changed in a call, the updated value
       will remain persistent until changed again.
+
+    backup
+
+      State: Persistent
+
+      Default: Disabled
+
+      Set this to a true value to have a .bak file copy created on all file
+      reads. The .bak file will be created in the directory the script is
+      run in.
 
     extensions
 

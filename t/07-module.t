@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 10;
+use Test::More;
 
 use Data::Dumper;
 
@@ -41,7 +41,7 @@ BEGIN {#1
 
     eval { my $res = $des->module(); };
 
-    ok( $@ =~ qr/Module X:Xxx not found/, "Error returned if module() can't find the module" );
+    like( $@, qr/Problem loading X:Xxx/, "Error returned if module() can't find the module" );
 }
 {#8
     # check for string param
@@ -60,3 +60,35 @@ BEGIN {#1
     is ($thing, 1, "module() with string param has expected data");
 
 }
+{ #9
+
+    my $des = Devel::Examine::Subs->new;
+
+    use lib 't/test';
+
+    my $res = $des->module('files::module');
+    is (@$res, 5, "with a local lib and unloaded module, module() works");
+}
+{ #10
+
+    my $des = Devel::Examine::Subs->new;
+
+    use lib 't/test';
+
+    my $res = $des->module('files::module');
+    is (@$res, 5, "with a local lib and unloaded module, module() works");
+
+    is (keys %files::module::, 0, "when module() loads a file, it's unloaded");
+}
+{
+    my $des = Devel::Examine::Subs->new;
+
+    use lib 't/test';
+
+    my $res = $des->module('files::module');
+    is (@$res, 5, "with a local lib and unloaded module, module() works");
+
+    is (keys %files::module::, 0, "when module() loads a file, it's unloaded");
+}
+
+done_testing();

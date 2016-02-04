@@ -1,5 +1,10 @@
 Revision history for Devel-Examine::Subs
 
+1.64    2016-02-04
+        - removed erroneous build requirement that negated the File::Edit::Portable
+          prereq_pm version update, allowing tests to continue to fail on some
+          versions of FreeBSD
+
 1.63    2016-02-03
         - added backup(), set/get status of _read_file() creating a '.bak' copy
           of each file on every read. Defaults to disabled (0) (fixes #7)

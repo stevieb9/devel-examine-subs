@@ -1,5 +1,8 @@
 Revision history for Devel-Examine::Subs
 
+1.65    2016-02-07
+        - bumped prereq ver of File::Edit::Portable to 1.18
+
 1.64    2016-02-04
         - removed erroneous build requirement that negated the File::Edit::Portable
           prereq_pm version update, allowing tests to continue to fail on some

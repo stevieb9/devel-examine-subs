@@ -1,6 +1,6 @@
 Revision history for Devel-Examine::Subs
 
-1.66    xxx
+1.66    2016-02-23
         - bumped prereq of Mock::Sub to 1.06
         - bumped prereq of File::Edit::Portable to 1.19
         - order() dies if it's called on a directory structure, as opposed to a

@@ -31,7 +31,7 @@ WriteMakefile
         'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES => {
-        'Mock::Sub' => '1.01',
+        'Mock::Sub' => '1.06',
         'Test::More' => 0,
         'Test::Trap' => 0,
     },
@@ -40,7 +40,7 @@ WriteMakefile
        'Data::Compare' => 0,
        'Data::Dumper' => 0,
        'File::Basename' => 0,
-       'File::Edit::Portable' => '1.18',
+       'File::Edit::Portable' => '1.19',
        'PPI' => 0,
        'Symbol' => 0,
     },

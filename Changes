@@ -1,5 +1,13 @@
 Revision history for Devel-Examine::Subs
 
+1.66    xxx
+        - bumped prereq of Mock::Sub to 1.06
+        - bumped prereq of File::Edit::Portable to 1.19
+        - order() dies if it's called on a directory structure, as opposed to a
+          single file (closes #9)
+        - changed all croak()s to confess() for better diagnostic output
+        - POD fixes (closes #8)
+
 1.65    2016-02-07
         - bumped prereq ver of File::Edit::Portable to 1.18
 

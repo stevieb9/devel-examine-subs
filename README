@@ -67,7 +67,7 @@ SYNOPSIS
         # previously uncaught issue
     
         if ($foo eq "bar"){
-            croak 'big bad error';
+            confess 'big bad error';
         }
 
     Print out all lines in all subs that contain a search term
@@ -217,7 +217,8 @@ METHODS
 
     Coderef should be created in the form sub { $_[0] =~ s/search/replace/;
     };. This allows us to avoid string eval, and allows us to use any regex
-    modifiers you choose.
+    modifiers you choose. The $_[0] element represents each line in the
+    file, as we loop over them.
 
  replace
 
@@ -230,7 +231,8 @@ METHODS
 
     The exec parameter is a code reference, eg: my $cref = sub {$_[0] =~
     s/this/that/;}. All standard Perl regular expressions apply, along with
-    their modifiers.
+    their modifiers. The $_[0] element represents each line in the file, as
+    we loop over them.
 
     Returns the number of lines changed in file mode, and an empty hashref
     in directory mode.

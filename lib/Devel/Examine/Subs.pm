@@ -227,6 +227,12 @@ sub order {
     trace() if $ENV{TRACE};
 
     my $self = shift;
+
+    if ($self->{params}{directory}){
+        confess "\norder() can only be called on an individual file, not " .
+                "a directory at this time\n\n";
+    }
+
     return @{ $self->{order} };
 }
 sub backup {
@@ -271,7 +277,7 @@ sub add_functionality {
     }
     
     if (! $is_allowed){
-        croak "Adding a non-allowed piece of functionality...\n";
+        confess "Adding a non-allowed piece of functionality...\n";
     }
 
     my %dt = (
@@ -328,7 +334,7 @@ sub add_functionality {
         $sub_name = $1;
     }
     else {
-        croak "couldn't extract the sub name";
+        confess "couldn't extract the sub name";
     }
 
     my $des = Devel::Examine::Subs->new(file => $file);
@@ -336,7 +342,7 @@ sub add_functionality {
     my $existing_subs = $des->all;
 
     if (grep { $sub_name eq $_ } @$existing_subs) {
-        croak "the sub you're trying to add already exists";
+        confess "the sub you're trying to add already exists";
     }
 
     $des = Devel::Examine::Subs->new(
@@ -671,7 +677,7 @@ sub _file {
                 $@ = "\nDevel::Examine::Subs::_file() speaking ... " .
                      "Can't transform module to a file name\n\n"
                      . $@;
-                croak $@;
+                confess $@;
             }
         }
         else {
@@ -730,7 +736,7 @@ sub _read_file {
         my $bak = "$basename.bak";
 
         copy $file, $bak
-            or croak "DES::_read_file() can't create backup copy $bak!";
+            or confess "DES::_read_file() can't create backup copy $bak!";
     }
 
     $self->{rw} = File::Edit::Portable->new;
@@ -835,7 +841,7 @@ sub _write_file {
         warn "\n\nin directory mode, all files are copied to the dir named " .
              "in the copy param, which is $copy\n\n";
 
-        mkdir $copy or croak "can't create directory $copy";
+        mkdir $copy or confess "can't create directory $copy";
     }
     if ($copy && -d $copy){
         copy $file, $copy;
@@ -856,7 +862,7 @@ sub _write_file {
         $@ = "\nDevel::Examine::Subs::_write_file() speaking...\n\n" .
              "File::Edit::Portable::write() returned a failure status.\n\n" .
              $@;
-        croak $@;
+        confess $@;
     }
 }
 
@@ -993,7 +999,7 @@ sub _pre_proc {
         my $compiler = $pre_proc_module->new;
 
         if (! $compiler->exists($pre_proc)){
-            croak "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
+            confess "Devel::Examine::Subs::_pre_proc() speaking...\n\n" .
                   "pre_processor '$pre_proc' is not implemented.\n";
         }
 
@@ -1006,7 +1012,7 @@ sub _pre_proc {
                   "dispatch table in Devel::Examine::Subs::Preprocessor " .
                   "has a mistyped function as a value, but the key is ok\n\n"
             . $@;
-            croak $@;
+            confess $@;
         }
 
     }
@@ -1129,7 +1135,7 @@ sub _post_proc {
                 # post_proc isn't in the dispatch table
 
                 if (! $compiler->exists($pf)){
-                    croak "\nDevel::Examine::Subs::_post_proc() " .
+                    confess "\nDevel::Examine::Subs::_post_proc() " .
                           "speaking...\n\npost_proc '$pf' is not " .
                           "implemented. '$post_proc' was sent in.\n";
                 }
@@ -1144,7 +1150,7 @@ sub _post_proc {
                           "Devel::Examine::Subs::Postprocessor has a mistyped " .
                           "function as a value, but the key is ok\n\n"
                     . $@;
-                    croak $@;
+                    confess $@;
                 }
             } 
             if (ref($pf) eq 'CODE'){
@@ -1196,7 +1202,7 @@ sub _engine {
         # engine isn't in the dispatch table
 
         if (! $compiler->exists($engine)){
-            croak "engine '$engine' is not implemented.\n";
+            confess "engine '$engine' is not implemented.\n";
         }
 
         eval {
@@ -1210,7 +1216,7 @@ sub _engine {
                   "dispatch table in Devel::Examine::Subs::Engine " .
                   "has a mistyped function as a value, but the key is ok\n\n"
             . $@;
-            croak $@;
+            confess $@;
         }
     }
 
@@ -1311,7 +1317,7 @@ Inject code into sub after a search term (preserves previous line's indenting)
     # previously uncaught issue
 
     if ($foo eq "bar"){
-        croak 'big bad error';
+        confess 'big bad error';
     }
 
 Print out all lines in all subs that contain a search term
@@ -1486,7 +1492,8 @@ Core optional parameter: C<copy =E<gt> 'filename.txt'>
 
 Coderef should be created in the form C<sub { $_[0] =~ s/search/replace/; };>.
 This allows us to avoid string C<eval>, and allows us to use any regex
-modifiers you choose.
+modifiers you choose. The C<$_[0]> element represents each line in the file,
+as we loop over them.
 
 
 
@@ -1499,7 +1506,8 @@ specifies how many successful replacements to do, starting at the top of the fil
 negative integer for unlimited (this is the default).
 
 The C<exec> parameter is a code reference, eg: C<my $cref = sub {$_[0] =~ s/this/that/;}>.
-All standard Perl regular expressions apply, along with their modifiers.
+All standard Perl regular expressions apply, along with their modifiers. The
+C<$_[0]> element represents each line in the file, as we loop over them.
 
 Returns the number of lines changed in file mode, and an empty hashref in directory mode.
 

@@ -256,14 +256,14 @@ sub search_replace {
         }
 
         if (! $file){
-            croak "\nDevel::Examine::Subs::Engine::search_replace " .
+            confess "\nDevel::Examine::Subs::Engine::search_replace " .
                   "speaking:\n" .
                   "can't use search_replace engine without specifying a " .
                   "file\n\n";
         }
 
         if (! $exec || ref($exec) ne 'CODE'){
-            croak "\nDevel::Examine::Subs::Engine::search_replace " .
+            confess "\nDevel::Examine::Subs::Engine::search_replace " .
                   " speaking:\n" .
                   "can't use search_replace engine without specifying" .
                   "a substitution regex code reference\n\n";
@@ -324,12 +324,12 @@ sub inject_after {
         my $code = $p->{code};
 
         if (!$search) {
-            croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                 "can't use inject_after engine without specifying a " .
                 "search term\n\n";
         }
         if (!$code) {
-            croak "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                 "can't use inject_after engine without code to inject\n\n";
 
         }
@@ -431,7 +431,7 @@ Devel::Examine::Subs
     my $engine = 'has';
 
     if (! $compiler->exists($engine)){
-        croak "engine $engine is not implemented.\n";
+        confess "engine $engine is not implemented.\n";
     }
 
     eval {

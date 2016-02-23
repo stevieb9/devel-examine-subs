@@ -255,7 +255,7 @@ sub replace {
         my @file = @{ $p->{file_contents} };
 
         if (! $exec || ref $exec ne 'CODE'){
-            croak "\nDES::replace() requires 'exec => \$cref param\n";
+            confess "\nDES::replace() requires 'exec => \$cref param\n";
         }
 
         my $lines_changed;
@@ -312,7 +312,7 @@ Devel::Examine::Subs
     my $pre_proc = 'module';
 
     if (! $compiler->exists($pre_proc)){
-        croak "pre_proc $pre_proc is not implemented.\n";
+        confess "pre_proc $pre_proc is not implemented.\n";
     }
 
     eval {

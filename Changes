@@ -1,5 +1,12 @@
 Revision history for Devel::Examine::Subs
 
+1.67    2016-03-14
+        - bump version of File::Edit::Portable prereq to v1.24 due to bug fixes
+          in previous versions of that module (File::Edit::Portable #35)
+        - corrected logic in t/05-object.t tests and verified with accuracy
+          that all tests are correct and working (fixes #11)
+        - fixed test in t/21-core_dump.t to accommodate FEP updates
+
 1.66    2016-02-23
         - order() dies if it's called on a directory structure, as opposed to a
           single file (closes #9)

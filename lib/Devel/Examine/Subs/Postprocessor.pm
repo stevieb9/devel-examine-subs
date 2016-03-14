@@ -86,7 +86,7 @@ sub subs {
         my @subs;
 
         for my $f (keys %$s){
-        
+
             for my $sub (keys %{$s->{$f}{subs}}){
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;

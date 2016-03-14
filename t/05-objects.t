@@ -55,30 +55,53 @@ for my $o (@$objects) {
     my %params = (file => 't/test');
     my $des = Devel::Examine::Subs->new(%params);
     my $struct = $des->objects();
-    
+
     for my $file (keys %$struct){
-        print "*** $file\n";
+
         for my $o (@{ $struct->{$file} }){
-           if ($o->name() eq 'four'){
-               is ($o->start(), 30, "sub four starts at the right line in dir");
-               is ($o->end(), 35, "sub four ends at the right line in dir");
-           }
-           if ($o->name() eq 'six'){
-               is ($o->start(), 43, "sub six starts at the right line in dir");
-               is ($o->end(), 45, "sub six starts at the right line in dir");
-           } 
-           if ($o->name() eq 'eight'){
-               is ($o->start(), 49, "sub eight starts at the right line in dir");
-               is ($o->end(), 51, "sub eight ends at the right line in dir");
-           } 
-           if ($o->name() eq 'two'){
-               is ($o->start(), 17, "sub two starts at the right line in dir");
-               is ($o->end(), 21, "sub two starts at the right line in dir");
-           } 
-       }
+            if ($file eq 't/files/other.pm') {
+                if ($o->name() eq 'four') {
+                    is ( $o->start(), 28,
+                        "sub four starts at the right line in dir" );
+                    is ( $o->end(), 33,
+                        "sub four ends at the right line in dir" );
+                }
+                if ($o->name() eq 'six') {
+                    is ( $o->start(), 41,
+                        "sub six starts at the right line in dir" );
+                    is ( $o->end(), 43,
+                        "sub six starts at the right line in dir" );
+                }
+                if ($o->name() eq 'eight') {
+                    is ( $o->start(), 47,
+                        "sub eight starts at the right line in dir" );
+                    is ( $o->end(), 49,
+                        "sub eight ends at the right line in dir" );
+                }
+                if ($o->name() eq 'two') {
+                    is ( $o->start(), 15,
+                        "sub two starts at the right line in dir" );
+                    is ( $o->end(), 19,
+                        "sub two starts at the right line in dir" );
+                }
+            }
+            if ($file eq 't/test/files/module.pm'){
+                if ($o->name() eq 'four') {
+                    is ( $o->start(), 17,
+                        "sub four starts at the right line in dir" );
+                    is ( $o->end(), 20,
+                        "sub four ends at the right line in dir" );
+                }
+                if ($o->name() eq 'two') {
+                    is ( $o->start(), 9,
+                        "sub two starts at the right line in dir" );
+                    is ( $o->end(), 12,
+                        "sub two starts at the right line in dir" );
+                }
+            }
+        }
     }
 }
-
 {
     my %params = (file => 't/sample.data');
     my $des = Devel::Examine::Subs->new(%params);

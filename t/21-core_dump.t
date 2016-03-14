@@ -40,7 +40,7 @@ my $des = Devel::Examine::Subs->new(
         is (1, 1, "Bypass windows check");
     }
     else {
-        is (@lines, 173, "Based on test data, core dump dumps the correct info" );
+        is (@lines, 170, "Based on test data, core dump dumps the correct info" );
     }
 
     eval { close $fh; };

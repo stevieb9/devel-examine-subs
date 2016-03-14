@@ -1,7 +1,6 @@
 use warnings;
 use strict;
 # sample data file
-
 sub one {
     # one
 sub one_inner {

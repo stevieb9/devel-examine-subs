@@ -79,7 +79,6 @@ t/pod.t
 t/sample.data
 t/test/bug-50.data
 t/test/extensions/this.pl
-t/test/extensions/this.text
 t/test/files/module.pm
 t/test/files/no_subs.pm
 t/test/files/other.pm

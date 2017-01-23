@@ -40,7 +40,7 @@ BEGIN {#1
     eval { $des->_read_file({ file => $file }); };
     like (
         $@,
-        qr/Can't call method "content" on an undefined/, # PPI error
+        qr/Can't call method "serialize" on an undefined/, # PPI error
         "_read_file() croaks via PPI if a file is invalid or doesn't exist"
     );
 }

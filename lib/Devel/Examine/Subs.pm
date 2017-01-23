@@ -764,7 +764,7 @@ sub _read_file {
         $ppi_doc = PPI::Document->new($file);
     }
 
-    @{ $p->{file_contents} } = split /\n/, $ppi_doc->content;
+    @{ $p->{file_contents} } = split /\n/, $ppi_doc->serialize;
 
 
     if (! $p->{file_contents}->[0]){

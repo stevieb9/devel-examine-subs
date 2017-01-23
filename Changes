@@ -1,5 +1,11 @@
 Revision history for Devel::Examine::Subs
 
+1.68 UNREL
+        - merge pull request #13, changes PPIs "content" with "serialize", as
+          the former can mangle heredocs (thanks Varadinksy)
+        - migrated the test files accompanying the PR into the normal test suite
+        - added check in _read_file() to see if the file is a proper file
+
 1.67    2016-03-14
         - bump version of File::Edit::Portable prereq to v1.24 due to bug fixes
           in previous versions of that module (File::Edit::Portable #35)

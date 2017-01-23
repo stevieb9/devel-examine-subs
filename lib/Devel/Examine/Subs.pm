@@ -739,6 +739,8 @@ sub _read_file {
             or confess "DES::_read_file() can't create backup copy $bak!";
     }
 
+    die "Can't call method \"serialize\" on an undefined file\n" if ! -f $file;
+
     $self->{rw} = File::Edit::Portable->new;
 
     my $ppi_doc;

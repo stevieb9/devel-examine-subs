@@ -1256,10 +1256,14 @@ Perl files and subs.
 
     use Devel::Examine::Subs;
 
-    my $file = 'perl.pl'; # or directory, or Module::Name
-    my $search = 'string';
+    # Examine a file
+    my $des = Devel::Examine::Subs->new( file => 'perl.pl' );
 
-    my $des = Devel::Examine::Subs->new( file => $file );
+    # Examine all the Perl files in a directory
+    my $des = Devel::Examine::Subs->new( file => '/path/to/directory' );
+
+    # Load a module by name. Uses %INC to find the path after loading it
+    my $des = Devel::Examine::Subs->new( file => 'Some::Module::Name' );
 
 
 Get all sub names in a file
@@ -1299,6 +1303,7 @@ Get the sub objects within a hash
 
 Get all subs containing "string" in the body
 
+    my $search = 'string';
     my $aref = $des->has( search => $search );
 
 Search and replace code in subs

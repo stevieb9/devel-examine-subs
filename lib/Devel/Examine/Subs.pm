@@ -1378,7 +1378,8 @@ Most methods can include or exclude specific subs
 Gather information about subroutines in Perl files (and in-memory modules),
 with the ability to search/replace code, inject new code, get line counts,
 get start and end line numbers, access the sub's code and a myriad of other
-options.
+options.  Files are parsed using L<PPI>, not by inspecting packages or
+coderefs.
 
 
 

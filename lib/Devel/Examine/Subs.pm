@@ -1379,7 +1379,7 @@ options.
 
 =head1 METHODS
 
-See the L<PARAMETERS> for the full list of params, and which ones
+See the L</PARAMETERS> for the full list of params, and which ones
 are persistent across runs using the same object.
 
 
@@ -1458,7 +1458,7 @@ C<objects_in_hash> is sent in with a true value, the objects will be returned
 in a hash reference where the key is the sub's name, and the value is the sub
 object.
 
-See L<SYNOPSIS> for the structure of each object.
+See L</SYNOPSIS> for the structure of each object.
 
 
 
@@ -1533,12 +1533,12 @@ the search term is used for any new code injected. Set C<no_indent> parameter
 to a true value to disable this feature.
 
 By default, an injection only happens after the first time a search term is
-found. Use the C<injects> parameter (see L<PARAMETERS>) to change this
+found. Use the C<injects> parameter (see L</PARAMETERS>) to change this
 behaviour. Setting to a positive integer beyond 1 will inject after that many
 finds. Set to a negative integer will inject after all finds.
 
 The C<code> array should contain one line of code (or blank line) per each
-element. (See L<SYNOPSIS> for an example). The code is not manipulated prior
+element. (See L</SYNOPSIS> for an example). The code is not manipulated prior
 to injection, it is inserted exactly as typed. Best to use a heredoc,
 C<__DATA__> section or an external text file for the code.
 
@@ -1556,7 +1556,7 @@ See C<search_replace()> for a description of how this parameter is used.
 
 =item C<injects>
 
-How many injections do you want to do per sub? See L<PARAMETERS> for more
+How many injections do you want to do per sub? See L</PARAMETERS> for more
 details.
 
 =back

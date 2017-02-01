@@ -348,7 +348,7 @@ Mandatory parameters: C<{ module =E<gt> 'Module::Name' }>
 This pre-processor returns an array reference of all subroutines within the
 namespace of the module listed in the C<module> parameter.
 
-The data is returned early as mentioned in the L<DESCRIPTION>.
+The data is returned early as mentioned in the L</DESCRIPTION>.
 
 =head2 C<inject>
 

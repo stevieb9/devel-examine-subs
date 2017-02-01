@@ -3,7 +3,7 @@ use 5.008;
 use warnings;
 use strict;
 
-our $VERSION = '1.68';
+our $VERSION = '1.69';
 
 use Carp;
 use Data::Compare;
@@ -1268,11 +1268,9 @@ Perl files and subs.
 
     my $des = Devel::Examine::Subs->new( file => 'Some::Module::Name' );
 
-
 Get all sub names in a file
 
     my $aref = $des->all;
-
 
 Get all the subs as objects
 
@@ -1301,8 +1299,6 @@ Get the sub objects within a hash
               $sub->end . "\n";
               ...
     }
-
-
 
 Get all subs containing "string" in the body
 
@@ -1344,8 +1340,6 @@ Print out all lines in all subs that contain a search term
             say "Code: $text\n";
         }
     }
-
-
 
 The structures look a bit differently when 'file' is a directory.
 You need to add one more layer of extraction.

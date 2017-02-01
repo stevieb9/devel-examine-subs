@@ -1256,13 +1256,16 @@ Perl files and subs.
 
     use Devel::Examine::Subs;
 
-    # Examine a file
+    # examine a file
+
     my $des = Devel::Examine::Subs->new( file => 'perl.pl' );
 
-    # Examine all the Perl files in a directory
+    # examine all the Perl files in a directory
+
     my $des = Devel::Examine::Subs->new( file => '/path/to/directory' );
 
-    # Load a module by name. Uses %INC to find the path after loading it
+    # load a module by name. Uses %INC to find the path after loading it
+
     my $des = Devel::Examine::Subs->new( file => 'Some::Module::Name' );
 
 

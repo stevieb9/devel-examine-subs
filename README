@@ -7,10 +7,17 @@ SYNOPSIS
 
         use Devel::Examine::Subs;
     
-        my $file = 'perl.pl'; # or directory, or Module::Name
-        my $search = 'string';
+        # examine a file
     
-        my $des = Devel::Examine::Subs->new( file => $file );
+        my $des = Devel::Examine::Subs->new( file => 'perl.pl' );
+    
+        # examine all the Perl files in a directory
+    
+        my $des = Devel::Examine::Subs->new( file => '/path/to/directory' );
+    
+        # load a module by name. Uses %INC to find the path after loading it
+    
+        my $des = Devel::Examine::Subs->new( file => 'Some::Module::Name' );
 
     Get all sub names in a file
 
@@ -46,6 +53,7 @@ SYNOPSIS
 
     Get all subs containing "string" in the body
 
+        my $search = 'string';
         my $aref = $des->has( search => $search );
 
     Search and replace code in subs
@@ -118,11 +126,12 @@ DESCRIPTION
     Gather information about subroutines in Perl files (and in-memory
     modules), with the ability to search/replace code, inject new code, get
     line counts, get start and end line numbers, access the sub's code and
-    a myriad of other options.
+    a myriad of other options. Files are parsed using PPI, not by
+    inspecting packages or coderefs.
 
 METHODS
 
-    See the PARAMETERS for the full list of params, and which ones are
+    See the "PARAMETERS" for the full list of params, and which ones are
     persistent across runs using the same object.
 
  new
@@ -185,7 +194,7 @@ METHODS
     returned in a hash reference where the key is the sub's name, and the
     value is the sub object.
 
-    See SYNOPSIS for the structure of each object.
+    See "SYNOPSIS" for the structure of each object.
 
  module('Module::Name')
 
@@ -247,13 +256,13 @@ METHODS
     no_indent parameter to a true value to disable this feature.
 
     By default, an injection only happens after the first time a search
-    term is found. Use the injects parameter (see PARAMETERS) to change
+    term is found. Use the injects parameter (see "PARAMETERS") to change
     this behaviour. Setting to a positive integer beyond 1 will inject
     after that many finds. Set to a negative integer will inject after all
     finds.
 
     The code array should contain one line of code (or blank line) per each
-    element. (See SYNOPSIS for an example). The code is not manipulated
+    element. (See "SYNOPSIS" for an example). The code is not manipulated
     prior to injection, it is inserted exactly as typed. Best to use a
     heredoc, __DATA__ section or an external text file for the code.
 
@@ -265,7 +274,7 @@ METHODS
 
     injects
 
-      How many injections do you want to do per sub? See PARAMETERS for
+      How many injections do you want to do per sub? See "PARAMETERS" for
       more details.
 
  inject
@@ -426,8 +435,8 @@ PARAMETERS
 
       Values: Array reference where each element is the names of files to
       find. Any wildcard or regex that are valid in File::Find::Rule's
-      <http://search.cpan.org/~rclamp/File-Find-Rule-0.33/lib/File/Find/Rule.pm>
-      are valid here. For example, [qw(*.pm *.pl)] is the default.
+      <http://search.cpan.org/~rclamp/File-Find-Rule-0.33/lib/File/Find/Rul
+      e.pm> are valid here. For example, [qw(*.pm *.pl)] is the default.
 
     maxdepth
 

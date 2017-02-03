@@ -3,7 +3,7 @@ use 5.008;
 use strict;
 use warnings;
 
-our $VERSION = '1.69';
+our $VERSION = '1.70';
 
 use Carp;
 use Data::Dumper;
@@ -376,7 +376,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Steve Bertrand.
+Copyright 2017 Steve Bertrand.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of either: the GNU General Public License as published by the Free

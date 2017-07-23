@@ -24,23 +24,15 @@ BEGIN {
 }
 
 sub new {
-    
     trace() if $ENV{TRACE};
-
     my $self = {};
     bless $self, shift;
-
-    my $struct = shift;
-
     $self->{post_procs} = $self->_dt();
-
     return $self;
 }
 sub _dt {
     
     trace() if $ENV{TRACE};
-
-    my $self = shift;
 
     my $dt = {
         file_lines_contain => \&file_lines_contain,
@@ -76,9 +68,8 @@ sub subs {
         
         trace() if $ENV{TRACE};
 
-        my $p = shift;
-        my $struct = shift;
-        
+        my ($p, $struct) = @_;
+
         my $s = $struct;
         my @subs;
 
@@ -167,10 +158,8 @@ sub _test {
     trace() if $ENV{TRACE};
 
     return sub {
-        
         trace() if $ENV{TRACE};
-        my $p = shift;
-        my $struct = shift;
+        my ($p, $struct) = @_;
         return $struct;
     };
 }
@@ -191,14 +180,11 @@ sub objects {
 
         return if not ref($struct) eq 'ARRAY';
 
-        my $file = $p->{file};
         my $search = $p->{search};
 
         if ($search && ! $p->{regex}){
             $search = "\Q$search";
         }
-
-        my $lines;
 
         my $des_sub;
 

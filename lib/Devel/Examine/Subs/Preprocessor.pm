@@ -25,23 +25,15 @@ BEGIN {
 }
 
 sub new {
-
     trace() if $ENV{TRACE};
-
     my $self = {};
     bless $self, shift;
-
-    my $struct = shift;
-
     $self->{pre_procs} = $self->_dt;
-
     return $self;
 }
 sub _dt {
 
     trace() if $ENV{TRACE};
-
-    my $self = shift;
 
     my $dt = {
         module => \&module,
@@ -54,18 +46,10 @@ sub _dt {
     return $dt;
 }
 sub exists {
-
     trace() if $ENV{TRACE};
-
     my $self = shift;
     my $string = shift;
-
-    if (exists $self->{pre_procs}{$string}){
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return exists $self->{pre_procs}{$string} ? 1 : 0;
 }
 sub module {
 

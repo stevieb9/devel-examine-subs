@@ -203,7 +203,9 @@ sub inject {
 
     # inject_use/inject_after_sub_def are preprocs
 
-    if ($p->{inject_use} || $p->{inject_after_sub_def} || defined $p->{line_num}){
+    if (
+        $p->{inject_use} || $p->{inject_after_sub_def} || defined $p->{line_num}
+    ){
         $self->{params}{pre_proc} = 'inject';
         $self->{params}{pre_proc_return} = 1;
     }
@@ -282,22 +284,22 @@ sub add_functionality {
             pre_proc => sub {
                 trace() if $ENV{TRACE};
                 return $in_prod
-                ? $INC{'Devel/Examine/Subs/Preprocessor.pm'}
-                : 'lib/Devel/Examine/Subs/Preprocessor.pm';
+                    ? $INC{'Devel/Examine/Subs/Preprocessor.pm'}
+                    : 'lib/Devel/Examine/Subs/Preprocessor.pm';
             },
 
             post_proc => sub {
                 trace() if $ENV{TRACE};
                 return $in_prod
-                ? $INC{'Devel/Examine/Subs/Postprocessor.pm'}
-                : 'lib/Devel/Examine/Subs/Postprocessor.pm';
+                    ? $INC{'Devel/Examine/Subs/Postprocessor.pm'}
+                    : 'lib/Devel/Examine/Subs/Postprocessor.pm';
             },
 
             engine => sub {
                 trace() if $ENV{TRACE};
                 return $in_prod
-                ? $INC{'Devel/Examine/Subs/Engine.pm'}
-                : 'lib/Devel/Examine/Subs/Engine.pm';
+                    ? $INC{'Devel/Examine/Subs/Engine.pm'}
+                    : 'lib/Devel/Examine/Subs/Engine.pm';
             },
     );
 
@@ -367,7 +369,7 @@ sub add_functionality {
 
     my @insert = ("        $sub_name => \\&$sub_name,");
 
-    my @ret = $rw->splice(
+    $rw->splice(
         file => $file, 
         find => 'my\s+\$dt\s+=\s+\{',
         insert => \@insert,
@@ -400,7 +402,7 @@ sub pre_procs {
 
     my @pre_procs;
 
-    for (keys %{$pre_proc->_dt}){
+    for (keys %{ $pre_proc->_dt }){
         push @pre_procs, $_ if $_ !~ /^_/;
     }
     return @pre_procs;
@@ -415,7 +417,7 @@ sub post_procs {
 
     my @post_procs;
 
-    for (keys %{$post_proc->_dt}){
+    for (keys %{ $post_proc->_dt }){
         push @post_procs, $_ if $_ !~ /^_/;
     }
     return @post_procs;
@@ -446,11 +448,8 @@ sub run {
     return $struct;
 }
 sub valid_params {
-    
     trace() if $ENV{TRACE};
-
-    my $self = shift;
-    return %{$self->{valid_params}};
+    return %{ $_[0]->{valid_params} };
 }
 
 #
@@ -675,7 +674,6 @@ sub _file {
         my $module_is_loaded;
 
         if (! $INC{$file}){
-            
             my $import_ok = eval {
                 require $file;
                 import $module;
@@ -719,9 +717,7 @@ sub _file {
    return $self->{params}{file};
 }
 sub _params {
-    
     trace() if $ENV{TRACE};
-
     my $self = shift;
     my %params = @_;
     return \%params;
@@ -888,11 +884,7 @@ sub _core {
     trace() if $ENV{TRACE};
     
     my $self = shift;
-
     my $p = $self->{params};
-
-    my $search = $self->{params}{search};
-    my $file = $self->{params}{file};
 
     $self->_read_file($p);
 
@@ -971,7 +963,6 @@ sub _core {
     # core dump
 
     if ($self->{params}{core_dump}){
-        
         print "\n\t Core Dump called...\n\n";
         print "\n\n\t Dumping data... \n\n";
         print Dumper $subs;

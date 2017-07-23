@@ -58,23 +58,13 @@ sub _dt {
     return $dt;
 }
 sub exists {
-    
     trace() if $ENV{TRACE};
-
     my $self = shift;
     my $string = shift;
-
-    if (exists $self->{engines}{$string}){
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return exists $self->{engines}{$string} ? 1 : 0;
 }
 sub _test {
-    
     trace() if $ENV{TRACE};
-
     return sub {
         trace() if $ENV{TRACE};
         return {a => 1};
@@ -117,7 +107,7 @@ sub has {
 
         my $file = (keys %$struct)[0];
 
-        my @has = keys %{$struct->{$file}{subs}};
+        my @has = keys %{ $struct->{$file}{subs} };
 
         return \@has || [];
     };
@@ -133,7 +123,6 @@ sub missing {
         my $p = shift;
         my $struct = shift;
 
-        my $file = $p->{file};
         my $search = $p->{search};
 
         if ($search && ! $p->{regex}){
@@ -204,14 +193,9 @@ sub objects {
 
         return if not ref($struct) eq 'ARRAY';
 
-        my $file = $p->{file};
-
-        my $lines;
-
         my ($des_sub, %obj_hash, @obj_array);
 
         for my $sub (@$struct){
-
             $des_sub
               = Devel::Examine::Subs::Sub->new($sub, $sub->{name});
 
@@ -280,12 +264,8 @@ sub search_replace {
 
                 $line_num++;
 
-                if ($line_num < $start_line){
-                    next;
-                }
-                if ($line_num > $end_line){
-                    last;
-                }
+                next if $line_num < $start_line;
+                last if $line_num > $end_line;
 
                 my $orig = $line;
 
@@ -334,13 +314,9 @@ sub inject_after {
 
         }
 
-        my $file = $p->{file};
         my @file_contents = @{$p->{file_contents}};
-
         my @processed;
-
         my $added_lines = 0;
-
         my @subs;
 
         for my $sub (@$struct) {

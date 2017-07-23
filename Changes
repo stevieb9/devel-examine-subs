@@ -1,7 +1,7 @@
 Revision history for Devel::Examine::Subs
 
 1.70 UNREL
-        -
+        - clean up code in respect to specific layouts (closes #18)
 
 1.69    2017-02-03
         - no operational/functional changes

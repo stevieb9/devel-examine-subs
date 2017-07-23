@@ -676,9 +676,13 @@ sub _file {
 
         if (! $INC{$file}){
             
-            eval { require $file; import $module; };
+            my $import_ok = eval {
+                require $file;
+                import $module;
+                1;
+            };
 
-            if ($@){
+            if (! $import_ok){
                 $@ = "\nDevel::Examine::Subs::_file() speaking ... " .
                      "Can't transform module to a file name\n\n"
                      . $@;
@@ -861,11 +865,13 @@ sub _write_file {
 
     my $write_response;
 
-    eval {
-        $write_response = $self->{rw}->write(file => $file, contents => $contents);
+    my $write_ok = eval {
+        $write_response
+          = $self->{rw}->write(file => $file, contents => $contents);
+        1;
     };
 
-    if ($@ || ! $write_response){
+    if (! $write_ok || ! $write_response){
         $@ = "\nDevel::Examine::Subs::_write_file() speaking...\n\n" .
              "File::Edit::Portable::write() returned a failure status.\n\n" .
              $@;
@@ -1010,11 +1016,12 @@ sub _pre_proc {
                   "pre_processor '$pre_proc' is not implemented.\n";
         }
 
-        eval {
+        my $compiled_ok = eval {
             $cref = $compiler->{pre_procs}{$pre_proc}->();
+            1;
         };
         
-        if ($@){
+        if (! $compiled_ok){
             $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Preprocessor " .
                   "has a mistyped function as a value, but the key is ok\n\n"
@@ -1149,11 +1156,12 @@ sub _post_proc {
                           "implemented. '$post_proc' was sent in.\n";
                 }
                 
-                eval {
+                my $compiled_ok = eval {
                     $cref = $compiler->{post_procs}{$pf}->();
+                    1;
                 };
         
-                if ($@){
+                if (! $compiled_ok){
                     $@ = "\n[Devel::Examine::Subs speaking] " .
                           "dispatch table in " .
                           "Devel::Examine::Subs::Postprocessor has a mistyped " .
@@ -1214,13 +1222,14 @@ sub _engine {
             confess "engine '$engine' is not implemented.\n";
         }
 
-        eval {
+        my $compiled_ok = eval {
             $cref = $compiler->{engines}{$engine}->();
+            1;
         };
 
         # engine has bad func val in dispatch table, but key is ok
 
-        if ($@){
+        if (! $compiled_ok){
             $@ = "\n[Devel::Examine::Subs speaking] " .
                   "dispatch table in Devel::Examine::Subs::Engine " .
                   "has a mistyped function as a value, but the key is ok\n\n"

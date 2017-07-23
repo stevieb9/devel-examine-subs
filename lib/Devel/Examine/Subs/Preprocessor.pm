@@ -88,11 +88,12 @@ sub module {
         my $module_is_loaded = 0;
 
         if (! $INC{$module_file}){
-            eval {
+            my $required_ok = eval {
                 require "$module_file";
+                1;
             };
 
-            if ($@) {
+            if (! $required_ok) {
                 die "Problem loading $p->{module}: $@";
             }
         }
@@ -312,8 +313,9 @@ Devel::Examine::Subs
         confess "pre_proc $pre_proc is not implemented.\n";
     }
 
-    eval {
+    my $compiled_ok = eval {
         $pre_proc_cref = $compiler->{pre_procs}{$pre_proc}->();
+        1;
     };
 
 =head1 DESCRIPTION

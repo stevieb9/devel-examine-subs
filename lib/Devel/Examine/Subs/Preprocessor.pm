@@ -6,26 +6,23 @@ use warnings;
 our $VERSION = '1.70';
 
 use Carp;
-use Data::Dumper;
 use Symbol qw(delete_package);
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to circular referencing,
-    # which broke CPAN installs.
+    # we need to do some trickery for Devel::Trace::Subs due to circular
+    # referencing, which broke CPAN installs. DTS does nothing if not presented,
+    # per this code
 
     eval {
         require Devel::Trace::Subs;
-    };
-
-    eval {
         import Devel::Trace::Subs qw(trace);
     };
 
     if (! defined &trace){
         *trace = sub {};
     }
-};
+}
 
 sub new {
 

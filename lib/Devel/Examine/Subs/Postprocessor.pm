@@ -6,25 +6,22 @@ use warnings;
 our $VERSION = '1.70';
 
 use Carp;
-use Data::Dumper;
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to circular referencing,
-    # which broke CPAN installs.
+    # we need to do some trickery for Devel::Trace::Subs due to circular
+    # referencing, which broke CPAN installs. DTS does nothing if not presented,
+    # per this code
 
     eval {
         require Devel::Trace::Subs;
-    };
-
-    eval {
         import Devel::Trace::Subs qw(trace);
     };
 
     if (! defined &trace){
         *trace = sub {};
     }
-};
+}
 
 sub new {
     
@@ -91,7 +88,8 @@ sub subs {
                 $s->{$f}{subs}{$sub}{start}++;
                 $s->{$f}{subs}{$sub}{end}++;
                 $s->{$f}{subs}{$sub}{name} = $sub;
-                @{ $s->{$f}{subs}{$sub}{code} } = @{ $s->{$f}{subs}{$sub}{code} };
+                @{ $s->{$f}{subs}{$sub}{code} }
+                  = @{ $s->{$f}{subs}{$sub}{code} };
                 push @subs, $s->{$f}{subs}{$sub};
             }
         }
@@ -243,8 +241,8 @@ first parameter.
 
 =head2 C<exists('post-processor')>
 
-Verifies whether the post-processor name specified as the string parameter exists
-and is valid.
+Verifies whether the post-processor name specified as the string parameter
+exists and is valid.
 
 =head2 C<subs()>
 

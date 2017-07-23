@@ -13,21 +13,19 @@ use File::Copy;
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to circular referencing,
-    # which broke CPAN installs.
+    # we need to do some trickery for Devel::Trace::Subs due to circular
+    # referencing, which broke CPAN installs. DTS does nothing if not presented,
+    # per this code
 
     eval {
         require Devel::Trace::Subs;
-    };
-
-    eval {
         import Devel::Trace::Subs qw(trace);
     };
 
     if (! defined &trace){
         *trace = sub {};
     }
-};
+}
 
 sub new {
     
@@ -43,8 +41,6 @@ sub new {
 sub _dt {
     
     trace() if $ENV{TRACE};
-
-    my $self = shift;
 
     my $dt = {
         all => \&all,
@@ -256,17 +252,19 @@ sub search_replace {
         }
 
         if (! $file){
-            confess "\nDevel::Examine::Subs::Engine::search_replace " .
-                  "speaking:\n" .
-                  "can't use search_replace engine without specifying a " .
-                  "file\n\n";
+            confess
+                "\nDevel::Examine::Subs::Engine::search_replace " .
+                "speaking:\n" .
+                "can't use search_replace engine without specifying a " .
+                "file\n\n";
         }
 
         if (! $exec || ref($exec) ne 'CODE'){
-            confess "\nDevel::Examine::Subs::Engine::search_replace " .
-                  " speaking:\n" .
-                  "can't use search_replace engine without specifying" .
-                  "a substitution regex code reference\n\n";
+            confess
+                "\nDevel::Examine::Subs::Engine::search_replace " .
+                " speaking:\n" .
+                "can't use search_replace engine without specifying" .
+                "a substitution regex code reference\n\n";
         }
 
         my @changed_lines;
@@ -324,12 +322,14 @@ sub inject_after {
         my $code = $p->{code};
 
         if (!$search) {
-            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            confess
+                "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                 "can't use inject_after engine without specifying a " .
                 "search term\n\n";
         }
         if (!$code) {
-            confess "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
+            confess
+                "\nDevel::Examine::Subs::Engine::inject_after speaking:\n" .
                 "can't use inject_after engine without code to inject\n\n";
 
         }

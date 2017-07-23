@@ -19,21 +19,19 @@ use Symbol qw(delete_package);
 
 BEGIN {
 
-    # we need to do some trickery for DTS due to circular referencing,
-    # which broke CPAN installs.
+    # we need to do some trickery for Devel::Trace::Subs due to circular
+    # referencing, which broke CPAN installs. DTS does nothing if not presented,
+    # per this code
 
     eval {
         require Devel::Trace::Subs;
-    };
-
-    eval {
         import Devel::Trace::Subs qw(trace);
     };
 
     if (! defined &trace){
         *trace = sub {};
     }
-};
+}
 
 #
 # public methods
@@ -262,9 +260,9 @@ sub add_functionality {
     my $in_prod = $self->{params}{add_functionality_prod};
 
     my @allowed = qw(
-                    pre_proc
-                    post_proc
-                    engine
+        pre_proc
+        post_proc
+        engine
     );
 
     my $is_allowed = 0;
@@ -282,23 +280,25 @@ sub add_functionality {
 
     my %dt = (
             pre_proc => sub {
-                        trace() if $ENV{TRACE};
-                        return $in_prod
-                        ? $INC{'Devel/Examine/Subs/Preprocessor.pm'}
-                        : 'lib/Devel/Examine/Subs/Preprocessor.pm';
-                      },
+                trace() if $ENV{TRACE};
+                return $in_prod
+                ? $INC{'Devel/Examine/Subs/Preprocessor.pm'}
+                : 'lib/Devel/Examine/Subs/Preprocessor.pm';
+            },
+
             post_proc => sub {
-                        trace() if $ENV{TRACE};
-                        return $in_prod
-                        ? $INC{'Devel/Examine/Subs/Postprocessor.pm'}
-                        : 'lib/Devel/Examine/Subs/Postprocessor.pm';
-                      },
+                trace() if $ENV{TRACE};
+                return $in_prod
+                ? $INC{'Devel/Examine/Subs/Postprocessor.pm'}
+                : 'lib/Devel/Examine/Subs/Postprocessor.pm';
+            },
+
             engine => sub {
-                        trace() if $ENV{TRACE};
-                        return $in_prod
-                        ? $INC{'Devel/Examine/Subs/Engine.pm'}
-                        : 'lib/Devel/Examine/Subs/Engine.pm';
-                      },
+                trace() if $ENV{TRACE};
+                return $in_prod
+                ? $INC{'Devel/Examine/Subs/Engine.pm'}
+                : 'lib/Devel/Examine/Subs/Engine.pm';
+            },
     );
 
     my $caller = (caller)[1];
@@ -346,10 +346,11 @@ sub add_functionality {
     }
 
     $des = Devel::Examine::Subs->new(
-                                    file => $file,
-                                    engine => 'objects', 
-                                    post_proc => [qw(subs end_of_last_sub)],
-                                );
+        file => $file,
+        engine => 'objects',
+        post_proc => [qw(subs end_of_last_sub)],
+    );
+
     $p = {
         engine => 'objects', 
         post_proc => [qw(subs end_of_last_sub)],
@@ -361,6 +362,8 @@ sub add_functionality {
     my $rw = File::Edit::Portable->new;
 
     $rw->splice(file => $file, insert => \@code, line => $start_writing);
+
+    # the weird spaces are required for layout... they're not erroneous
 
     my @insert = ("        $sub_name => \\&$sub_name,");
 
@@ -657,7 +660,9 @@ sub _file {
     my $self = shift;
     my $p = shift;
 
-    $self->{params}{file} = defined $p->{file} ? $p->{file} : $self->{params}{file};
+    $self->{params}{file} = defined $p->{file}
+        ? $p->{file}
+        : $self->{params}{file};
 
     # if a module was passed in, dig up the file
 
@@ -789,11 +794,11 @@ sub _run_directory {
     $self->{rw} = File::Edit::Portable->new;
 
     my @files = $self->{rw}->dir(
-                            dir => $dir,
-                            maxdepth => $self->{params}{maxdepth} || 0,
-                            types => $self->{params}{extensions},
-                            list => 1,
-                        );
+        dir => $dir,
+        maxdepth => $self->{params}{maxdepth} || 0,
+        types => $self->{params}{extensions},
+        list => 1,
+    );
 
     my %struct;
 
@@ -1031,7 +1036,7 @@ sub _proc {
     # routine (aka the 'Processor phase') for all of DES
 
     # make sure all unit tests are successful after any change
-    # to this subroutine!
+    # to this subroutine
 
     # if you want the data structure to look differently before 
     # reaching here, use a pre_proc. If you want it different 
@@ -1078,6 +1083,8 @@ sub _proc {
 
         $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;
         $subs{$file}{subs}{$name}{start}--;
+
+        # yep, its a hard to find thing 'y' is :)
 
         my $lines = $PPI_sub =~ y/\n//;
 

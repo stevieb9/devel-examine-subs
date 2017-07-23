@@ -1078,7 +1078,7 @@ sub _proc {
         next if grep {$name eq $_ } @$exclude;
 
         if ($include->[0]){
-            next if (! grep {$name eq $_ && $_} @$include);
+            next if (! grep {$_ && $name eq $_} @$include);
         }
 
         $subs{$file}{subs}{$name}{start} = $PPI_sub->line_number;

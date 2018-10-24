@@ -8,7 +8,8 @@ BEGIN {#1
     use_ok( 'Devel::Examine::Subs' ) || print "Bail out!\n";
     if ($^O =~ /win32/i) {
       use Test::More;
-    } else {
+    }
+    else {
       use Test::More skip_all => 'not an MSWin32 OS';
     }
 }

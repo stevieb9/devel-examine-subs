@@ -1,5 +1,8 @@
 Revision history for Devel::Examine::Subs
 
+1.71 UNREL
+        -
+
 1.70    2018-10-24
         - clean up code in respect to specific layouts (closes #18)
         - efficiency change in the core _proc() sub. We now check for existence

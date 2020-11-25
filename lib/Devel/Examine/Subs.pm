@@ -786,7 +786,7 @@ sub _read_file {
         $ppi_doc = PPI::Document->new($tempfile_name);
 
         close $self->tempfile;
-        unlink $self->tempfile()->filename;
+        unlink $tempfile_name or die "Can't delete temp file $tempfile_name: $!";
     }
     else {
         $ppi_doc = PPI::Document->new($file);

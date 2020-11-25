@@ -447,6 +447,26 @@ sub run {
 
     return $struct;
 }
+sub rw {
+    trace() if $ENV{TRACE};
+
+    # Insert a File::Edit::Portable object into self
+
+    my ($self, $rw) = @_;
+
+    $self->{rw} = $rw if defined $rw;
+
+    return $self->{rw};
+}
+sub tempfile {
+    trace() if $ENV{TRACE};
+
+    # Insert a File::Edit::Portable::tempfile object into self
+
+    my ($self, $tempfile) = @_;
+    $self->{tempfile} = $tempfile if defined $tempfile;
+    return $self->{tempfile};
+}
 sub valid_params {
     trace() if $ENV{TRACE};
     return %{ $_[0]->{valid_params} };
@@ -746,18 +766,18 @@ sub _read_file {
 
     die "Can't call method \"serialize\" on an undefined file\n" if ! -f $file;
 
-    $self->{rw} = File::Edit::Portable->new;
+    $self->rw(File::Edit::Portable->new);
 
     my $ppi_doc;
 
-    if ($self->{rw}->recsep($file, 'hex') ne $self->{rw}->platform_recsep('hex')) {
-        my $fh = $self->{rw}->read($file);
+    if ($self->rw()->recsep($file, 'hex') ne $self->rw()->platform_recsep('hex') || $ENV{ISSUE_31_TEST}) {
+        my $fh = $self->rw()->read($file);
 
-        my $tempfile = $self->{rw}->tempfile;
-        my $tempfile_name = $tempfile->filename;
-        my $platform_recsep = $self->{rw}->platform_recsep;
+        $self->tempfile($self->rw()->tempfile);
+        my $tempfile_name = $self->tempfile()->filename;
+        my $platform_recsep = $self->rw()->platform_recsep;
 
-        $self->{rw}->write(
+        $self->rw()->write(
             copy => $tempfile_name,
             contents => $fh,
             recsep => $platform_recsep
@@ -765,14 +785,14 @@ sub _read_file {
 
         $ppi_doc = PPI::Document->new($tempfile_name);
 
-        close $tempfile;
+        close $self->tempfile;
+        unlink $self->tempfile()->filename;
     }
     else {
         $ppi_doc = PPI::Document->new($file);
     }
 
     @{ $p->{file_contents} } = split /\n/, $ppi_doc->serialize;
-
 
     if (! $p->{file_contents}->[0]){
         return 0;
@@ -791,9 +811,9 @@ sub _run_directory {
 
     my $dir = $self->{params}{file};
 
-    $self->{rw} = File::Edit::Portable->new;
+    $self->rw(File::Edit::Portable->new);
 
-    my @files = $self->{rw}->dir(
+    my @files = $self->rw()->dir(
         dir => $dir,
         maxdepth => $self->{params}{maxdepth} || 0,
         types => $self->{params}{extensions},
@@ -863,7 +883,7 @@ sub _write_file {
 
     my $write_ok = eval {
         $write_response
-          = $self->{rw}->write(file => $file, contents => $contents);
+          = $self->rw()->write(file => $file, contents => $contents);
         1;
     };
 
@@ -1647,7 +1667,34 @@ This allows for very fine-grained interaction with the application, and makes
 it easy to write new engines and for testing.
 
 
+=head2 C<rw($rw)>
 
+Parameters:
+
+    $rw
+
+Optional, C<File::Edit::Portable> object.
+
+On first call, a L<File::Edit::Portable> object must be sent in. On subsequent
+calls, we'll return this object.
+
+Returns: C<File::Edit::Portable> object if previously sent in, else returns
+C<undef>.
+
+
+=head2 C<tempfile($file)>
+
+Parameters:
+
+    $file
+
+Optional, C<File::Temp> object, typically generated through a call to
+C<File::Edit::Portable>'s C<tempfile()>.
+
+On first call, a C<Temp::File> object must be sent in. On subsequent calls,
+we'll return that object.
+
+Returns: C<Temp::File> object if previously sent in, else returns C<undef>.
 
 
 =head2 C<add_functionality>
@@ -1963,7 +2010,6 @@ In your calling script, set C<$ENV{DES_TRACE} = 1>.
 
 See C<perldoc Devel::Trace::Subs> for information on how to access the traces.
 
-
 =head1 SEE ALSO
 
 =over 4
@@ -1981,12 +2027,6 @@ Information related to the 'post_proc' phase core modules.
 Information related to the 'engine' phase core modules.
 
 =back
-
-
-
-
-
-
 
 =head1 AUTHOR
 

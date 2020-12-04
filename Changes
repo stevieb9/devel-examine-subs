@@ -13,6 +13,7 @@ Revision history for Devel::Examine::Subs
         - added t/58-tempfile_unlink_bug.t, which tests against the problem
           identified in issue #31
         - in POD, move description section above synopsis (closes #30)
+        - fix misleading/incorrect comment (fixes #28)
 
 1.70    2018-10-24
         - clean up code in respect to specific layouts (closes #18)

@@ -629,7 +629,7 @@ sub _config {
 
     $self->{valid_params} = \%valid_params;
 
-    # get previous run's config
+    # store previous run's config
 
     %{$self->{previous_run_config}} = %{$self->{params}};
 

@@ -1279,6 +1279,14 @@ Perl files and subs.
 <a href="http://travis-ci.org/stevieb9/devel-examine-subs"><img src="https://secure.travis-ci.org/stevieb9/devel-examine-subs.png"/>
 <a href='https://coveralls.io/github/stevieb9/devel-examine-subs?branch=master'><img src='https://coveralls.io/repos/stevieb9/devel-examine-subs/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
 
+=head1 DESCRIPTION
+
+Gather information about subroutines in Perl files (and in-memory modules),
+with the ability to search/replace code, inject new code, get line counts,
+get start and end line numbers, access the sub's code and a myriad of other
+options.  Files are parsed using L<PPI>, not by inspecting packages or
+coderefs.
+
 =head1 SYNOPSIS
 
     use Devel::Examine::Subs;
@@ -1395,17 +1403,6 @@ Most methods can include or exclude specific subs
     my $missing = $des->missing( exclude => ['this', 'that'] );
 
     # note that 'exclude' param renders 'include' invalid
-
-
-=head1 DESCRIPTION
-
-Gather information about subroutines in Perl files (and in-memory modules),
-with the ability to search/replace code, inject new code, get line counts,
-get start and end line numbers, access the sub's code and a myriad of other
-options.  Files are parsed using L<PPI>, not by inspecting packages or
-coderefs.
-
-
 
 =head1 METHODS
 

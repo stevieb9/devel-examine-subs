@@ -1,5 +1,8 @@
 Revision history for Devel::Examine::Subs
 
+1.72 UNREL
+        -
+
 1.71    2020-12-04
         - fixes #31; unlink temporary file in _read_file() after we're done
           with it. Without unlink, we were leaking temporary files

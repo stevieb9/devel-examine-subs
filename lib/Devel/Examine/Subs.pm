@@ -1272,8 +1272,12 @@ __END__
 
 =head1 NAME
 
-Devel::Examine::Subs - Get info about, search/replace and inject code into
-Perl files and subs.
+Devel::Examine::Subs - Get info about, search/replace and inject code into Perl files and subs.
+
+=for html
+<a href="https://github.com/stevieb9/devel-examine-subs/actions"><img src="https://github.com/stevieb9/devel-examine-subs/workflows/CI/badge.svg"/></a>
+<a href='https://coveralls.io/github/stevieb9/devel-examine-subs?branch=master'><img src='https://coveralls.io/repos/stevieb9/devel-examine-subs/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
+
 
 =head1 DESCRIPTION
 

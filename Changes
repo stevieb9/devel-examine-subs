@@ -1,5 +1,8 @@
 Revision history for Devel::Examine::Subs
 
+1.74 UNREL
+    -
+
 1.73    2021-10-11
     - Add heading to forgotten example in SYNOPSIS
     - Re-layout Changes file

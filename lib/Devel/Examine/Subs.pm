@@ -1299,7 +1299,7 @@ coderefs.
 
     my $des = Devel::Examine::Subs->new( file => 'Some::Module::Name' );
 
-Get all sub names in a file
+=head3 Get all sub names in a file
 
     my $aref = $des->all;
 
@@ -1316,7 +1316,7 @@ Get all the subs as objects
         $sub->lines;      # lines that match search term
     }
 
-Get the sub objects within a hash
+=head3 Get all subs as objects
 
     my $subs = $des->objects( objects_in_hash => 1 );
 
@@ -1331,16 +1331,16 @@ Get the sub objects within a hash
               ...
     }
 
-Get all subs containing "string" in the body
+=head3 Get all subs containing a search term in the code
 
     my $search = 'string';
     my $aref = $des->has( search => $search );
 
-Search and replace code in subs
+=head3 Search and replace code in subs
 
     $des->search_replace( exec => sub { $_[0] =~ s/this/that/g; } );
 
-Inject code into sub after a search term (preserves previous line's indenting)
+=head3 Inject code into sub after a search term
 
     my @code = <DATA>;
 
@@ -1357,7 +1357,7 @@ Inject code into sub after a search term (preserves previous line's indenting)
         confess 'big bad error';
     }
 
-Print out all lines in all subs that contain a search term
+=head3 Print out all lines in all subs that contain a search term
 
     my $subs = $des->lines(search => 'this');
 
@@ -1372,8 +1372,7 @@ Print out all lines in all subs that contain a search term
         }
     }
 
-The structures look a bit differently when 'file' is a directory.
-You need to add one more layer of extraction.
+=head3 Locate subs in a directory recursively
 
     my $files = $des->objects;
 
@@ -1383,7 +1382,7 @@ You need to add one more layer of extraction.
         }
     }
 
-Print all subs within each Perl file under a directory
+=head3 Print all subs within each Perl file under a directory
 
     my $files = $des->all( file => 'lib/Devel/Examine' );
 
@@ -1392,7 +1391,7 @@ Print all subs within each Perl file under a directory
         print join('\t', @{$files->{$file}});
     }
 
-Most methods can include or exclude specific subs
+=head3 Include or exclude specific subs
 
     my $has = $des->has( include => ['dump', 'private'] );
 
@@ -1404,8 +1403,6 @@ Most methods can include or exclude specific subs
 
 See the L</PARAMETERS> for the full list of params, and which ones
 are persistent across runs using the same object.
-
-
 
 =head2 C<new>
 

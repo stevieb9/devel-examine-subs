@@ -1,7 +1,7 @@
 Revision history for Devel::Examine::Subs
 
 1.72 UNREL
-        -
+        - Migrated from Travis CI to Github Actions
 
 1.71    2020-12-04
         - fixes #31; unlink temporary file in _read_file() after we're done
@@ -101,10 +101,10 @@ Revision history for Devel::Examine::Subs
 
 1.58    20151230
         - _proc() now sets $p->{order}, which keeps track of the original order
-          of subs in the file being worked on 
+          of subs in the file being worked on
         - added order(), returns the list of sub names in the order they appear
           in the file
-        - fixed minor issues in a couple of unit test files (file cleanup on 
+        - fixed minor issues in a couple of unit test files (file cleanup on
           windows wasn't working correctly)
         - removed 'blead' from travis
         - win32 tests in CPAN Testers should be ok again after last dev version
@@ -226,7 +226,7 @@ Revision history for Devel::Examine::Subs
         - added remove(), which operates at the file level
         - fixed a couple of undef warnings in inject_after()
 
-1.28    
+1.28
         - Data::Compare to compare for caching
         - cache is now working again
         - added cache (default off) persistent param
@@ -267,7 +267,7 @@ Revision history for Devel::Examine::Subs
         - began making things more generic
         - can search/replace and inject code
         - can cache results in directory searching
-        - countless bug fixes        
+        - countless bug fixes
 
 1.17    20150715
         - implemented PPI sub checking, much safer
@@ -283,7 +283,7 @@ Revision history for Devel::Examine::Subs
         - new test for 'search'
         - many other test additions/updates
         - test for ::Sub
-        - test for _config() 
+        - test for _config()
 
         To consider:
         - need to sort out esc/unescape for 'search'
@@ -330,6 +330,6 @@ Revision history for Devel::Examine::Subs
           changing this internally)
         - created repository on bitbucket
 
-0.01    20120330 
+0.01    20120330
         First version, released on an unsuspecting world.
 

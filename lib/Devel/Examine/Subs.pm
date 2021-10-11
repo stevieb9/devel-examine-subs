@@ -1303,7 +1303,7 @@ coderefs.
 
     my $aref = $des->all;
 
-Get all the subs as objects
+=head3 Get all the subs as objects
 
     $subs = $des->objects;
 
@@ -1316,7 +1316,7 @@ Get all the subs as objects
         $sub->lines;      # lines that match search term
     }
 
-=head3 Get all subs as objects
+=head3 Get all subs as objects within a hash
 
     my $subs = $des->objects( objects_in_hash => 1 );
 

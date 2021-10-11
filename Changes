@@ -1,5 +1,8 @@
 Revision history for Devel::Examine::Subs
 
+1.73 UNREL
+    -
+
 1.72    2021-10-11
         - Migrated from Travis CI to Github Actions
         - Added section headers for POD in SYNOPSIS
